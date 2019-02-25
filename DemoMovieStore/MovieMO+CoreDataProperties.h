@@ -7,13 +7,17 @@
 //
 
 #import "MovieMO+CoreDataClass.h"
-
+#import "Movie.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MovieMO (CoreDataProperties)
 
 + (NSFetchRequest<MovieMO *> *)fetchRequest;
+
++ (MovieMO *) insertNewMovie: (Movie *)movie;
+
++ (MovieMO *) fetchMovieMOWithIdentifier: (int32_t)identifier;
 
 @property (nonatomic) int32_t identifier;
 @property (nonatomic) float voteAverage;

@@ -28,13 +28,24 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *overview;
 
-@property (nonatomic, weak) NSMutableArray * arrayImageURLString;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *constraintBetweenTxtReleaseDateAndBtnAdult;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *constraintBetweenTxtReleaseDateAndBtnStart;
+
+
+@property (nonatomic) NSMutableArray * arrayImageURLString;
+
+@property (nonatomic) Movie * movie;
 
 @property (nonatomic) NSMutableString * urlString;
 
 @end
 
 @implementation MovieItemCell
+
+static float LAYOUT_PRIORITY_NON_REQUIRED = 1;
+
+static float LAYOUT_PRIORITY_REQUIRED = 99;
 
 static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";
 
@@ -49,33 +60,39 @@ static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";
 }
 
 - (void) setMovieItemCell: (Movie * _Nonnull)movie imageURLString: (NSString *)imageURLString arrayImageURLString: (NSMutableArray *)arrayImageURLString {
+    self.movie = movie;
     self.movieTitle.text = movie.title;
     self.arrayImageURLString = arrayImageURLString;
-    [self setMovieItemImage: movie.posterPath imageURLString: imageURLString];
+    [self setMovieItemImage: imageURLString];
     self.releaseDate.text = [DateUtils stringFromDate:movie.releaseDate formatDate:formatOfReleaseDate];
     self.rating.text = [NSString stringWithFormat:@"%.1f", movie.voteAverage];
-    if(!movie.adult) {
-        self.adult.hidden = YES;
-        // add constraint for releasedate
+    [self setTxtAdult: movie.adult];
+    self.overview.text = movie.overview;
+}
+
+- (void) setTxtAdult: (BOOL)adult {
+    if(!adult) {
+        [self.adult removeFromSuperview];
+        self.constraintBetweenTxtReleaseDateAndBtnStart.priority = LAYOUT_PRIORITY_REQUIRED;
     }
     else {
-        // add constraint for releasedate
+        self.constraintBetweenTxtReleaseDateAndBtnStart.priority = LAYOUT_PRIORITY_NON_REQUIRED;
+        self.constraintBetweenTxtReleaseDateAndBtnAdult.priority = LAYOUT_PRIORITY_REQUIRED;
         self.adult.layer.borderWidth = 1;
         self.adult.layer.borderColor = [[UIColor lightGrayColor] CGColor];
         self.adult.layer.cornerRadius = 4;
         self.adult.clipsToBounds = YES;
     }
-    self.overview.text = movie.overview;
 }
 
-- (void) setMovieItemImage: (NSString *)posterPath imageURLString: (NSString *)imageURLString {
+- (void) setMovieItemImage: (NSString *)imageURLString {
     if(!imageURLString) {
-        if(!posterPath) {
+        if(!self.movie.posterPath) {
             self.movieImage.image = [UIImage imageNamed:@"no-image-found"];
         }
         else {
             __weak MovieItemCell * weakSelf = self;
-            [[ImageHelper getInstance] createImageURLWithImageSize:POSTER_SIZE sizeOption:nil posterPath:posterPath success:^(NSString * _Nonnull imageURLString) {
+            [[ImageHelper getInstance] createImageURLWithImageSize:POSTER_SIZE sizeOption:nil posterPath:weakSelf.movie.posterPath success:^(NSString * _Nonnull imageURLString) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [weakSelf.arrayImageURLString addObject: imageURLString];
                     NSURL * url = [NSURL URLWithString: imageURLString];
@@ -94,7 +111,7 @@ static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";
     }
 }
 
-- (IBAction)addMovieFavorite:(id)sender {
+- (IBAction)btnStartButtonPressed:(id)sender {
     [self setAnimationButtonStart];
 }
 

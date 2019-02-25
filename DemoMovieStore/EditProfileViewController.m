@@ -30,6 +30,8 @@
 
 @property (nonatomic) UIAlertController * alertErrorController;
 
+@property (nonatomic) UIAlertController * alertActivityController;
+
 @property (nonatomic) UIDatePicker * datePicker;
 
 @end
@@ -41,12 +43,6 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UITapGestureRecognizer * tapGestureReconizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handlerEventTapView)];
-    [self.view addGestureRecognizer: tapGestureReconizer];
-}
-
-- (void) viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
     [self setAvatar];
     [self setTxtName];
     [self setTxtBirthday];
@@ -54,6 +50,9 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
     [self setBtnCancel];
     [self setBtnDone];
     [self setSegmentedControlGender];
+    
+    UITapGestureRecognizer * tapGestureReconizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handlerEventTapView)];
+    [self.view addGestureRecognizer: tapGestureReconizer];
 }
 
 - (void) handlerEventTapView {
@@ -92,6 +91,20 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
     return _alertErrorController;
 }
 
+- (UIAlertController *) alertActivityController {
+    if(!_alertActivityController) {
+        _alertActivityController = [UIAlertController alertControllerWithTitle:@"" message:@"Waiting ..." preferredStyle:UIAlertControllerStyleAlert];
+        UIActivityIndicatorView * activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle: UIActivityIndicatorViewStyleGray];
+        CGRect frameOfActivity = activityIndicator.frame;
+        frameOfActivity.origin.x = 25;
+        frameOfActivity.origin.y = 17.5;
+        activityIndicator.frame = frameOfActivity;
+        [_alertActivityController.view addSubview: activityIndicator];
+        [activityIndicator startAnimating];
+    }
+    return _alertActivityController;
+}
+
 - (void) chooseAvartarImageFromDevice {
     UIAlertController * alertViewController = [UIAlertController alertControllerWithTitle:@"Options" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
     __weak EditProfileViewController *weakSelf = self;
@@ -100,6 +113,7 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
             UIImagePickerController * imagePickerController = [[UIImagePickerController alloc] init];
             imagePickerController.delegate = self;
             imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+            imagePickerController.allowsEditing = YES;
             [weakSelf presentViewController:imagePickerController animated:YES completion:nil];
         }
         else {
@@ -112,6 +126,7 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
             UIImagePickerController * imagePickerController = [[UIImagePickerController alloc] init];
             imagePickerController.delegate = self;
             imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            imagePickerController.allowsEditing = YES;
             [weakSelf presentViewController:imagePickerController animated:YES completion:nil];
         }
         else {
@@ -206,7 +221,7 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
     }
     GENDER gender = self.segmentedControlGender.selectedSegmentIndex;
     if(![@"" isEqualToString: message]) {
-        self.alertErrorController.title = @"🧨🧨🧨";
+        self.alertErrorController.title = @"💔💔💔";
         self.alertErrorController.message = message;
         [self presentViewController: self.alertErrorController animated:YES completion:nil];
     }
@@ -217,21 +232,45 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
         if(self.account) {
             // set identifier for account
             account.indentifier = self.account.indentifier;
+            [self presentViewController:self.alertActivityController animated:YES completion:nil];
+            __weak EditProfileViewController * weakSelf = self;
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 BOOL isSaved = [AccountMO updateAccount: account];
                 if(isSaved) {
                     [[AccountManager getInstance] setAccount: account];
                     [[AccountManager getInstance] saveAccountToUserDefault];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [weakSelf dismissViewControllerAnimated:NO completion:nil];
+                    });
+                }
+                else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [weakSelf dismissViewControllerAnimated:NO completion:nil];
+                        weakSelf.alertErrorController.message = @"Save error";
+                        [weakSelf presentViewController:weakSelf.alertErrorController animated:YES completion:nil];
+                    });
                 }
             });
         }
         else {
+            [self presentViewController:self.alertActivityController animated:YES completion:nil];
+            __weak EditProfileViewController * weakSelf = self;
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 // insert and set identifier for account
                 BOOL isInserted = [AccountMO insertNewAccount: account];
                 if(isInserted) {
                     [[AccountManager getInstance] setAccount: account];
                     [[AccountManager getInstance] saveAccountToUserDefault];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [weakSelf dismissViewControllerAnimated:NO completion:nil];
+                    });
+                }
+                else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [weakSelf dismissViewControllerAnimated:NO completion:nil];
+                        weakSelf.alertErrorController.message = @"Save error";
+                        [weakSelf presentViewController:weakSelf.alertErrorController animated:YES completion:nil];
+                    });
                 }
             });
         }
@@ -240,7 +279,7 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
 
 #pragma mark <UIImagePickerControllerDelegate>
 
-- (void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
+- (void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
     UIImage * image = [info objectForKey: UIImagePickerControllerOriginalImage];
     if(image) {
         self.avatar.image = image;

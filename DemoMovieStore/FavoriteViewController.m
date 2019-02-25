@@ -9,6 +9,8 @@
 #import "FavoriteViewController.h"
 #import "Movie.h"
 #import "AccountManager.h"
+#import "MovieItemCell.h"
+#import "Constants.h"
 
 @interface FavoriteViewController ()
 
@@ -16,9 +18,9 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
-@pro
+@property (nonatomic, copy) NSMutableArray<Movie *> * movies;
 
-@property (nonatomic) NSMutableSet<Movie *> * movies;
+@property (nonatomic) NSMutableArray * arrayImageURLString;
 
 @end
 
@@ -26,26 +28,33 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.movies = [[NSMutableArray alloc] init];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.arrayImageURLString = [[NSMutableArray alloc] init];
+    [self.tableView registerNib:[UINib nibWithNibName:MOVIE_ITEM_CELL bundle:nil] forCellReuseIdentifier:MOVIE_ITEM_CELL];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    __weak Account * account = [[AccountManager getInstance] account];
+    Account * account = [[AccountManager getInstance] account];
     if(account) {
-        /*
-        self.movies = [account.favouriteMovies copy];
-        if(!self.movies) {
-            self.movies = [[NSMutableSet alloc] init];
+        if(account.favouriteMovies) {
+            for(id item in account.favouriteMovies) {
+                [self.movies addObject: item];
+            }
         }
-         */
     }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    
+    Account * account = [[AccountManager getInstance] account];
+    if(account) {
+        if(self.movies.count > 0) {
+            account.favouriteMovies = [[NSMutableSet alloc] initWithArray: self.movies];
+        }
+    }
 }
 
 #pragma mark <UITableViewDataSource>
@@ -55,11 +64,19 @@
 }
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 0;
+    return self.movies.count;
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return nil;
+    MovieItemCell * cell = [tableView dequeueReusableCellWithIdentifier:MOVIE_ITEM_CELL forIndexPath:indexPath];
+    if(self.arrayImageURLString.count < (indexPath.row + 1)) {
+        [cell setMovieItemCell:[self.movies objectAtIndex: indexPath.row] imageURLString:nil arrayImageURLString:self.arrayImageURLString];
+    }
+    else {
+        NSString * imageURLString = [self.arrayImageURLString objectAtIndex: indexPath.row];
+        [cell setMovieItemCell:[self.movies objectAtIndex: indexPath.row] imageURLString:imageURLString arrayImageURLString:self.arrayImageURLString];
+    }
+    return cell;
 }
 
 @end
