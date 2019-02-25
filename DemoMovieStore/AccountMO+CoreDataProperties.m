@@ -8,10 +8,12 @@
 
 #import "AccountMO+CoreDataProperties.h"
 #import "AppDelegate.h"
+#import "Movie.h"
+#import "MovieMO+CoreDataClass.h"
 
 @implementation AccountMO (CoreDataProperties)
 
-static NSString * const CURRENT_IDENTIFIER = @"CurrentIdentifierKey";
+static NSString * const CURRENT_IDENTIFIER = @"CurrentIdentifierOfAccountKey";
 
 static NSString * const ENTITY_NAME = @"Account";
 
@@ -19,12 +21,14 @@ static NSString * const ENTITY_NAME = @"Account";
 	return [NSFetchRequest fetchRequestWithEntityName:@"Account"];
 }
 
-+ (Account *) fetchAccountWithIdentifier: (int32_t)identifier {
-    Account * account = [[Account alloc] init];
++ (AccountMO *) fetchAccountMOWithIdentifier: (int32_t)identifier {
     NSManagedObjectContext * context = [AppDelegate managedObjectContext];
     NSFetchRequest * request = [NSFetchRequest fetchRequestWithEntityName: ENTITY_NAME];
     NSError * error = nil;
     NSArray<AccountMO *> * accounts = [context executeFetchRequest:request error:&error];
+    if(error) {
+        return nil;
+    }
     NSArray<AccountMO *> * accountFilters = [accounts filteredArrayUsingPredicate: [NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
         if(evaluatedObject) {
             AccountMO * accountMO = (AccountMO *)evaluatedObject;
@@ -37,10 +41,36 @@ static NSString * const ENTITY_NAME = @"Account";
         }
         return YES;
     }]];
+    if(accountFilters) {
+        return [accountFilters firstObject];
+    }
+    else {
+        return nil;
+    }
+}
+
++ (Account *) fetchAccountWithIdentifier: (int32_t)identifier {
+    Account * account = [[Account alloc] init];
+    NSManagedObjectContext * context = [AppDelegate managedObjectContext];
+    NSFetchRequest * request = [NSFetchRequest fetchRequestWithEntityName: ENTITY_NAME];
+    NSError * error = nil;
+    NSArray<AccountMO *> * accounts = [context executeFetchRequest:request error:&error];
     if(error) {
         return nil;
     }
-    if(accountFilters || accountFilters.count == 0) {
+    NSArray<AccountMO *> * accountFilters = [accounts filteredArrayUsingPredicate: [NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+        if(evaluatedObject) {
+            AccountMO * accountMO = (AccountMO *)evaluatedObject;
+            if(identifier != accountMO.identifier) {
+                return NO;
+            }
+        }
+        else {
+            return NO;
+        }
+        return YES;
+    }]];
+    if(accountFilters) {
         AccountMO * accountMO = [accountFilters firstObject];
         if(accountMO) {
             account.indentifier = accountMO.identifier;
@@ -49,7 +79,12 @@ static NSString * const ENTITY_NAME = @"Account";
             account.email = accountMO.email;
             account.gender = accountMO.gender;
             account.avartar = accountMO.avartar;
-            account.favouriteMovies = [NSMutableSet setWithSet: accountMO.favouriteMovies];
+            NSMutableSet * set = [[NSMutableSet alloc] init];
+            for(MovieMO * item in accountMO.favouriteMovies) {
+                Movie * movie = [[Movie alloc] initWithIdentifier:item.identifier voteAverage:item.voteAverage title:item.title posterPath:item.posterPath adult:item.adult overview:item.overview releaseDate:item.releaseDate];
+                [set addObject: movie];
+            }
+            account.favouriteMovies = set;
         }
         else {
             return nil;
@@ -73,7 +108,6 @@ static NSString * const ENTITY_NAME = @"Account";
         accountMO.dateOfBirth= account.dateOfBirth;
         accountMO.email = account.email;
         accountMO.gender = account.gender;
-        accountMO.favouriteMovies = [NSSet setWithSet: account.favouriteMovies];
         if(context.hasChanges) {
             NSError * error = nil;
             BOOL isSaved = [context save: &error];
@@ -113,13 +147,31 @@ static NSString * const ENTITY_NAME = @"Account";
         }
         return YES;
     }]];
-    if(accountFilters || accountFilters.count == 0) {
+    if(accountFilters) {
         AccountMO * accountMO = [accountFilters firstObject];
         if(accountMO) {
             accountMO.dateOfBirth = account.dateOfBirth;
             accountMO.email = account.email;
             accountMO.gender = account.gender;
             accountMO.avartar = account.avartar;
+            NSMutableSet * sets = account.favouriteMovies;
+            if(sets) {
+                for(Movie * movie in sets) {
+                    MovieMO * movieMO = [MovieMO fetchMovieMOWithIdentifier:(int32_t)movie.identifier];
+                    if(movieMO) {
+                        [accountMO addFavouriteMoviesObject: movieMO];
+                    }
+                    else {
+                        MovieMO * movieMO = [MovieMO insertNewMovie: movie];
+                        if(movieMO) {
+                            [accountMO addFavouriteMoviesObject: movieMO];
+                        }
+                        else {
+                            return NO;
+                        }
+                    }
+                }
+            }
             if(context.hasChanges) {
                 NSError * error = nil;
                 [context save: &error];

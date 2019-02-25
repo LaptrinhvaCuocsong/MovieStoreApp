@@ -8,8 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import "DetailViewController.h"
+#import "Account.h"
 
 @protocol TableViewCreatorDelegate <NSObject>
+
+- (void) addOrRemoveFavouriteMovie: (Movie *)movie;
 
 - (void) pushDetailViewController: (DetailViewController *)detailViewController;
 

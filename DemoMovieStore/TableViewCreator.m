@@ -53,6 +53,7 @@
         NSString * imageURLString = [self.arrayImageURLString objectAtIndex: indexPath.row];
         [cell setMovieItemCell:[self.tableView.movies objectAtIndex: indexPath.row] imageURLString:imageURLString arrayImageURLString:self.arrayImageURLString];
     }
+    cell.delegate = self;
     return cell;
 }
 
@@ -67,6 +68,12 @@
     DetailViewController * detailViewController = [self.mainStoryBoard instantiateViewControllerWithIdentifier: DETAIL_VIEW_CONTROLLER_MAIN_STORYBOARD];
     detailViewController.movie = [tableView.movies objectAtIndex:indexPath.row];
     [self.delegate pushDetailViewController:detailViewController];
+}
+
+#pragma mark <MovieItemCellDelegate>
+
+- (void) addOrRemoveFavouriteMovie:(Movie *)movie {
+    [self.delegate addOrRemoveFavouriteMovie: movie];
 }
 
 @end

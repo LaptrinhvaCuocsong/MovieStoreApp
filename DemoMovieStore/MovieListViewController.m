@@ -16,6 +16,7 @@
 #import "UICollectionView+Extent.h"
 #import "UITableView+Extent.h"
 #import "CustomCollectionViewLayout.h"
+#import "AccountManager.h"
 
 @interface MovieListViewController ()
 
@@ -47,6 +48,8 @@
 
 @property (nonatomic) BOOL alertViewControllerIsActive;
 
+@property (nonatomic) Account * account;
+
 @end
 
 typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
@@ -74,6 +77,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    self.account = [[AccountManager getInstance] account];
 }
 
 - (void) viewDidAppear:(BOOL)animated {
@@ -213,8 +217,49 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 #pragma mark <TableViewCreatorDelegate>
 
+- (void) addOrRemoveFavouriteMovie:(Movie *)movie {
+    if(!self.account) {
+        [self showMessageErrorCantAddFavouriteMovie];
+    }
+    else {
+        if(!self.account.favouriteMovies) {
+            self.account.favouriteMovies = [[NSMutableSet alloc] init];
+        }
+        BOOL exist = NO;
+        for(Movie * item in self.account.favouriteMovies) {
+            if(item.identifier == movie.identifier) {
+                exist = YES;
+                break;
+            }
+        }
+        if(exist) {
+            if(movie.isFavouriteMovie) {
+                
+            }
+        }
+        else {
+        
+        }
+        if(movie.isFavouriteMovie) {
+            
+        }
+        else {
+        
+        }
+    }
+}
+
 - (void) pushDetailViewController:(DetailViewController *)detailViewController {
     [self.navigationController pushViewController:detailViewController animated:YES];
+}
+
+- (void) showMessageErrorCantAddFavouriteMovie {
+    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"🙏🙏🙏" message:@"You must be logged in to perform this feature" preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Login now" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

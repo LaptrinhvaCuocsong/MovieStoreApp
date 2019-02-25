@@ -11,8 +11,9 @@
 #import "Movie.h"
 #import "UITableView+Extent.h"
 #import "TableViewCreatorDelegate.h"
+#import "MovieItemCellDelegate.h"
 
-@interface TableViewCreator : NSObject <UITableViewDelegate, UITableViewDataSource>
+@interface TableViewCreator : NSObject <UITableViewDelegate, UITableViewDataSource, MovieItemCellDelegate>
 
 @property (nonatomic, weak) id<TableViewCreatorDelegate> delegate;
 
