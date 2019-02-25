@@ -10,18 +10,18 @@
 
 @implementation DateUtils
 
-+ (NSString *) stringToReleaseDate: (NSDate *)releaseDate formatDate: (NSString *)formatOfDate {
++ (NSString *) stringFromDate: (NSDate *)date formatDate: (NSString *)formatOfDate {
     NSDateFormatter * dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.dateFormat = formatOfDate;
     dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-    return [dateFormatter stringFromDate: releaseDate];
+    return [dateFormatter stringFromDate: date];
 }
 
-+ (NSDate *) dateToReleaseDateString: (NSString *)releaseDateString formatDate: (NSString *)formatOfDate {
++ (NSDate *) dateFromDateString: (NSString *)dateString formatDate: (NSString *)formatOfDate {
     NSDateFormatter * dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.dateFormat = formatOfDate;
     dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-    return [dateFormatter dateFromString: releaseDateString];
+    return [dateFormatter dateFromString: dateString];
 }
 
 @end

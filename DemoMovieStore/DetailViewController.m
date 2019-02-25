@@ -63,7 +63,7 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd";
     
     self.navigationItem.title = self.movie.title;
     
-    self.txtReleaseDate.text = [DateUtils stringToReleaseDate: self.movie.releaseDate formatDate:formatOfReleaseDate];
+    self.txtReleaseDate.text = [DateUtils stringFromDate:self.movie.releaseDate formatDate:formatOfReleaseDate];
     
     self.txtRating.text = [NSString stringWithFormat:@"%.1f", self.movie.voteAverage];
     

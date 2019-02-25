@@ -45,7 +45,7 @@ static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";
 
 - (NSDate * _Nonnull) releaseDate {
     NSString * strDate = self[@"release_date"];
-    return [DateUtils dateToReleaseDateString: strDate formatDate: formatOfReleaseDate];
+    return [DateUtils dateFromDateString:strDate formatDate:formatOfReleaseDate];
 }
 
 @end

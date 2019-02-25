@@ -2,7 +2,7 @@
 //  AccountMO+CoreDataClass.m
 //  
 //
-//  Created by RTC-HN149 on 2/22/19.
+//  Created by nguyen manh hung on 2/23/19.
 //
 //
 

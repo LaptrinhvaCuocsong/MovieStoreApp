@@ -7,8 +7,18 @@
 //
 
 #import "FavoriteViewController.h"
+#import "Movie.h"
+#import "AccountManager.h"
 
 @interface FavoriteViewController ()
+
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
+
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@pro
+
+@property (nonatomic) NSMutableSet<Movie *> * movies;
 
 @end
 
@@ -16,11 +26,40 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    __weak Account * account = [[AccountManager getInstance] account];
+    if(account) {
+        /*
+        self.movies = [account.favouriteMovies copy];
+        if(!self.movies) {
+            self.movies = [[NSMutableSet alloc] init];
+        }
+         */
+    }
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+}
+
+#pragma mark <UITableViewDataSource>
+
+- (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
+}
+
+- (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return 0;
+}
+
+- (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return nil;
 }
 
 @end

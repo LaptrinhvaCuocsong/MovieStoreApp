@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="15G22010" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14460.32" systemVersion="18D109" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
     <entity name="Account" representedClassName="AccountMO" syncable="YES">
+        <attribute name="avartar" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="dateOfBirth" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="gender" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="identifier" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="imageURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="sex" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <relationship name="favouriteMovies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FavouriteMovie" inverseName="accounts" inverseEntity="FavouriteMovie" syncable="YES"/>
+        <relationship name="favouriteMovies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Movie" inverseName="account" inverseEntity="Movie" syncable="YES"/>
     </entity>
-    <entity name="FavouriteMovie" representedClassName="FavouriteMovieMO" syncable="YES">
-        <attribute name="accountIdentifier" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+    <entity name="Movie" representedClassName="MovieMO" syncable="YES">
         <attribute name="adult" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="identifier" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="overview" optional="YES" attributeType="String" syncable="YES"/>
@@ -18,10 +17,10 @@
         <attribute name="releaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="voteAverage" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
-        <relationship name="accounts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Account" inverseName="favouriteMovies" inverseEntity="Account" syncable="YES"/>
+        <relationship name="account" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Account" inverseName="favouriteMovies" inverseEntity="Account" syncable="YES"/>
     </entity>
     <elements>
-        <element name="FavouriteMovie" positionX="-36" positionY="45" width="128" height="180"/>
-        <element name="Account" positionX="-9" positionY="135" width="128" height="150"/>
+        <element name="Account" positionX="-645.1015625" positionY="96.57421875" width="128" height="150"/>
+        <element name="Movie" positionX="-387" positionY="99" width="128" height="163"/>
     </elements>
 </model>

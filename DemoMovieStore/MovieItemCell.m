@@ -52,7 +52,7 @@ static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";
     self.movieTitle.text = movie.title;
     self.arrayImageURLString = arrayImageURLString;
     [self setMovieItemImage: movie.posterPath imageURLString: imageURLString];
-    self.releaseDate.text = [DateUtils stringToReleaseDate: movie.releaseDate formatDate: formatOfReleaseDate];
+    self.releaseDate.text = [DateUtils stringFromDate:movie.releaseDate formatDate:formatOfReleaseDate];
     self.rating.text = [NSString stringWithFormat:@"%.1f", movie.voteAverage];
     if(!movie.adult) {
         self.adult.hidden = YES;

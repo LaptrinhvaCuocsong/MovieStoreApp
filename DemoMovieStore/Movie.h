@@ -24,8 +24,6 @@
 
 @property (nonatomic) NSDate * _Nonnull releaseDate;
 
-@property (nonatomic) BOOL isFavouriteMovie;
-
 - (instancetype _Nullable) initWithIdentifier: (NSUInteger)identifier voteAverage: (float)voteAverage title: (NSString * _Nonnull)title posterPath: (NSString * _Nullable)posterPath adult: (BOOL)adult overview: (NSString * _Nullable)overview releaseDate: (NSDate * _Nonnull)releaseDate;
 
 @end

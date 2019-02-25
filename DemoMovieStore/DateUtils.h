@@ -10,8 +10,8 @@
 
 @interface DateUtils : NSObject
 
-+ (NSString *) stringToReleaseDate: (NSDate *)releaseDate formatDate: (NSString *)formatOfDate;
++ (NSString *) stringFromDate: (NSDate *)date formatDate: (NSString *)formatOfDate;
 
-+ (NSDate *) dateToReleaseDateString: (NSString *)releaseDateString formatDate: (NSString *)formatOfDate;
++ (NSDate *) dateFromDateString: (NSString *)dateString formatDate: (NSString *)formatOfDate;
 
 @end

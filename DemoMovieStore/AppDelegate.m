@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "AccountManager.h"
 
 @interface AppDelegate ()
 
@@ -23,6 +24,8 @@ static NSManagedObjectContext * managedObjectContext = nil;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     managedObjectContext = self.persistentContainer.viewContext;
+    AccountManager * accountManager = [AccountManager getInstance];
+    [accountManager loadAccount];
     return YES;
 }
 
@@ -50,7 +53,8 @@ static NSManagedObjectContext * managedObjectContext = nil;
 
 
 - (void)applicationWillTerminate:(UIApplication *)application {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:
+    
     // Saves changes in the application's managed object context before the application terminates.
     [self saveContext];
 }

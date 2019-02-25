@@ -1,5 +1,5 @@
 //
-//  AccountMO+CoreDataClass.h
+//  MovieMO+CoreDataClass.h
 //  
 //
 //  Created by nguyen manh hung on 2/23/19.
@@ -9,14 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class MovieMO;
+@class AccountMO;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface AccountMO : NSManagedObject
+@interface MovieMO : NSManagedObject
 
 @end
 
 NS_ASSUME_NONNULL_END
 
-#import "AccountMO+CoreDataProperties.h"
+#import "MovieMO+CoreDataProperties.h"

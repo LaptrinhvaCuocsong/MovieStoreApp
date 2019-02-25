@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "TabItemViewController.h"
 
-@interface FavoriteViewController : TabItemViewController
+@interface FavoriteViewController : TabItemViewController <UITableViewDelegate, UITableViewDataSource>
 
 @end
