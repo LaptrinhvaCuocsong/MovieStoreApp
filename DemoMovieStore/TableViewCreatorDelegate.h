@@ -12,6 +12,8 @@
 
 @protocol TableViewCreatorDelegate <NSObject>
 
+- (BOOL) isGrantedAddFavouriteMovie;
+
 - (void) addOrRemoveFavouriteMovie: (Movie *)movie;
 
 - (void) pushDetailViewController: (DetailViewController *)detailViewController;

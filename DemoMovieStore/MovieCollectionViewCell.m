@@ -17,8 +17,6 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *title;
 
-@property (nonatomic, weak) NSMutableArray * arrayImageURLString;
-
 @end
 
 @implementation MovieCollectionViewCell
@@ -31,35 +29,27 @@
     self.clipsToBounds = YES;
 }
 
-- (void) setMovieCollectionViewCell: (Movie * _Nonnull)movie imageURLString: (NSString *)imageURLString arrayImageURLString: (NSMutableArray *)arrayImageURLString {
-    self.arrayImageURLString = arrayImageURLString;
-    [self setMovieCollectionViewImage: movie.posterPath imageURLString: imageURLString];
+- (void) setMovieCollectionViewCell: (Movie * _Nonnull)movie {
+    [self setMovieCollectionViewImage: movie.posterPath];
     self.title.text = movie.title;
 }
 
-- (void) setMovieCollectionViewImage: (NSString *)posterPath imageURLString: (NSString *)imageURLString {
-    if(!imageURLString) {
-        if(!posterPath) {
-            self.movieImage.image = [UIImage imageNamed:@"no-image-found"];
-        }
-        else {
-            __weak MovieCollectionViewCell * weakSelf = self;
-            [[ImageHelper getInstance] createImageURLWithImageSize:POSTER_SIZE sizeOption:nil posterPath:posterPath success:^(NSString * _Nonnull imageURLString) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [weakSelf.arrayImageURLString addObject: imageURLString];
-                    NSURL * url = [NSURL URLWithString: imageURLString];
-                    [weakSelf.movieImage sd_setImageWithURL:url placeholderImage:[UIImage imageNamed:@"no-image-found"]];
-                });
-            } failure:^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    weakSelf.movieImage.image = [UIImage imageNamed:@"no-image-found"];
-                });
-            }];
-        }
+- (void) setMovieCollectionViewImage: (NSString *)posterPath {
+    if(!posterPath) {
+        self.movieImage.image = [UIImage imageNamed:@"no-image-found"];
     }
     else {
-        NSURL * url = [NSURL URLWithString: imageURLString];
-        [self.movieImage sd_setImageWithURL:url placeholderImage:[UIImage imageNamed:@"no-image-found"]];
+        __weak MovieCollectionViewCell * weakSelf = self;
+        [[ImageHelper getInstance] createImageURLWithImageSize:POSTER_SIZE sizeOption:nil posterPath:posterPath success:^(NSString * _Nonnull imageURLString) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSURL * url = [NSURL URLWithString: imageURLString];
+                [weakSelf.movieImage sd_setImageWithURL:url placeholderImage:[UIImage imageNamed:@"no-image-found"]];
+            });
+        } failure:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                weakSelf.movieImage.image = [UIImage imageNamed:@"no-image-found"];
+            });
+        }];
     }
 }
 

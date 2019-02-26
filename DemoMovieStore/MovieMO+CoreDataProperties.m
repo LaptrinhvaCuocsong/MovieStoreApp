@@ -11,8 +11,6 @@
 
 @implementation MovieMO (CoreDataProperties)
 
-static NSString * const CURRENT_IDENTIFIER = @"CurrentIdentifierOfMovieKey";
-
 static NSString * const ENTITY_NAME = @"Movie";
 
 + (NSFetchRequest<MovieMO *> *)fetchRequest {
@@ -51,9 +49,7 @@ static NSString * const ENTITY_NAME = @"Movie";
     NSManagedObjectContext * context = [AppDelegate managedObjectContext];
     MovieMO * movieMO = [NSEntityDescription insertNewObjectForEntityForName:ENTITY_NAME inManagedObjectContext:context];
     if(movieMO) {
-        NSInteger currentIdentifer = [[NSUserDefaults standardUserDefaults] integerForKey: CURRENT_IDENTIFIER];
-        currentIdentifer = (currentIdentifer)?currentIdentifer:0;
-        movieMO.identifier = (int32_t)++currentIdentifer;
+        movieMO.identifier = (int32_t)movie.identifier;
         movieMO.voteAverage = movie.voteAverage;
         movieMO.title = movie.title;
         movieMO.posterPath = movie.posterPath;
@@ -63,8 +59,7 @@ static NSString * const ENTITY_NAME = @"Movie";
         if(context.hasChanges) {
             NSError * error = nil;
             if([context save:&error]) {
-                NSLog(@"Insert success");
-                [[NSUserDefaults standardUserDefaults] setInteger:currentIdentifer forKey:CURRENT_IDENTIFIER];
+                NSLog(@"Insert Movie success");
             }
             else {
                 return nil;

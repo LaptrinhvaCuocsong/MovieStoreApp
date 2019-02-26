@@ -17,6 +17,7 @@
 #import "UITableView+Extent.h"
 #import "CustomCollectionViewLayout.h"
 #import "AccountManager.h"
+#import "AccountMO+CoreDataClass.h"
 
 @interface MovieListViewController ()
 
@@ -50,6 +51,8 @@
 
 @property (nonatomic) Account * account;
 
+@property (nonatomic) BOOL isFirstReload;
+
 @end
 
 typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
@@ -61,6 +64,8 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (void) viewDidLoad {
     [super viewDidLoad];
+    
+    self.isFirstReload = YES;
     
     self.alertViewControllerIsActive = NO;
     
@@ -78,11 +83,50 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.account = [[AccountManager getInstance] account];
+    if(self.isFirstReload) {
+        self.isFirstReload = NO;
+    }
+    else {
+        if(self.movieListView.subviews) {
+            if(self.account) {
+                if(self.account.favouriteMovies) {
+                    for(Movie * movie in self.movies) {
+                        BOOL exist = NO;
+                        for(Movie * favouriteMovie in self.account.favouriteMovies) {
+                            if(movie.identifier == favouriteMovie.identifier) {
+                                exist = YES;
+                                break;
+                            }
+                        }
+                        if(exist) {
+                            movie.isFavouriteMovie = YES;
+                        }
+                        else {
+                            movie.isFavouriteMovie = NO;
+                        }
+                    }
+                }
+            }
+            id subView = [self.movieListView.subviews firstObject];
+            [subView setMovies: self.movies];
+            [subView reloadData];
+        }
+    }
 }
 
 - (void) viewDidAppear:(BOOL)animated {
     if(self.movies.count == 0) {
         [self excuteGetMovieFromAPI];
+    }
+}
+
+- (void) viewDidDisappear:(BOOL)animated {
+    if(self.account) {
+        // update list favourite movie of account
+        dispatch_queue_t myQueue = dispatch_queue_create("myQueue", DISPATCH_QUEUE_SERIAL);
+        dispatch_async(myQueue, ^{
+            [AccountMO updateAccount: self.account];
+        });
     }
 }
 
@@ -171,6 +215,22 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     __weak MovieListViewController * weakSelf = self;
     [self.moviesCreator createMoviesWithPageNumber:self.pageNumber success:^(NSMutableArray<Movie *> * _Nonnull movies) {
         [weakSelf.movies addObjectsFromArray: [NSArray arrayWithArray: movies]];
+        if(weakSelf.account) {
+            if(weakSelf.account.favouriteMovies) {
+                for(Movie * movie in weakSelf.movies) {
+                    BOOL exist = NO;
+                    for(Movie * favouriteMovie in weakSelf.account.favouriteMovies) {
+                        if(movie.identifier == favouriteMovie.identifier) {
+                            exist = YES;
+                            break;
+                        }
+                    }
+                    if(exist) {
+                        movie.isFavouriteMovie = YES;
+                    }
+                }
+            }
+        }
         id subview = [weakSelf.movieListView.subviews firstObject];
         [subview setMovies: weakSelf.movies];
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -217,31 +277,30 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 #pragma mark <TableViewCreatorDelegate>
 
-- (void) addOrRemoveFavouriteMovie:(Movie *)movie {
+- (BOOL) isGrantedAddFavouriteMovie {
     if(!self.account) {
         [self showMessageErrorCantAddFavouriteMovie];
+        return NO;
+    }
+    return YES;
+}
+
+- (void) addOrRemoveFavouriteMovie:(Movie *)movie {
+    if(!self.account.favouriteMovies) {
+        self.account.favouriteMovies = [[NSMutableSet alloc] init];
+    }
+    if(movie.isFavouriteMovie) {
+        [self.account.favouriteMovies addObject: movie];
     }
     else {
-        if(!self.account.favouriteMovies) {
-            self.account.favouriteMovies = [[NSMutableSet alloc] init];
-        }
-        BOOL exist = NO;
+        Movie * m = nil;
         for(Movie * item in self.account.favouriteMovies) {
-            if(item.identifier == movie.identifier) {
-                exist = YES;
+            if(movie.identifier == item.identifier) {
+                m = item;
                 break;
             }
         }
-        if(exist) {
-            if(!movie.isFavouriteMovie) {
-                [self.account.favouriteMovies removeObject: movie];
-            }
-        }
-        else {
-            if(movie.isFavouriteMovie) {
-                [self.account.favouriteMovies addObject: movie];
-            }
-        }
+        [self.account.favouriteMovies removeObject: m];
     }
 }
 

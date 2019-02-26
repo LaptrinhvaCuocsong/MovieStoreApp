@@ -15,8 +15,6 @@
 
 @property (nonatomic) UITableView * tableView;
 
-@property (nonatomic) NSMutableArray * arrayImageURLString;
-
 @property (nonatomic) UIStoryboard * mainStoryBoard;
 
 @end
@@ -29,7 +27,6 @@
     self = [super init];
     if(self) {
         self.tableView = tableView;
-        self.arrayImageURLString = [[NSMutableArray alloc] init];
         self.mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         [self.tableView registerNib:[UINib nibWithNibName:MOVIE_ITEM_CELL bundle:nil] forCellReuseIdentifier:MOVIE_ITEM_CELL];
     }
@@ -46,13 +43,7 @@
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MovieItemCell * cell = [tableView dequeueReusableCellWithIdentifier: MOVIE_ITEM_CELL forIndexPath:indexPath];
-    if(self.arrayImageURLString.count < (indexPath.row + 1)) {
-        [cell setMovieItemCell:[self.tableView.movies objectAtIndex: indexPath.row] imageURLString:nil arrayImageURLString:self.arrayImageURLString];
-    }
-    else {
-        NSString * imageURLString = [self.arrayImageURLString objectAtIndex: indexPath.row];
-        [cell setMovieItemCell:[self.tableView.movies objectAtIndex: indexPath.row] imageURLString:imageURLString arrayImageURLString:self.arrayImageURLString];
-    }
+    [cell setMovieItemCell:[self.tableView.movies objectAtIndex: indexPath.row]];
     cell.delegate = self;
     return cell;
 }
@@ -74,6 +65,10 @@
 
 - (void) addOrRemoveFavouriteMovie:(Movie *)movie {
     [self.delegate addOrRemoveFavouriteMovie: movie];
+}
+
+- (BOOL) isGrantedAddFavouriteMovie {
+    return [self.delegate isGrantedAddFavouriteMovie];
 }
 
 @end

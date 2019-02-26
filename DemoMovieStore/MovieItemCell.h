@@ -14,6 +14,6 @@
 
 @property (nonatomic, weak) _Nullable id<MovieItemCellDelegate> delegate;
 
-- (void) setMovieItemCell: (Movie * _Nonnull)movie imageURLString: (NSString * _Nullable)imageURLString arrayImageURLString: (NSMutableArray * _Nonnull)arrayImageURLString;
+- (void) setMovieItemCell: (Movie * _Nonnull)movie;
 
 @end

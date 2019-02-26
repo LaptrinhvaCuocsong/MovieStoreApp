@@ -11,6 +11,8 @@
 
 @protocol MovieItemCellDelegate <NSObject>
 
+- (BOOL) isGrantedAddFavouriteMovie;
+
 - (void) addOrRemoveFavouriteMovie: (Movie *)movie;
 
 @end

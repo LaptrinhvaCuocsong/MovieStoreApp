@@ -82,6 +82,7 @@ static NSString * const ENTITY_NAME = @"Account";
             NSMutableSet * set = [[NSMutableSet alloc] init];
             for(MovieMO * item in accountMO.favouriteMovies) {
                 Movie * movie = [[Movie alloc] initWithIdentifier:item.identifier voteAverage:item.voteAverage title:item.title posterPath:item.posterPath adult:item.adult overview:item.overview releaseDate:item.releaseDate];
+                movie.isFavouriteMovie = YES;
                 [set addObject: movie];
             }
             account.favouriteMovies = set;
@@ -156,10 +157,33 @@ static NSString * const ENTITY_NAME = @"Account";
             accountMO.avartar = account.avartar;
             NSMutableSet * sets = account.favouriteMovies;
             if(sets) {
+                NSSet<MovieMO *> * ss = [accountMO.favouriteMovies filteredSetUsingPredicate: [NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+                    MovieMO * movieMO = (MovieMO *)evaluatedObject;
+                    BOOL notExist = YES;
+                    for(Movie * movie in account.favouriteMovies) {
+                        if(movieMO.identifier == movie.identifier) {
+                            notExist = NO;
+                            break;
+                        }
+                    }
+                    return notExist;
+                }]];
+                for(MovieMO * movieMO in ss) {
+                    [accountMO removeFavouriteMoviesObject: movieMO];
+                }
                 for(Movie * movie in sets) {
-                    MovieMO * movieMO = [MovieMO fetchMovieMOWithIdentifier:(int32_t)movie.identifier];
+                    MovieMO * movieMO = [MovieMO fetchMovieMOWithIdentifier: (int32_t)movie.identifier];
                     if(movieMO) {
-                        [accountMO addFavouriteMoviesObject: movieMO];
+                        BOOL exist = NO;
+                        for(MovieMO * item in accountMO.favouriteMovies) {
+                            if(movieMO.identifier == item.identifier) {
+                                exist = YES;
+                                break;
+                            }
+                        }
+                        if(!exist) {
+                            [accountMO addFavouriteMoviesObject: movieMO];
+                        }
                     }
                     else {
                         MovieMO * movieMO = [MovieMO insertNewMovie: movie];
