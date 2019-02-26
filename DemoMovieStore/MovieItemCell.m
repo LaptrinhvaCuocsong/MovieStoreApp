@@ -124,6 +124,12 @@ static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";
         weakSelf.btnStart.frame = CGRectMake(frameOfButtonStart.origin.x - 5, frameOfButtonStart.origin.y - 5, frameOfButtonStart.size.width + 10, frameOfButtonStart.size.height + 10);
         weakSelf.btnStart.layer.borderColor = [[UIColor redColor] CGColor];
         weakSelf.btnStart.layer.borderWidth = 2;
+        if(weakSelf.movie.isFavouriteMovie) {
+            weakSelf.btnStart.imageView.image = [UIImage imageNamed:@""];
+        }
+        else {
+            
+        }
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:0.3 delay:0.0 usingSpringWithDamping:0.3 initialSpringVelocity:1 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             weakSelf.btnStart.frame = frameOfButtonStart;

@@ -233,18 +233,14 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
             }
         }
         if(exist) {
-            if(movie.isFavouriteMovie) {
-                
+            if(!movie.isFavouriteMovie) {
+                [self.account.favouriteMovies removeObject: movie];
             }
         }
         else {
-        
-        }
-        if(movie.isFavouriteMovie) {
-            
-        }
-        else {
-        
+            if(movie.isFavouriteMovie) {
+                [self.account.favouriteMovies addObject: movie];
+            }
         }
     }
 }
