@@ -11,6 +11,6 @@
 
 @interface MovieCollectionViewCell : UICollectionViewCell
 
-- (void) setMovieCollectionViewCell: (Movie * _Nonnull)movie imageURLString: (NSString * _Nullable)imageURLString arrayImageURLString: (NSMutableArray * _Nonnull)arrayImageURLString;
+- (void) setMovieCollectionViewCell: (Movie * _Nonnull)movie;
 
 @end

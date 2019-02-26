@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void) saveAccountToUserDefault;
 
+- (void) removeAccountToUserDefault;
+
 @end
 
 NS_ASSUME_NONNULL_END

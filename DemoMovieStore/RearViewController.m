@@ -62,12 +62,27 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
     self.avartarImage.layer.borderColor = [[UIColor grayColor] CGColor];
     self.avartarImage.layer.cornerRadius = 5;
     self.avartarImage.clipsToBounds = YES;
+    
     if(self.account) {
         UIImage * image = [UIImage imageWithData: self.account.avartar];
         if(image) {
             self.avartarImage.image = image;
         }
     }
+    self.avartarImage.userInteractionEnabled = YES;
+    UIGestureRecognizer * gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeAccount)];
+    [self.avartarImage addGestureRecognizer: gestureRecognizer];
+}
+
+- (void) changeAccount {
+    UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"Account option" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
+    __weak RearViewController * weakSelf = self;
+    [alertController addAction: [UIAlertAction actionWithTitle:@"Remove account" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [[AccountManager getInstance] removeAccountToUserDefault];
+        [weakSelf dismissViewControllerAnimated:YES completion:nil];
+    }]];
+    [alertController addAction: [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void) setTxtBithDay {

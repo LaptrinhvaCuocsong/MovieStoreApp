@@ -16,8 +16,6 @@
 
 @property (nonatomic) UICollectionView * collectionView;
 
-@property (nonatomic) NSMutableArray * arrayImageURLString;
-
 @end
 
 @implementation CollectionViewCreator
@@ -26,7 +24,6 @@
     self = [super init];
     if(self) {
         self.collectionView = collectionView;
-        self.arrayImageURLString = [[NSMutableArray alloc] init];
         [self.collectionView registerNib:[UINib nibWithNibName:MOVIE_COLLECTION_VIEW_CELL bundle:nil] forCellWithReuseIdentifier:MOVIE_COLLECTION_VIEW_CELL];
     }
     return self;
@@ -44,13 +41,7 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     MovieCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:MOVIE_COLLECTION_VIEW_CELL forIndexPath:indexPath];
-    if(self.arrayImageURLString.count < (indexPath.item + 1)) {
-        [cell setMovieCollectionViewCell: [collectionView.movies objectAtIndex: indexPath.item] imageURLString:nil arrayImageURLString:self.arrayImageURLString];
-    }
-    else {
-        NSString * imageURLString = [self.arrayImageURLString objectAtIndex: indexPath.item];
-        [cell setMovieCollectionViewCell: [collectionView.movies objectAtIndex: indexPath.item] imageURLString:imageURLString arrayImageURLString:self.arrayImageURLString];
-    }
+    [cell setMovieCollectionViewCell: [collectionView.movies objectAtIndex: indexPath.item]];
     return cell;
 }
 

@@ -234,11 +234,11 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
             account.indentifier = self.account.indentifier;
             [self presentViewController:self.alertActivityController animated:YES completion:nil];
             __weak EditProfileViewController * weakSelf = self;
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            dispatch_queue_t myQueue = dispatch_queue_create("myQueue", DISPATCH_QUEUE_SERIAL);
+            dispatch_async(myQueue, ^{
                 BOOL isSaved = [AccountMO updateAccount: account];
                 if(isSaved) {
                     [[AccountManager getInstance] setAccount: account];
-                    [[AccountManager getInstance] saveAccountToUserDefault];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [weakSelf dismissViewControllerAnimated:NO completion:nil];
                     });
@@ -255,7 +255,8 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
         else {
             [self presentViewController:self.alertActivityController animated:YES completion:nil];
             __weak EditProfileViewController * weakSelf = self;
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            dispatch_queue_t myQueue = dispatch_queue_create("myQueue", DISPATCH_QUEUE_SERIAL);
+            dispatch_async(myQueue, ^{
                 // insert and set identifier for account
                 BOOL isInserted = [AccountMO insertNewAccount: account];
                 if(isInserted) {

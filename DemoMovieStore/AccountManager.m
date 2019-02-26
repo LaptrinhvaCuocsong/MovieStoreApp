@@ -33,10 +33,7 @@ static NSString * const KEY_OF_ACCOUNT = @"KEY_OF_ACCOUNT";
     NSUserDefaults * userDefault = [NSUserDefaults standardUserDefaults];
     NSInteger accountId = [userDefault integerForKey: KEY_OF_ACCOUNT];
     if(accountId) {
-        __weak AccountManager * weakSelf = self;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            weakSelf.account = [AccountMO fetchAccountWithIdentifier: (int32_t)accountId];
-        });
+        self.account = [AccountMO fetchAccountWithIdentifier: (int32_t)accountId];
     }
 }
 
@@ -44,6 +41,13 @@ static NSString * const KEY_OF_ACCOUNT = @"KEY_OF_ACCOUNT";
     NSUserDefaults * userDefault = [NSUserDefaults standardUserDefaults];
     if(self.account) {
         [userDefault setInteger:self.account.indentifier forKey:KEY_OF_ACCOUNT];
+    }
+}
+
+- (void) removeAccountToUserDefault {
+    NSUserDefaults * userDefault = [NSUserDefaults standardUserDefaults];
+    if(self.account) {
+        [userDefault removeObjectForKey: KEY_OF_ACCOUNT];
     }
 }
 

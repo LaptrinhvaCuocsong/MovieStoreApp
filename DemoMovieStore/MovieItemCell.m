@@ -32,9 +32,6 @@
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *constraintBetweenTxtReleaseDateAndBtnStart;
 
-
-@property (nonatomic) NSMutableArray * arrayImageURLString;
-
 @property (nonatomic) Movie * movie;
 
 @property (nonatomic) NSMutableString * urlString;
@@ -53,21 +50,17 @@ static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";
     [super awakeFromNib];
     self.adult.layer.cornerRadius = 4;
     self.adult.clipsToBounds = YES;
-    self.btnStart.layer.borderWidth = 1;
-    self.btnStart.layer.borderColor = [[UIColor lightGrayColor] CGColor];
-    self.btnStart.layer.cornerRadius = 4;
-    self.btnStart.clipsToBounds = YES;
 }
 
-- (void) setMovieItemCell: (Movie * _Nonnull)movie imageURLString: (NSString *)imageURLString arrayImageURLString: (NSMutableArray *)arrayImageURLString {
+- (void) setMovieItemCell: (Movie * _Nonnull)movie {
     self.movie = movie;
     self.movieTitle.text = movie.title;
-    self.arrayImageURLString = arrayImageURLString;
-    [self setMovieItemImage: imageURLString];
+    [self setMovieItemImage];
     self.releaseDate.text = [DateUtils stringFromDate:movie.releaseDate formatDate:formatOfReleaseDate];
     self.rating.text = [NSString stringWithFormat:@"%.1f", movie.voteAverage];
     [self setTxtAdult: movie.adult];
     self.overview.text = movie.overview;
+    [self setBtnStart];
 }
 
 - (void) setTxtAdult: (BOOL)adult {
@@ -85,34 +78,50 @@ static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";
     }
 }
 
-- (void) setMovieItemImage: (NSString *)imageURLString {
-    if(!imageURLString) {
-        if(!self.movie.posterPath) {
-            self.movieImage.image = [UIImage imageNamed:@"no-image-found"];
-        }
-        else {
-            __weak MovieItemCell * weakSelf = self;
-            [[ImageHelper getInstance] createImageURLWithImageSize:POSTER_SIZE sizeOption:nil posterPath:weakSelf.movie.posterPath success:^(NSString * _Nonnull imageURLString) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [weakSelf.arrayImageURLString addObject: imageURLString];
-                    NSURL * url = [NSURL URLWithString: imageURLString];
-                    [weakSelf.movieImage sd_setImageWithURL:url placeholderImage:[UIImage imageNamed:@"no-image-found"]];
-                });
-            } failure:^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    weakSelf.movieImage.image = [UIImage imageNamed:@"no-image-found"];
-                });
-            }];
-        }
+- (void) setMovieItemImage {
+    if(!self.movie.posterPath) {
+        self.movieImage.image = [UIImage imageNamed:@"no-image-found"];
     }
     else {
-        NSURL * url = [NSURL URLWithString: imageURLString];
-        [self.movieImage sd_setImageWithURL:url placeholderImage:[UIImage imageNamed:@"no-image-found"]];
+        __weak MovieItemCell * weakSelf = self;
+        [[ImageHelper getInstance] createImageURLWithImageSize:POSTER_SIZE sizeOption:nil posterPath:weakSelf.movie.posterPath success:^(NSString * _Nonnull imageURLString) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSURL * url = [NSURL URLWithString: imageURLString];
+                [weakSelf.movieImage sd_setImageWithURL:url placeholderImage:[UIImage imageNamed:@"no-image-found"]];
+            });
+        } failure:^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                weakSelf.movieImage.image = [UIImage imageNamed:@"no-image-found"];
+            });
+        }];
+    }
+}
+
+- (void) setBtnStart {
+    self.adult.clipsToBounds = YES;
+    self.btnStart.layer.borderWidth = 1;
+    self.btnStart.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+    self.btnStart.layer.cornerRadius = 4;
+    self.btnStart.clipsToBounds = YES;
+    if(self.movie.isFavouriteMovie) {
+        [self.btnStart setBackgroundImage:[UIImage imageNamed: @"ic_star"] forState:UIControlStateNormal];
+    }
+    else {
+        [self.btnStart setBackgroundImage:[UIImage imageNamed: @"ic_star_border"] forState:UIControlStateNormal];
     }
 }
 
 - (IBAction)btnStartButtonPressed:(id)sender {
-    [self setAnimationButtonStart];
+    if([self.delegate isGrantedAddFavouriteMovie]) {
+        if(self.movie.isFavouriteMovie) {
+            self.movie.isFavouriteMovie = NO;
+        }
+        else {
+            self.movie.isFavouriteMovie = YES;
+        }
+        [self setAnimationButtonStart];
+        [self.delegate addOrRemoveFavouriteMovie: self.movie];
+    }
 }
 
 - (void) setAnimationButtonStart {
@@ -124,6 +133,12 @@ static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";
         weakSelf.btnStart.frame = CGRectMake(frameOfButtonStart.origin.x - 5, frameOfButtonStart.origin.y - 5, frameOfButtonStart.size.width + 10, frameOfButtonStart.size.height + 10);
         weakSelf.btnStart.layer.borderColor = [[UIColor redColor] CGColor];
         weakSelf.btnStart.layer.borderWidth = 2;
+        if(weakSelf.movie.isFavouriteMovie) {
+            [weakSelf.btnStart setBackgroundImage:[UIImage imageNamed: @"ic_star"] forState:UIControlStateNormal];
+        }
+        else {
+            [weakSelf.btnStart setBackgroundImage:[UIImage imageNamed: @"ic_star_border"] forState:UIControlStateNormal];
+        }
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:0.3 delay:0.0 usingSpringWithDamping:0.3 initialSpringVelocity:1 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             weakSelf.btnStart.frame = frameOfButtonStart;
