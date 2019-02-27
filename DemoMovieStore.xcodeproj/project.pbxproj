@@ -395,8 +395,8 @@
 				A18A28C5221B374900EA3E88 /* UICollectionView+Extent.m */,
 				B6C90D96221BF69200CFE10B /* NSDictionary+ImageConfiguration.h */,
 				B6C90D97221BF69200CFE10B /* NSDictionary+ImageConfiguration.m */,
-				B6ACDBE5221E92E0000B34B7 /* NSDictionary+Cast.h */,
 				B6ACDBE6221E92E0000B34B7 /* NSDictionary+Cast.m */,
+				B6ACDBE5221E92E0000B34B7 /* NSDictionary+Cast.h */,
 			);
 			name = Category;
 			sourceTree = "<group>";

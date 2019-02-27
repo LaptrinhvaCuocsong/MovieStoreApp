@@ -25,6 +25,8 @@
 
 @property (nonatomic) Account * account;
 
+@property (nonatomic) BOOL isSearchAction;
+
 @end
 
 @implementation FavoriteViewController
@@ -54,20 +56,23 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self.movies removeAllObjects];
     self.account = [[AccountManager getInstance] account];
     if(self.account) {
-        if(self.account.favouriteMovies) {
-            for(id item in self.account.favouriteMovies) {
-                [self.movies addObject: item];
-            }
-            if(!self.isFirstReload) {
-                [self.tableView reloadData];
-            }
-            else {
-                self.isFirstReload = NO;
-            }
-        }
+        [self setMoviesWithSet: self.account.favouriteMovies];
+    }
+    if(!self.isFirstReload) {
+        [self.tableView reloadData];
+    }
+    else {
+        self.isFirstReload = NO;
+    }
+    self.isSearchAction = NO;
+}
+
+- (void) setMoviesWithSet: (NSSet *)sets {
+    [self.movies removeAllObjects];
+    for(id item in sets) {
+        [self.movies addObject: item];
     }
 }
 
@@ -115,18 +120,39 @@
 
 #pragma mark <UITableViewDelegate>
 
+- (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if(self.isSearchAction) {
+        cell.layer.opacity = 0.5;
+        __block CGRect frameOfCell = cell.frame;
+        frameOfCell.origin.y += 50;
+        cell.frame = frameOfCell;
+        [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            frameOfCell.origin.y -= 50;
+            cell.frame = frameOfCell;
+            cell.layer.opacity = 1.0;
+        } completion:nil];
+    }
+}
+
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 150;
 }
 
 #pragma mark <UISearchBarDelegate>
 
-- (void) searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    NSLog(@"%@", searchText);
-}
-
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     [self.searchBar resignFirstResponder];
+    NSString * format = [NSString stringWithFormat:@"'%@%@%@'", @"*", searchBar.text, @"*"];
+    if(self.account) {
+        if(self.account.favouriteMovies) {
+            NSSet<Movie *> * sets = [self.account.favouriteMovies filteredSetUsingPredicate: [NSPredicate predicateWithFormat: [NSString stringWithFormat:@"SELF.title LIKE[c] %@", format]]];
+            if(sets) {
+                [self setMoviesWithSet: sets];
+                self.isSearchAction = YES;
+                [self.tableView reloadData];
+            }
+        }
+    }
 }
 
 @end
