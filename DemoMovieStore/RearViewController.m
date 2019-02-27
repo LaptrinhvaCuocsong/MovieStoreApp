@@ -69,6 +69,10 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
             self.avartarImage.image = image;
         }
     }
+    else {
+        self.avartarImage.image = [UIImage imageNamed: @"ic-person"];
+    }
+    
     self.avartarImage.userInteractionEnabled = YES;
     UIGestureRecognizer * gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeAccount)];
     [self.avartarImage addGestureRecognizer: gestureRecognizer];

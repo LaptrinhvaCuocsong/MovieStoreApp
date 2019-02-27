@@ -48,6 +48,7 @@ static NSString * const KEY_OF_ACCOUNT = @"KEY_OF_ACCOUNT";
     NSUserDefaults * userDefault = [NSUserDefaults standardUserDefaults];
     if(self.account) {
         [userDefault removeObjectForKey: KEY_OF_ACCOUNT];
+        self.account = nil;
     }
 }
 

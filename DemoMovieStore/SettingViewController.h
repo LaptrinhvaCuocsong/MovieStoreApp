@@ -7,8 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TabItemViewController.h"
 
-@interface SettingViewController : TabItemViewController
+@interface SettingViewController : UITableViewController <UIPickerViewDelegate, UIPickerViewDataSource>
 
 @end
