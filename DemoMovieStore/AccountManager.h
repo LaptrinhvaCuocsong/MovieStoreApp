@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AccountManager : NSObject
 
-@property (nonatomic) Account * account;
+@property (nonatomic) Account * _Nullable account;
 
 + (instancetype) getInstance;
 

@@ -39,6 +39,7 @@
 		B6ACDBE0221E8E10000B34B7 /* Cast.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ACDBDF221E8E10000B34B7 /* Cast.m */; };
 		B6ACDBE4221E8F99000B34B7 /* CastsCreatorImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ACDBE3221E8F99000B34B7 /* CastsCreatorImpl.m */; };
 		B6ACDBE7221E92E0000B34B7 /* NSDictionary+Cast.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ACDBE6221E92E0000B34B7 /* NSDictionary+Cast.m */; };
+		B6AE59042226387A00D068F9 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6AE59032226387A00D068F9 /* WebKit.framework */; };
 		B6C90D1E221A98AF00CFE10B /* TableViewCreator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C90D1D221A98AF00CFE10B /* TableViewCreator.m */; };
 		B6C90D21221A98BC00CFE10B /* CollectionViewCreator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C90D20221A98BC00CFE10B /* CollectionViewCreator.m */; };
 		B6C90D25221A9E5100CFE10B /* Movie.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C90D24221A9E5100CFE10B /* Movie.m */; };
@@ -120,6 +121,7 @@
 		B6ACDBE5221E92E0000B34B7 /* NSDictionary+Cast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Cast.h"; sourceTree = "<group>"; };
 		B6ACDBE6221E92E0000B34B7 /* NSDictionary+Cast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Cast.m"; sourceTree = "<group>"; };
 		B6AE59022223F19D00D068F9 /* MovieItemCellDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MovieItemCellDelegate.h; sourceTree = "<group>"; };
+		B6AE59032226387A00D068F9 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		B6C90D1C221A98AF00CFE10B /* TableViewCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewCreator.h; sourceTree = "<group>"; };
 		B6C90D1D221A98AF00CFE10B /* TableViewCreator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewCreator.m; sourceTree = "<group>"; };
 		B6C90D1F221A98BC00CFE10B /* CollectionViewCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionViewCreator.h; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6AE59042226387A00D068F9 /* WebKit.framework in Frameworks */,
 				6808C810C4B59C67FABC50C4 /* libPods-DemoMovieStore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -428,6 +431,7 @@
 		F0B48EAF94FDCF5946C9756F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6AE59032226387A00D068F9 /* WebKit.framework */,
 				A1CF0579222121BF00111F1B /* Photos.framework */,
 				A7EFCB16602FE85762432E4F /* libPods-DemoMovieStore.a */,
 			);
