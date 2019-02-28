@@ -14,4 +14,6 @@
 
 + (NSDate *) dateFromDateString: (NSString *)dateString formatDate: (NSString *)formatOfDate;
 
++ (NSInteger) yearFromDate: (NSDate *)date;
+
 @end

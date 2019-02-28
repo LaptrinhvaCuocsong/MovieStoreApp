@@ -18,13 +18,11 @@
 
 @implementation MoviesCreatorImpl
 
-static NSString * const API_GET_MOVIE_LIST = @"https://api.themoviedb.org/3/movie/popular?api_key=e7631ffcb8e766993e5ec0c1f4245f93&page=%lu";
-
-- (void) createMoviesWithPageNumber: (NSUInteger) pageNumber success: (void(^)(NSMutableArray<Movie *> *))success failure: (void(^)(void))failure {
+- (void) createMoviesWithPageNumber: (NSUInteger) pageNumber success: (void(^ _Nonnull)(NSMutableArray<Movie *> * _Nonnull movies))success failure: (void(^ _Nonnull)(void))failure urlString: (NSString * _Nonnull)urlString {
     NSMutableArray * movies = [[NSMutableArray alloc] init];
-    NSString * urlString = [NSString stringWithFormat:API_GET_MOVIE_LIST, pageNumber];
+    NSString * urlStr = [NSString stringWithFormat:urlString, pageNumber];
     AFHTTPSessionManager * manager = [[MyNetworking getInstance] afHttpSessionManager: nil];
-    NSURLSessionDataTask * dataTask = [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    NSURLSessionDataTask * dataTask = [manager GET:urlStr parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if(responseObject) {
             NSMutableDictionary * dictionary = (NSMutableDictionary *)responseObject;
             NSMutableArray * results = dictionary[@"results"];

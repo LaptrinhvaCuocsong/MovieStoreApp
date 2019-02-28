@@ -24,4 +24,9 @@
     return [dateFormatter dateFromString: dateString];
 }
 
++ (NSInteger) yearFromDate: (NSDate *)date {
+    NSCalendar * calendar = [NSCalendar currentCalendar];
+    return [calendar component:NSCalendarUnitYear fromDate:date];
+}
+
 @end

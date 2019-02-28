@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) Account * _Nullable account;
 
+@property (nonatomic) NSMutableDictionary * _Nullable settingOfAccount;
+
 + (instancetype) getInstance;
 
 - (void) loadAccount;

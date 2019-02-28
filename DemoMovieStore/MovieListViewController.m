@@ -18,6 +18,8 @@
 #import "CustomCollectionViewLayout.h"
 #import "AccountManager.h"
 #import "AccountMO+CoreDataClass.h"
+#import "NSMutableDictionary+SettingOfAccount.h"
+#import "DateUtils.h"
 
 @interface MovieListViewController ()
 
@@ -51,6 +53,8 @@
 
 @property (nonatomic) Account * account;
 
+@property (nonatomic) NSMutableDictionary * settingOfAccount;
+
 @property (nonatomic) BOOL isFirstReload;
 
 @end
@@ -78,11 +82,15 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     self.movies = [[NSMutableArray alloc] init];
     
     [self setSubViewForMovieListView];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMovieList) name:DID_CHANGE_SETTING object:nil];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
     self.account = [[AccountManager getInstance] account];
+    
     if(self.isFirstReload) {
         self.isFirstReload = NO;
     }
@@ -116,18 +124,32 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (void) viewDidAppear:(BOOL)animated {
     if(self.movies.count == 0) {
-        [self excuteGetMovieFromAPI];
+        self.settingOfAccount = [[AccountManager getInstance] settingOfAccount];
+        NSString * urlString = nil;
+        if(self.settingOfAccount) {
+            urlString = [self.settingOfAccount urlString];
+        }
+        else {
+            urlString = API_GET_MOVIE_POPULAR_LIST;
+        }
+        
+        [self excuteGetMovieFromAPI: urlString];
     }
 }
 
 - (void) viewDidDisappear:(BOOL)animated {
     if(self.account) {
         // update list favourite movie of account
+        __weak MovieListViewController * weakSelf = self;
         dispatch_queue_t myQueue = dispatch_queue_create("myQueue", DISPATCH_QUEUE_SERIAL);
         dispatch_async(myQueue, ^{
-            [AccountMO updateAccount: self.account];
+            [AccountMO updateAccount: weakSelf.account];
         });
     }
+}
+
+- (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
 }
 
 - (UITableView *) tableView {
@@ -207,14 +229,22 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     }
 }
 
-- (void) excuteGetMovieFromAPI {
+- (void) excuteGetMovieFromAPI: (NSString *)urlString {
     if(!self.alertViewControllerIsActive) {
         [self presentViewController:self.alertViewController animated:YES completion:nil];
         self.alertViewControllerIsActive = YES;
     }
     __weak MovieListViewController * weakSelf = self;
+    
     [self.moviesCreator createMoviesWithPageNumber:self.pageNumber success:^(NSMutableArray<Movie *> * _Nonnull movies) {
+        
+        [weakSelf setMoviesWithMovieRate: movies];
+        
+        [weakSelf setMoviesWithMovieReleaseYear: movies];
+        
         [weakSelf.movies addObjectsFromArray: [NSArray arrayWithArray: movies]];
+        
+        // set isFavouriteMovie
         if(weakSelf.account) {
             if(weakSelf.account.favouriteMovies) {
                 for(Movie * movie in weakSelf.movies) {
@@ -231,6 +261,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
                 }
             }
         }
+        
         id subview = [weakSelf.movieListView.subviews firstObject];
         [subview setMovies: weakSelf.movies];
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -242,10 +273,9 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
             [weakSelf.alertViewController dismissViewControllerAnimated:NO completion: ^ {
                 if(!weakSelf.alertErrorViewController) {
                     weakSelf.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"💔💔💔" message:@"We can't load movie collection" preferredStyle:UIAlertControllerStyleAlert];
-                    
                     UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                         [weakSelf dismissViewControllerAnimated:NO completion:nil];
-                        [weakSelf excuteGetMovieFromAPI];
+                        [weakSelf excuteGetMovieFromAPI: urlString];
                     }];
                     [weakSelf.alertErrorViewController addAction: tryAgain];
                     
@@ -257,7 +287,25 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
                 [weakSelf presentViewController:weakSelf.alertErrorViewController animated:YES completion:nil];
             }] ;
         });
-    }];
+
+    } urlString:urlString];
+}
+
+- (void) setMoviesWithMovieRate: (NSMutableArray *)movies {
+    float movieRate = [self.settingOfAccount movieRate];
+    [movies filterUsingPredicate: [NSPredicate predicateWithFormat: @"SELF.voteAverage >= %f", movieRate]];
+}
+
+- (void) setMoviesWithMovieReleaseYear: (NSMutableArray *)movies {
+    NSInteger movieReleaseYear = [self.settingOfAccount releaseYear];
+    [movies filterUsingPredicate: [NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+        Movie * movie = (Movie *)evaluatedObject;
+        NSInteger year = [DateUtils yearFromDate: movie.releaseDate];
+        if(year < movieReleaseYear) {
+            return NO;
+        }
+        return YES;
+    }]];
 }
 
 - (IBAction)changeMovieListView:(id)sender {
@@ -315,6 +363,10 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void) changeMovieList {
+    [self.movies removeAllObjects];
 }
 
 @end

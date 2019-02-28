@@ -40,6 +40,7 @@
 		B6ACDBE4221E8F99000B34B7 /* CastsCreatorImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ACDBE3221E8F99000B34B7 /* CastsCreatorImpl.m */; };
 		B6ACDBE7221E92E0000B34B7 /* NSDictionary+Cast.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ACDBE6221E92E0000B34B7 /* NSDictionary+Cast.m */; };
 		B6AE59042226387A00D068F9 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6AE59032226387A00D068F9 /* WebKit.framework */; };
+		B6AE59232227C1BF00D068F9 /* NSMutableDictionary+SettingOfAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = B6AE59222227C1BF00D068F9 /* NSMutableDictionary+SettingOfAccount.m */; };
 		B6C90D1E221A98AF00CFE10B /* TableViewCreator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C90D1D221A98AF00CFE10B /* TableViewCreator.m */; };
 		B6C90D21221A98BC00CFE10B /* CollectionViewCreator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C90D20221A98BC00CFE10B /* CollectionViewCreator.m */; };
 		B6C90D25221A9E5100CFE10B /* Movie.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C90D24221A9E5100CFE10B /* Movie.m */; };
@@ -122,6 +123,8 @@
 		B6ACDBE6221E92E0000B34B7 /* NSDictionary+Cast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Cast.m"; sourceTree = "<group>"; };
 		B6AE59022223F19D00D068F9 /* MovieItemCellDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MovieItemCellDelegate.h; sourceTree = "<group>"; };
 		B6AE59032226387A00D068F9 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		B6AE59212227C1BF00D068F9 /* NSMutableDictionary+SettingOfAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+SettingOfAccount.h"; sourceTree = "<group>"; };
+		B6AE59222227C1BF00D068F9 /* NSMutableDictionary+SettingOfAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+SettingOfAccount.m"; sourceTree = "<group>"; };
 		B6C90D1C221A98AF00CFE10B /* TableViewCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewCreator.h; sourceTree = "<group>"; };
 		B6C90D1D221A98AF00CFE10B /* TableViewCreator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewCreator.m; sourceTree = "<group>"; };
 		B6C90D1F221A98BC00CFE10B /* CollectionViewCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionViewCreator.h; sourceTree = "<group>"; };
@@ -400,6 +403,8 @@
 				B6C90D97221BF69200CFE10B /* NSDictionary+ImageConfiguration.m */,
 				B6ACDBE6221E92E0000B34B7 /* NSDictionary+Cast.m */,
 				B6ACDBE5221E92E0000B34B7 /* NSDictionary+Cast.h */,
+				B6AE59212227C1BF00D068F9 /* NSMutableDictionary+SettingOfAccount.h */,
+				B6AE59222227C1BF00D068F9 /* NSMutableDictionary+SettingOfAccount.m */,
 			);
 			name = Category;
 			sourceTree = "<group>";
@@ -554,6 +559,7 @@
 				B65FE6FD221A6196005762B6 /* FavoriteViewController.m in Sources */,
 				B6C90D52221ABF8100CFE10B /* Constants.m in Sources */,
 				A1FC7AE9222063A800972C9B /* MovieMO+CoreDataClass.m in Sources */,
+				B6AE59232227C1BF00D068F9 /* NSMutableDictionary+SettingOfAccount.m in Sources */,
 				A1FC7AF1222071C100972C9B /* AccountManager.m in Sources */,
 				B65FE6DF221A53F5005762B6 /* DemoMovieStore.xcdatamodeld in Sources */,
 				B65FE6FA221A6183005762B6 /* MovieListViewController.m in Sources */,
