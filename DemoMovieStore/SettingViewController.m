@@ -44,17 +44,27 @@
 
 - (UIView *) pickerView {
     if(!_pickerView) {
-        _pickerView = [[UIView alloc] initWithFrame: CGRectMake(5, CGRectGetHeight(self.view.frame) - 250, CGRectGetWidth(self.view.frame)-10, 300)];
-        _pickerView.backgroundColor = [UIColor whiteColor];
-        _pickerView.layer.borderWidth = 1;
-        _pickerView.layer.cornerRadius = 5;
-        _pickerView.clipsToBounds = YES;
-        _pickerView.layer.borderColor = [[UIColor lightGrayColor] CGColor];
-        UIPickerView * picker = [[UIPickerView alloc] initWithFrame: CGRectMake(0, 0, CGRectGetWidth(_pickerView.frame), CGRectGetHeight(_pickerView.frame) - 50)];
+        CGRect frameOfPickerView = CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 250);
+        _pickerView = [[UIView alloc] initWithFrame: frameOfPickerView];
+        UIPickerView * picker = [[UIPickerView alloc] initWithFrame: CGRectMake(10, 0, CGRectGetWidth(_pickerView.frame)-20, CGRectGetHeight(_pickerView.frame) - 50)];
+        picker.layer.borderWidth = 1;
+        picker.layer.cornerRadius = 5;
+        picker.clipsToBounds = YES;
+        picker.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+        picker.backgroundColor = [UIColor whiteColor];
         [_pickerView addSubview: picker];
-        picker.backgroundColor = [UIColor redColor];
         picker.delegate = self;
         picker.dataSource = self;
+        UIButton * btnCancel = [UIButton buttonWithType: UIButtonTypeRoundedRect];
+        btnCancel.titleLabel.text = @"Cancel";
+        btnCancel.frame = CGRectMake(0, CGRectGetHeight(_pickerView.frame)-55, CGRectGetWidth(_pickerView.frame)/2 - 10, 40);
+        btnCancel.backgroundColor = [UIColor redColor];
+        [_pickerView addSubview: btnCancel];
+        UIButton * btnDone = [UIButton buttonWithType: UIButtonTypeRoundedRect];
+        btnDone.titleLabel.text = @"Done";
+        btnDone.frame = CGRectMake(CGRectGetWidth(self.view.frame)/2 + 10, CGRectGetHeight(_pickerView.frame)-55, CGRectGetWidth(_pickerView.frame)/2 - 10, 40);
+        btnDone.backgroundColor = [UIColor blueColor];
+        [_pickerView addSubview: btnDone];
     }
     return _pickerView;
 }
