@@ -266,29 +266,34 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         [subview setMovies: weakSelf.movies];
         dispatch_async(dispatch_get_main_queue(), ^{
             [subview reloadData];
-            [weakSelf.alertViewController dismissViewControllerAnimated:NO completion:nil];
+            [weakSelf.alertViewController dismissViewControllerAnimated:NO completion: ^ {
+                weakSelf.alertViewControllerIsActive = NO;
+            }];
         });
     } failure:^{
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf.alertViewController dismissViewControllerAnimated:NO completion: ^ {
-                if(!weakSelf.alertErrorViewController) {
-                    weakSelf.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"💔💔💔" message:@"We can't load movie collection" preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                        [weakSelf dismissViewControllerAnimated:NO completion:nil];
-                        [weakSelf excuteGetMovieFromAPI: urlString];
-                    }];
-                    [weakSelf.alertErrorViewController addAction: tryAgain];
-                    
-                    UIAlertAction * actionExit = [UIAlertAction actionWithTitle:@"Exit" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                        exit(0);
-                    }];
-                    [weakSelf.alertErrorViewController addAction: actionExit];
-                }
-                [weakSelf presentViewController:weakSelf.alertErrorViewController animated:YES completion:nil];
-            }] ;
-        });
-
+        [weakSelf handlerErrorWhenConnectAPI: urlString];
     } urlString:urlString];
+}
+
+- (void) handlerErrorWhenConnectAPI: (NSString *)urlString {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.alertViewController dismissViewControllerAnimated:NO completion: ^ {
+            if(!self.alertErrorViewController) {
+                self.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"💔💔💔" message:@"We can't load movie collection" preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    [self dismissViewControllerAnimated:NO completion:nil];
+                    [self excuteGetMovieFromAPI: urlString];
+                }];
+                [self.alertErrorViewController addAction: tryAgain];
+                
+                UIAlertAction * actionExit = [UIAlertAction actionWithTitle:@"Exit" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                    exit(0);
+                }];
+                [self.alertErrorViewController addAction: actionExit];
+            }
+            [self presentViewController:self.alertErrorViewController animated:YES completion:nil];
+        }] ;
+    });
 }
 
 - (void) setMoviesWithMovieRate: (NSMutableArray *)movies {
@@ -306,6 +311,17 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         }
         return YES;
     }]];
+}
+
+- (void) sortMoiveWithTypeOfSort: (TYPE_OF_SORT)typeOfSort movies: (NSMutableArray *)movies {
+    switch (typeOfSort) {
+        case RELEASE_DATE_SORT:
+            break;
+        case RATING_SORT:
+            break;
+        default:
+            break;
+    }
 }
 
 - (IBAction)changeMovieListView:(id)sender {

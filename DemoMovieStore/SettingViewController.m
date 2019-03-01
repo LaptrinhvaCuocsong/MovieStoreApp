@@ -87,6 +87,7 @@
     }
     
     if(self.haveChangeSetting) {
+        [[AccountManager getInstance] setSettingOfAccount: self.settingOfAccount];
         [[NSNotificationCenter defaultCenter] postNotificationName:DID_CHANGE_SETTING object:nil];
     }
 }
@@ -153,19 +154,9 @@
         [_pickerView addSubview: picker];
         [_pickerView addSubview: self.btnDelete];
         [_pickerView addSubview: self.btnDone];
+        
         picker.delegate = self;
         picker.dataSource = self;
-
-        UIButton * btnCancel = [UIButton buttonWithType: UIButtonTypeRoundedRect];
-        btnCancel.titleLabel.text = @"Cancel";
-        btnCancel.frame = CGRectMake(0, CGRectGetHeight(_pickerView.frame)-55, CGRectGetWidth(_pickerView.frame)/2 - 10, 40);
-        btnCancel.backgroundColor = [UIColor redColor];
-        [_pickerView addSubview: btnCancel];
-        UIButton * btnDone = [UIButton buttonWithType: UIButtonTypeRoundedRect];
-        btnDone.titleLabel.text = @"Done";
-        btnDone.frame = CGRectMake(CGRectGetWidth(self.view.frame)/2 + 10, CGRectGetHeight(_pickerView.frame)-55, CGRectGetWidth(_pickerView.frame)/2 - 10, 40);
-        btnDone.backgroundColor = [UIColor blueColor];
-        [_pickerView addSubview: btnDone];
     }
     return _pickerView;
 }
