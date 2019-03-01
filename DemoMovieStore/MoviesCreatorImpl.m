@@ -18,13 +18,14 @@
 
 @implementation MoviesCreatorImpl
 
-- (void) createMoviesWithPageNumber: (NSUInteger) pageNumber success: (void(^ _Nonnull)(NSMutableArray<Movie *> * _Nonnull movies))success failure: (void(^ _Nonnull)(void))failure urlString: (NSString * _Nonnull)urlString {
+- (void) createMoviesWithPageNumber: (NSUInteger) pageNumber success: (void(^ _Nonnull)(NSMutableArray<Movie *> * _Nonnull, NSInteger))success failure: (void(^ _Nonnull)(void))failure urlString: (NSString * _Nonnull)urlString {
     NSMutableArray * movies = [[NSMutableArray alloc] init];
     NSString * urlStr = [NSString stringWithFormat:urlString, pageNumber];
     AFHTTPSessionManager * manager = [[MyNetworking getInstance] afHttpSessionManager: nil];
     NSURLSessionDataTask * dataTask = [manager GET:urlStr parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if(responseObject) {
             NSMutableDictionary * dictionary = (NSMutableDictionary *)responseObject;
+            NSInteger totalPages = [dictionary[@"total_pages"] integerValue];
             NSMutableArray * results = dictionary[@"results"];
             for(NSMutableDictionary * item in results) {
                 NSUInteger identifier = [item identifier];
@@ -37,7 +38,7 @@
                 Movie * movie = [[Movie alloc] initWithIdentifier:identifier voteAverage:voteAverage title:title posterPath:posterPath adult:adult overview:overviews releaseDate:releaseDate];
                 [movies addObject: movie];
             }
-            success(movies);
+            success(movies, totalPages);
         }
         else {
             NSLog(@"responseObject is nil");

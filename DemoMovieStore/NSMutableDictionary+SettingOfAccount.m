@@ -7,6 +7,7 @@
 //
 
 #import "NSMutableDictionary+SettingOfAccount.h"
+#import "Constants.h"
 
 @implementation NSMutableDictionary (SettingOfAccount)
 
@@ -30,7 +31,11 @@
 
 - (NSInteger) releaseYear {
     NSNumber * obj = self[@"releaseYear"];
-    return [obj integerValue];
+    NSInteger releaseYear = [obj integerValue];
+    if(releaseYear == 0) {
+        return MIN_RELEASE_YEAR;
+    }
+    return releaseYear;
 }
 
 - (void) setReleaseYear: (NSInteger)releaseYear {

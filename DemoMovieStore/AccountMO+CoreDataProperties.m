@@ -102,8 +102,8 @@ static NSString * const ENTITY_NAME = @"Account";
     AccountMO * accountMO = [NSEntityDescription insertNewObjectForEntityForName:ENTITY_NAME inManagedObjectContext:context];
     if(accountMO) {
         NSInteger currentIdentifer = [[NSUserDefaults standardUserDefaults] integerForKey: CURRENT_IDENTIFIER];
-        currentIdentifer = (currentIdentifer)?currentIdentifer:0;
-        account.indentifier = ++currentIdentifer;
+        currentIdentifer = (currentIdentifer)?currentIdentifer:0 + 1;
+        account.indentifier = currentIdentifer;
         accountMO.identifier = (int32_t)currentIdentifer;
         accountMO.name = account.name;
         accountMO.dateOfBirth= account.dateOfBirth;

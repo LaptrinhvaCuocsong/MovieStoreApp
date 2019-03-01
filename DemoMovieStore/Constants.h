@@ -39,4 +39,6 @@ extern NSString * const API_GET_MOVIE_NOW_PLAYING;
 
 extern NSString * const DID_CHANGE_SETTING;
 
+extern NSInteger MIN_RELEASE_YEAR;
+
 @end

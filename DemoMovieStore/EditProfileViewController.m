@@ -229,52 +229,34 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
         NSDate * dateOfBirth = [DateUtils dateFromDateString:birthday formatDate:formatOfDateOfBirth];
         NSData * data = UIImagePNGRepresentation(self.avatar.image);
         Account * account = [[Account alloc] initWithName:name dateOfBirth:dateOfBirth email:email gender:gender avartar:data];
-        if(self.account) {
-            // set identifier for account
-            account.indentifier = self.account.indentifier;
-            [self presentViewController:self.alertActivityController animated:YES completion:nil];
-            __weak EditProfileViewController * weakSelf = self;
-            dispatch_queue_t myQueue = dispatch_queue_create("myQueue", DISPATCH_QUEUE_SERIAL);
-            dispatch_async(myQueue, ^{
-                BOOL isSaved = [AccountMO updateAccount: account];
-                if(isSaved) {
-                    [[AccountManager getInstance] setAccount: account];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [weakSelf dismissViewControllerAnimated:NO completion:nil];
-                    });
-                }
-                else {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [weakSelf dismissViewControllerAnimated:NO completion:nil];
-                        weakSelf.alertErrorController.message = @"Save error";
-                        [weakSelf presentViewController:weakSelf.alertErrorController animated:YES completion:nil];
-                    });
-                }
-            });
-        }
-        else {
-            [self presentViewController:self.alertActivityController animated:YES completion:nil];
-            __weak EditProfileViewController * weakSelf = self;
-            dispatch_queue_t myQueue = dispatch_queue_create("myQueue", DISPATCH_QUEUE_SERIAL);
-            dispatch_async(myQueue, ^{
-                // insert and set identifier for account
-                BOOL isInserted = [AccountMO insertNewAccount: account];
-                if(isInserted) {
-                    [[AccountManager getInstance] setAccount: account];
-                    [[AccountManager getInstance] saveAccountToUserDefault];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [weakSelf dismissViewControllerAnimated:NO completion:nil];
-                    });
-                }
-                else {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [weakSelf dismissViewControllerAnimated:NO completion:nil];
-                        weakSelf.alertErrorController.message = @"Save error";
-                        [weakSelf presentViewController:weakSelf.alertErrorController animated:YES completion:nil];
-                    });
-                }
-            });
-        }
+        account.indentifier= (self.account)?self.account.indentifier:0;
+        
+        [self presentViewController:self.alertActivityController animated:YES completion:nil];
+        
+        __weak EditProfileViewController * weakSelf = self;
+        
+        dispatch_async(dispatch_queue_create("muQueue", DISPATCH_QUEUE_SERIAL), ^{
+            BOOL isSaved = YES;
+            if(account.indentifier) {
+                isSaved = [AccountMO updateAccount: account];
+            }
+            else {
+                isSaved = [AccountMO insertNewAccount: account];
+            }
+            if(isSaved) {
+                [[AccountManager getInstance] setAccount: account];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf dismissViewControllerAnimated:NO completion:nil];
+                });
+            }
+            else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf dismissViewControllerAnimated:NO completion:nil];
+                    weakSelf.alertErrorController.message = @"Save error";
+                    [weakSelf presentViewController:weakSelf.alertErrorController animated:YES completion:nil];
+                });
+            }
+        });
     }
 }
 

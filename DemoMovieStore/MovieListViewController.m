@@ -47,7 +47,7 @@
 
 @property (nonatomic) id<MoviesCreator> moviesCreator;
 
-@property (nonatomic) NSUInteger pageNumber;
+@property (nonatomic) __block NSUInteger pageNumber;
 
 @property (nonatomic) BOOL alertViewControllerIsActive;
 
@@ -137,17 +137,6 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     }
 }
 
-- (void) viewDidDisappear:(BOOL)animated {
-    if(self.account) {
-        // update list favourite movie of account
-        __weak MovieListViewController * weakSelf = self;
-        dispatch_queue_t myQueue = dispatch_queue_create("myQueue", DISPATCH_QUEUE_SERIAL);
-        dispatch_async(myQueue, ^{
-            [AccountMO updateAccount: weakSelf.account];
-        });
-    }
-}
-
 - (void) dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
 }
@@ -234,9 +223,10 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         [self presentViewController:self.alertViewController animated:YES completion:nil];
         self.alertViewControllerIsActive = YES;
     }
+    
     __weak MovieListViewController * weakSelf = self;
     
-    [self.moviesCreator createMoviesWithPageNumber:self.pageNumber success:^(NSMutableArray<Movie *> * _Nonnull movies) {
+    [self.moviesCreator createMoviesWithPageNumber:self.pageNumber success:^(NSMutableArray<Movie *> * _Nonnull movies, NSInteger totalPages) {
         
         [weakSelf setMoviesWithMovieRate: movies];
         
@@ -262,14 +252,28 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
             }
         }
         
-        id subview = [weakSelf.movieListView.subviews firstObject];
-        [subview setMovies: weakSelf.movies];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [subview reloadData];
-            [weakSelf.alertViewController dismissViewControllerAnimated:NO completion: ^ {
-                weakSelf.alertViewControllerIsActive = NO;
-            }];
-        });
+        if(weakSelf.movies.count < 20 && weakSelf.pageNumber < totalPages) {
+            weakSelf.pageNumber ++;
+            [weakSelf excuteGetMovieFromAPI: urlString];
+        }
+        else {
+            if(weakSelf.movies.count > 20) {
+                NSRange range = NSMakeRange(19, weakSelf.movies.count - 20);
+                [weakSelf.movies removeObjectsInRange: range];
+            }
+            
+            [weakSelf sortMoiveWithTypeOfSort: weakSelf.movies];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                id subview = [weakSelf.movieListView.subviews firstObject];
+                [subview setMovies: weakSelf.movies];
+                [subview reloadData];
+                [weakSelf.alertViewController dismissViewControllerAnimated:NO completion: ^ {
+                    weakSelf.alertViewControllerIsActive = NO;
+                }];
+            });
+        }
+        
     } failure:^{
         [weakSelf handlerErrorWhenConnectAPI: urlString];
     } urlString:urlString];
@@ -313,14 +317,17 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     }]];
 }
 
-- (void) sortMoiveWithTypeOfSort: (TYPE_OF_SORT)typeOfSort movies: (NSMutableArray *)movies {
-    switch (typeOfSort) {
-        case RELEASE_DATE_SORT:
-            break;
-        case RATING_SORT:
-            break;
-        default:
-            break;
+- (void) sortMoiveWithTypeOfSort: (NSMutableArray *)movies {
+    TYPE_OF_SORT typeOfSort = self.settingOfAccount.typeOfSort;
+    if(typeOfSort == RELEASE_DATE_SORT) {
+        NSSortDescriptor * sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"releaseDate" ascending: YES];
+        NSArray<NSSortDescriptor *> * array = @[sortDescriptor];
+        [movies sortUsingDescriptors: array];
+    }
+    else if(typeOfSort == RATING_SORT) {
+        NSSortDescriptor * sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"voteAverage" ascending: YES];
+        NSArray<NSSortDescriptor *> * array = @[sortDescriptor];
+        [movies sortUsingDescriptors: array];
     }
 }
 

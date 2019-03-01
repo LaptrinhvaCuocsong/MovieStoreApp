@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "AccountManager.h"
+#import "AccountMO+CoreDataClass.h"
 
 @interface AppDelegate ()
 
@@ -44,6 +45,7 @@ static NSManagedObjectContext * managedObjectContext = nil;
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    
 }
 
 
@@ -56,7 +58,14 @@ static NSManagedObjectContext * managedObjectContext = nil;
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:
     
     // Saves changes in the application's managed object context before the application terminates.
-    [self saveContext];
+    
+    // save account
+    Account * account = [[AccountManager getInstance] account];
+    if(account) {
+        [AccountMO updateAccount: account];
+        
+        [[AccountManager getInstance] saveAccountToUserDefault];
+    }
 }
 
 

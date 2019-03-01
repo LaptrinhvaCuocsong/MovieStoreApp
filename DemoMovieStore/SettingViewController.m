@@ -48,7 +48,6 @@
     if(self.revealViewController) {
         [self.btnSlide setTarget: self.revealViewController];
         [self.btnSlide setAction: @selector(revealToggle:)];
-        [self.view addGestureRecognizer: self.revealViewController.panGestureRecognizer];
     }
 }
 
@@ -61,6 +60,7 @@
     self.settingOfAccount = [[AccountManager getInstance] settingOfAccount];
     if(!self.settingOfAccount) {
         self.settingOfAccount = [[NSMutableDictionary alloc] init];
+        [self.settingOfAccount setUrlString: API_GET_MOVIE_POPULAR_LIST];
     }
     
     [self setSlider];
@@ -93,9 +93,9 @@
 }
 
 - (void) setSlider {
-    [self.slider setValue:[self.settingOfAccount movieRate]  animated:NO];
     self.slider.minimumValue = 0.0;
     self.slider.maximumValue = 10.0;
+    [self.slider setValue:[self.settingOfAccount movieRate]];
     [self.slider addTarget:self action:@selector(sliderValueChange) forControlEvents:UIControlEventValueChanged];
 }
 

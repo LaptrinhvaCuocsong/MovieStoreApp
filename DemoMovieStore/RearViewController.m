@@ -82,11 +82,16 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
     UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"Account option" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
     __weak RearViewController * weakSelf = self;
     [alertController addAction: [UIAlertAction actionWithTitle:@"Remove account" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [[AccountManager getInstance] setAccount: nil];
         [[AccountManager getInstance] removeAccountToUserDefault];
         [weakSelf dismissViewControllerAnimated:YES completion:nil];
+        [weakSelf.view layoutIfNeeded];
     }]];
-    [alertController addAction: [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    /*
+    [alertController addAction: [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:(UIAlertAction * _Nonnull action) {
+        
+    }]];
+    [alertController addAction: [UI]];
+     */
     [self presentViewController:alertController animated:YES completion:nil];
 }
 

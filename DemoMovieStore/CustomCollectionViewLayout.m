@@ -49,9 +49,11 @@
             NSInteger a = j % numberOfCollumn;
             float x = xOffsets[a];
             attribute.frame = CGRectMake(x, yOffset, self.sizeOfCell.width, self.sizeOfCell.height);
-            if(a == numberOfCollumn - 1) {
+            
+            if(a == numberOfCollumn - 1 || j == numberOfItemInSection - 1) {
                 yOffset += CGRectGetHeight(attribute.frame) + grap;
             }
+            
             [self.attributes addObject: attribute];
         }
         yOffset += 20.0;

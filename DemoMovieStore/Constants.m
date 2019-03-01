@@ -25,4 +25,6 @@ NSString * const API_GET_MOVIE_NOW_PLAYING = @"https://api.themoviedb.org/3/movi
 
 NSString * const DID_CHANGE_SETTING = @"DidChangeSetting";
 
+NSInteger MIN_RELEASE_YEAR = 1970;
+
 @end

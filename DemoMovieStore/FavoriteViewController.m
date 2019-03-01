@@ -12,6 +12,7 @@
 #import "MovieItemCell.h"
 #import "Constants.h"
 #import "AccountMO+CoreDataClass.h"
+#import "AccountManager.h"
 
 @interface FavoriteViewController ()
 
@@ -73,17 +74,6 @@
     [self.movies removeAllObjects];
     for(id item in sets) {
         [self.movies addObject: item];
-    }
-}
-
-- (void) viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    if(self.account) {
-        // update list favourite movie of account
-        dispatch_queue_t myQueue = dispatch_queue_create("myQueue", DISPATCH_QUEUE_SERIAL);
-        dispatch_async(myQueue, ^{
-            [AccountMO updateAccount: self.account];
-        });
     }
 }
 
