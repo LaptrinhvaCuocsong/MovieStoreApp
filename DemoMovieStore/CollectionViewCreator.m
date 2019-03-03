@@ -52,7 +52,26 @@
     UIStoryboard * mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     DetailViewController * detailViewController = [mainStoryboard instantiateViewControllerWithIdentifier: DETAIL_VIEW_CONTROLLER_MAIN_STORYBOARD];
     detailViewController.movie = [collectionView.movies objectAtIndex: indexPath.item];
+    detailViewController.delegate = self;
     [self.delegate pushDetailViewController: detailViewController];
+}
+
+#pragma mark <DetailViewControllerDelegate>
+
+- (void) addOrRemoveFavouriteMovie:(Movie *)movie {
+    [self.delegate addOrRemoveFavouriteMovie: movie];
+}
+
+- (void) addOrSetReminderMovie:(Reminder *)reminder {
+    [self.delegate addOrSetReminderMovie: reminder];
+}
+
+- (BOOL) isGranted {
+    return [self.delegate isGranted];
+}
+
+- (Reminder *) reminderWithMovieId: (NSInteger)movieId {
+    return [self.delegate reminderWithMovieId: movieId];
 }
 
 @end

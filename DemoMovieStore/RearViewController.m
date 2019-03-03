@@ -43,10 +43,21 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setViewForController) name:DID_REMOVE_ACCOUNT object:nil];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    [self setViewForController];
+}
+
+- (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
+}
+
+- (void) setViewForController {
     self.account = [[AccountManager getInstance] account];
     [self setAvartarImage];
     self.txtName.text = (self.account)?self.account.name:@"Your name";
@@ -80,18 +91,19 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 
 - (void) changeAccount {
     UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"Account option" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
+    
     __weak RearViewController * weakSelf = self;
+    
     [alertController addAction: [UIAlertAction actionWithTitle:@"Remove account" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [[AccountManager getInstance] removeAccountToUserDefault];
-        [weakSelf dismissViewControllerAnimated:YES completion:nil];
-        [weakSelf.view layoutIfNeeded];
-    }]];
-    /*
-    [alertController addAction: [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:(UIAlertAction * _Nonnull action) {
         
+        [[NSNotificationCenter defaultCenter] postNotificationName: DID_REMOVE_ACCOUNT object: nil];
+        
+        [weakSelf dismissViewControllerAnimated:YES completion:nil];
     }]];
-    [alertController addAction: [UI]];
-     */
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+
     [self presentViewController:alertController animated:YES completion:nil];
 }
 

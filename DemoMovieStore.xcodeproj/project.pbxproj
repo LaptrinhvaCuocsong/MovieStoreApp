@@ -8,12 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		6808C810C4B59C67FABC50C4 /* libPods-DemoMovieStore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7EFCB16602FE85762432E4F /* libPods-DemoMovieStore.a */; };
+		A109292E222BD5770047238D /* Reminder.m in Sources */ = {isa = PBXBuildFile; fileRef = A109292D222BD5770047238D /* Reminder.m */; };
 		A18A28C3221B372100EA3E88 /* UITableView+Extent.m in Sources */ = {isa = PBXBuildFile; fileRef = A18A28C2221B372100EA3E88 /* UITableView+Extent.m */; };
 		A18A28C6221B374900EA3E88 /* UICollectionView+Extent.m in Sources */ = {isa = PBXBuildFile; fileRef = A18A28C5221B374900EA3E88 /* UICollectionView+Extent.m */; };
-		A1FC7AE8222063A800972C9B /* AccountMO+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = A1FC7AE0222063A700972C9B /* AccountMO+CoreDataProperties.m */; };
-		A1FC7AE9222063A800972C9B /* MovieMO+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = A1FC7AE1222063A700972C9B /* MovieMO+CoreDataClass.m */; };
-		A1FC7AEA222063A800972C9B /* MovieMO+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = A1FC7AE2222063A700972C9B /* MovieMO+CoreDataProperties.m */; };
-		A1FC7AEB222063A800972C9B /* AccountMO+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = A1FC7AE6222063A800972C9B /* AccountMO+CoreDataClass.m */; };
+		A1EF8AE5222B9A2200A5CA20 /* AccountMO+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EF8ADB222B9A2100A5CA20 /* AccountMO+CoreDataProperties.m */; };
+		A1EF8AE6222B9A2200A5CA20 /* MovieMO+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EF8ADC222B9A2100A5CA20 /* MovieMO+CoreDataClass.m */; };
+		A1EF8AE7222B9A2200A5CA20 /* AccountMO+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EF8ADD222B9A2100A5CA20 /* AccountMO+CoreDataClass.m */; };
+		A1EF8AE8222B9A2200A5CA20 /* MovieMO+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EF8ADF222B9A2100A5CA20 /* MovieMO+CoreDataProperties.m */; };
+		A1EF8AE9222B9A2200A5CA20 /* ReminderMO+CoreDataClass.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EF8AE0222B9A2100A5CA20 /* ReminderMO+CoreDataClass.m */; };
+		A1EF8AEA222B9A2200A5CA20 /* ReminderMO+CoreDataProperties.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EF8AE1222B9A2100A5CA20 /* ReminderMO+CoreDataProperties.m */; };
 		A1FC7AEE2220646E00972C9B /* Account.m in Sources */ = {isa = PBXBuildFile; fileRef = A1FC7AED2220646E00972C9B /* Account.m */; };
 		A1FC7AF1222071C100972C9B /* AccountManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1FC7AF0222071C100972C9B /* AccountManager.m */; };
 		B61976D9221EE99E003A9F59 /* CastCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B61976D7221EE99E003A9F59 /* CastCollectionViewCell.m */; };
@@ -58,6 +61,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A109292C222BD5770047238D /* Reminder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reminder.h; sourceTree = "<group>"; };
+		A109292D222BD5770047238D /* Reminder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Reminder.m; sourceTree = "<group>"; };
+		A1273746222A09B0005C8D64 /* DetailViewControllerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewControllerDelegate.h; sourceTree = "<group>"; };
 		A18A28C1221B372100EA3E88 /* UITableView+Extent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITableView+Extent.h"; sourceTree = "<group>"; };
 		A18A28C2221B372100EA3E88 /* UITableView+Extent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITableView+Extent.m"; sourceTree = "<group>"; };
 		A18A28C4221B374900EA3E88 /* UICollectionView+Extent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UICollectionView+Extent.h"; sourceTree = "<group>"; };
@@ -65,14 +71,18 @@
 		A1C8C1CD221F281B000BDE6C /* CollectionViewCreatorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CollectionViewCreatorDelegate.h; sourceTree = "<group>"; };
 		A1CF0578222108BF00111F1B /* EditProfileViewControllerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditProfileViewControllerDelegate.h; sourceTree = "<group>"; };
 		A1CF0579222121BF00111F1B /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
-		A1FC7AE0222063A700972C9B /* AccountMO+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AccountMO+CoreDataProperties.m"; sourceTree = "<group>"; };
-		A1FC7AE1222063A700972C9B /* MovieMO+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MovieMO+CoreDataClass.m"; sourceTree = "<group>"; };
-		A1FC7AE2222063A700972C9B /* MovieMO+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MovieMO+CoreDataProperties.m"; sourceTree = "<group>"; };
-		A1FC7AE3222063A700972C9B /* MovieMO+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MovieMO+CoreDataClass.h"; sourceTree = "<group>"; };
-		A1FC7AE4222063A800972C9B /* MovieMO+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MovieMO+CoreDataProperties.h"; sourceTree = "<group>"; };
-		A1FC7AE5222063A800972C9B /* AccountMO+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AccountMO+CoreDataProperties.h"; sourceTree = "<group>"; };
-		A1FC7AE6222063A800972C9B /* AccountMO+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AccountMO+CoreDataClass.m"; sourceTree = "<group>"; };
-		A1FC7AE7222063A800972C9B /* AccountMO+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AccountMO+CoreDataClass.h"; sourceTree = "<group>"; };
+		A1EF8AD9222B9A2100A5CA20 /* MovieMO+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MovieMO+CoreDataClass.h"; sourceTree = SOURCE_ROOT; };
+		A1EF8ADA222B9A2100A5CA20 /* AccountMO+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AccountMO+CoreDataProperties.h"; sourceTree = SOURCE_ROOT; };
+		A1EF8ADB222B9A2100A5CA20 /* AccountMO+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AccountMO+CoreDataProperties.m"; sourceTree = SOURCE_ROOT; };
+		A1EF8ADC222B9A2100A5CA20 /* MovieMO+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MovieMO+CoreDataClass.m"; sourceTree = SOURCE_ROOT; };
+		A1EF8ADD222B9A2100A5CA20 /* AccountMO+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AccountMO+CoreDataClass.m"; sourceTree = SOURCE_ROOT; };
+		A1EF8ADE222B9A2100A5CA20 /* AccountMO+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AccountMO+CoreDataClass.h"; sourceTree = SOURCE_ROOT; };
+		A1EF8ADF222B9A2100A5CA20 /* MovieMO+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MovieMO+CoreDataProperties.m"; sourceTree = SOURCE_ROOT; };
+		A1EF8AE0222B9A2100A5CA20 /* ReminderMO+CoreDataClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ReminderMO+CoreDataClass.m"; sourceTree = SOURCE_ROOT; };
+		A1EF8AE1222B9A2100A5CA20 /* ReminderMO+CoreDataProperties.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ReminderMO+CoreDataProperties.m"; sourceTree = SOURCE_ROOT; };
+		A1EF8AE2222B9A2200A5CA20 /* MovieMO+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MovieMO+CoreDataProperties.h"; sourceTree = SOURCE_ROOT; };
+		A1EF8AE3222B9A2200A5CA20 /* ReminderMO+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ReminderMO+CoreDataClass.h"; sourceTree = SOURCE_ROOT; };
+		A1EF8AE4222B9A2200A5CA20 /* ReminderMO+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ReminderMO+CoreDataProperties.h"; sourceTree = SOURCE_ROOT; };
 		A1FC7AEC2220646E00972C9B /* Account.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Account.h; sourceTree = "<group>"; };
 		A1FC7AED2220646E00972C9B /* Account.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Account.m; sourceTree = "<group>"; };
 		A1FC7AEF222071C100972C9B /* AccountManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AccountManager.h; sourceTree = "<group>"; };
@@ -174,14 +184,18 @@
 		B619E9B2221FE17900D80490 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				A1FC7AE5222063A800972C9B /* AccountMO+CoreDataProperties.h */,
-				A1FC7AE7222063A800972C9B /* AccountMO+CoreDataClass.h */,
-				A1FC7AE6222063A800972C9B /* AccountMO+CoreDataClass.m */,
-				A1FC7AE0222063A700972C9B /* AccountMO+CoreDataProperties.m */,
-				A1FC7AE4222063A800972C9B /* MovieMO+CoreDataProperties.h */,
-				A1FC7AE3222063A700972C9B /* MovieMO+CoreDataClass.h */,
-				A1FC7AE1222063A700972C9B /* MovieMO+CoreDataClass.m */,
-				A1FC7AE2222063A700972C9B /* MovieMO+CoreDataProperties.m */,
+				A1EF8AE2222B9A2200A5CA20 /* MovieMO+CoreDataProperties.h */,
+				A1EF8AD9222B9A2100A5CA20 /* MovieMO+CoreDataClass.h */,
+				A1EF8ADC222B9A2100A5CA20 /* MovieMO+CoreDataClass.m */,
+				A1EF8ADF222B9A2100A5CA20 /* MovieMO+CoreDataProperties.m */,
+				A1EF8AE4222B9A2200A5CA20 /* ReminderMO+CoreDataProperties.h */,
+				A1EF8AE3222B9A2200A5CA20 /* ReminderMO+CoreDataClass.h */,
+				A1EF8AE0222B9A2100A5CA20 /* ReminderMO+CoreDataClass.m */,
+				A1EF8AE1222B9A2100A5CA20 /* ReminderMO+CoreDataProperties.m */,
+				A1EF8ADA222B9A2100A5CA20 /* AccountMO+CoreDataProperties.h */,
+				A1EF8ADE222B9A2100A5CA20 /* AccountMO+CoreDataClass.h */,
+				A1EF8ADD222B9A2100A5CA20 /* AccountMO+CoreDataClass.m */,
+				A1EF8ADB222B9A2100A5CA20 /* AccountMO+CoreDataProperties.m */,
 			);
 			name = CoreData;
 			sourceTree = "<group>";
@@ -284,6 +298,7 @@
 				A1C8C1CD221F281B000BDE6C /* CollectionViewCreatorDelegate.h */,
 				A1CF0578222108BF00111F1B /* EditProfileViewControllerDelegate.h */,
 				B6AE59022223F19D00D068F9 /* MovieItemCellDelegate.h */,
+				A1273746222A09B0005C8D64 /* DetailViewControllerDelegate.h */,
 			);
 			name = Delegate;
 			sourceTree = "<group>";
@@ -322,6 +337,8 @@
 				B6ACDBDF221E8E10000B34B7 /* Cast.m */,
 				A1FC7AEC2220646E00972C9B /* Account.h */,
 				A1FC7AED2220646E00972C9B /* Account.m */,
+				A109292C222BD5770047238D /* Reminder.h */,
+				A109292D222BD5770047238D /* Reminder.m */,
 			);
 			name = Entity;
 			sourceTree = "<group>";
@@ -540,14 +557,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6E332FD2220027800BD969D /* EditProfileViewController.m in Sources */,
+				A1EF8AEA222B9A2200A5CA20 /* ReminderMO+CoreDataProperties.m in Sources */,
 				B65FE703221A61B1005762B6 /* AboutViewController.m in Sources */,
 				B6C90D21221A98BC00CFE10B /* CollectionViewCreator.m in Sources */,
 				A1FC7AEE2220646E00972C9B /* Account.m in Sources */,
 				B63BD699221D98AF00B80DE0 /* DetailViewController.m in Sources */,
 				B6ACDBE0221E8E10000B34B7 /* Cast.m in Sources */,
+				A1EF8AE8222B9A2200A5CA20 /* MovieMO+CoreDataProperties.m in Sources */,
+				A1EF8AE9222B9A2200A5CA20 /* ReminderMO+CoreDataClass.m in Sources */,
 				B6C90D1E221A98AF00CFE10B /* TableViewCreator.m in Sources */,
 				B61976D9221EE99E003A9F59 /* CastCollectionViewCell.m in Sources */,
+				A1EF8AE6222B9A2200A5CA20 /* MovieMO+CoreDataClass.m in Sources */,
 				B63BD691221D316F00B80DE0 /* CustomCollectionViewLayout.m in Sources */,
+				A1EF8AE7222B9A2200A5CA20 /* AccountMO+CoreDataClass.m in Sources */,
 				B6C90D98221BF69200CFE10B /* NSDictionary+ImageConfiguration.m in Sources */,
 				B6ACDBE4221E8F99000B34B7 /* CastsCreatorImpl.m in Sources */,
 				B6ACDBE7221E92E0000B34B7 /* NSDictionary+Cast.m in Sources */,
@@ -558,26 +580,24 @@
 				B65FE707221A61D1005762B6 /* TabItemViewController.m in Sources */,
 				B65FE6FD221A6196005762B6 /* FavoriteViewController.m in Sources */,
 				B6C90D52221ABF8100CFE10B /* Constants.m in Sources */,
-				A1FC7AE9222063A800972C9B /* MovieMO+CoreDataClass.m in Sources */,
 				B6AE59232227C1BF00D068F9 /* NSMutableDictionary+SettingOfAccount.m in Sources */,
 				A1FC7AF1222071C100972C9B /* AccountManager.m in Sources */,
 				B65FE6DF221A53F5005762B6 /* DemoMovieStore.xcdatamodeld in Sources */,
+				A1EF8AE5222B9A2200A5CA20 /* AccountMO+CoreDataProperties.m in Sources */,
+				A109292E222BD5770047238D /* Reminder.m in Sources */,
 				B65FE6FA221A6183005762B6 /* MovieListViewController.m in Sources */,
 				B65FE6EF221A5517005762B6 /* SWRevealViewController.m in Sources */,
 				B65FE6D6221A53F5005762B6 /* AppDelegate.m in Sources */,
-				A1FC7AEB222063A800972C9B /* AccountMO+CoreDataClass.m in Sources */,
 				B65FE6D3221A53F5005762B6 /* main.m in Sources */,
 				B6C90D9C221C014B00CFE10B /* ImageConfigurationCreatorImpl.m in Sources */,
 				B6C90D63221BA73200CFE10B /* MyNetworking.m in Sources */,
 				B65FE6F2221A5628005762B6 /* RearViewController.m in Sources */,
 				B6C90D4E221ABCDF00CFE10B /* MovieItemCell.m in Sources */,
-				A1FC7AE8222063A800972C9B /* AccountMO+CoreDataProperties.m in Sources */,
 				B6C90D7C221BCBC800CFE10B /* ImageHelper.m in Sources */,
 				B6C90D25221A9E5100CFE10B /* Movie.m in Sources */,
 				B6C90D5F221AEA2E00CFE10B /* NSDictionary+Movie.m in Sources */,
 				B63BD6A0221E4B9300B80DE0 /* DateUtils.m in Sources */,
 				A18A28C6221B374900EA3E88 /* UICollectionView+Extent.m in Sources */,
-				A1FC7AEA222063A800972C9B /* MovieMO+CoreDataProperties.m in Sources */,
 				B65FE700221A61A7005762B6 /* SettingViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

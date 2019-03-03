@@ -9,11 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "Movie.h"
 #import "TabItemViewController.h"
+#import "DetailViewControllerDelegate.h"
 
 @interface DetailViewController : TabItemViewController <UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
-@property (nonatomic, weak) Movie * movie;
+@property (nonatomic) Movie * movie;
 
-@property (nonatomic) CGRect frameOfDetailView;
+@property (nonatomic, weak) id<DetailViewControllerDelegate> delegate;
 
 @end

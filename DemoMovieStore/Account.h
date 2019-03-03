@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Movie.h"
+#import "Reminder.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,6 +32,8 @@ typedef NS_ENUM(NSInteger, GENDER) {
 @property (nonatomic) NSData * avartar;
 
 @property (nonatomic) NSMutableSet<Movie *> * favouriteMovies;
+
+@property (nonatomic) NSMutableSet<Reminder *> * reminderMovies;
 
 - (instancetype) initWithName: (NSString *)name dateOfBirth: (NSDate *)dateOfBirth email: (NSString *)email gender: (GENDER)gender avartar: (NSData *)avartar;
 

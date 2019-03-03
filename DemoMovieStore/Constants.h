@@ -41,4 +41,6 @@ extern NSString * const DID_CHANGE_SETTING;
 
 extern NSInteger MIN_RELEASE_YEAR;
 
+extern NSString * const DID_REMOVE_ACCOUNT;
+
 @end
