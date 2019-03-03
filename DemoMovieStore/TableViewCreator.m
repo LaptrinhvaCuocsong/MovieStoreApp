@@ -58,17 +58,26 @@
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     DetailViewController * detailViewController = [self.mainStoryBoard instantiateViewControllerWithIdentifier: DETAIL_VIEW_CONTROLLER_MAIN_STORYBOARD];
     detailViewController.movie = [tableView.movies objectAtIndex:indexPath.row];
+    detailViewController.delegate = self;
     [self.delegate pushDetailViewController:detailViewController];
 }
 
-#pragma mark <MovieItemCellDelegate>
+#pragma mark <MovieItemCellDelegate, DetailViewControllerDelegate>
 
 - (void) addOrRemoveFavouriteMovie:(Movie *)movie {
     [self.delegate addOrRemoveFavouriteMovie: movie];
 }
 
-- (BOOL) isGrantedAddFavouriteMovie {
-    return [self.delegate isGrantedAddFavouriteMovie];
+- (void) addOrSetReminderMovie:(Reminder *)reminder {
+    [self.delegate addOrSetReminderMovie: reminder];
+}
+
+- (BOOL) isGranted {
+    return [self.delegate isGranted];
+}
+
+- (Reminder *) reminderWithMovieId: (NSInteger)movieId {
+    return [self.delegate reminderWithMovieId: movieId];
 }
 
 @end

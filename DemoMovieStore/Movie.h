@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class Reminder;
+
 @interface Movie : NSObject
 
 @property (nonatomic) NSUInteger identifier;
@@ -25,6 +27,8 @@
 @property (nonatomic) NSDate * _Nonnull releaseDate;
 
 @property (nonatomic) BOOL isFavouriteMovie;
+
+@property (nonatomic) Reminder * reminder;
 
 - (instancetype _Nullable) initWithIdentifier: (NSUInteger)identifier voteAverage: (float)voteAverage title: (NSString * _Nonnull)title posterPath: (NSString * _Nullable)posterPath adult: (BOOL)adult overview: (NSString * _Nullable)overview releaseDate: (NSDate * _Nonnull)releaseDate;
 

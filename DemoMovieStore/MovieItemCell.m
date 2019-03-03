@@ -98,7 +98,6 @@ static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";
 }
 
 - (void) setBtnStart {
-    self.adult.clipsToBounds = YES;
     self.btnStart.layer.borderWidth = 1;
     self.btnStart.layer.borderColor = [[UIColor lightGrayColor] CGColor];
     self.btnStart.layer.cornerRadius = 4;
@@ -112,7 +111,7 @@ static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";
 }
 
 - (IBAction)btnStartButtonPressed:(id)sender {
-    if([self.delegate isGrantedAddFavouriteMovie]) {
+    if([self.delegate isGranted]) {
         if(self.movie.isFavouriteMovie) {
             self.movie.isFavouriteMovie = NO;
         }

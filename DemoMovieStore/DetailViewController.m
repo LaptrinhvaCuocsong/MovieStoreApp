@@ -15,6 +15,7 @@
 #import "CastsCreatorImpl.h"
 #import "Cast.h"
 #import "Constants.h"
+#import "Reminder.h"
 
 @interface DetailViewController ()
 
@@ -32,7 +33,7 @@
 
 @property (weak, nonatomic) IBOutlet UIButton *btnReminder;
 
-@property (weak, nonatomic) IBOutlet UILabel *txtReminder;
+@property (weak, nonatomic) IBOutlet UITextField *txtReminder;
 
 @property (weak, nonatomic) IBOutlet UICollectionView *actorCollectionView;
 
@@ -44,11 +45,13 @@
 
 @property (nonatomic) NSMutableArray * arrayImageURLString;
 
+@property (nonatomic) UIDatePicker * datePicker;
+
 @end
 
 @implementation DetailViewController
 
-static NSString * const formatOfReleaseDate = @"yyyy/MM/dd";
+static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -75,13 +78,38 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd";
     
     [self setBtnReminder];
     
-    [self setTxtReminder];
-    
     [self setActorCollectionView];
+
+    [self setBtnStart];
+    
+    UITapGestureRecognizer * tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handlerEventTapView)];
+    [self.view addGestureRecognizer: tapGestureRecognizer];
+}
+
+- (void) handlerEventTapView {
+    if([self.txtReminder isFirstResponder]) {
+        [self.txtReminder resignFirstResponder];
+    }
 }
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    if(!self.movie.reminder) {
+        Reminder * r = [self.delegate reminderWithMovieId: self.movie.identifier];
+        if(r) {
+            self.movie.reminder = r;
+        }
+    }
+    
+    [self setTxtReminder];
+}
+
+- (void) viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    if(self.movie.reminder) {
+        [self.delegate addOrSetReminderMovie: self.movie.reminder];
+    }
 }
 
 - (void) setNavigationBar {
@@ -121,11 +149,38 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd";
     self.movieOverview.editable = NO;
 }
 
+- (UIDatePicker *) datePicker {
+    if(!_datePicker) {
+        _datePicker = [[UIDatePicker alloc] init];
+        _datePicker.datePickerMode = UIDatePickerModeDateAndTime;
+        [_datePicker addTarget:self action:@selector(changeReminderDate) forControlEvents:UIControlEventValueChanged];
+    }
+    _datePicker.minimumDate = [[NSDate alloc] init];
+    return _datePicker;
+}
+
+- (void) changeReminderDate {
+    if([self.delegate isGranted]) {
+        if(!self.movie.reminder) {
+            self.movie.reminder = [[Reminder alloc] initWithReminderDate:self.datePicker.date movie:self.movie];
+        }
+        else {
+            self.movie.reminder.reminderDate = self.datePicker.date;
+        }
+        NSString * str = [DateUtils stringFromDate:self.movie.reminder.reminderDate formatDate:formatOfReleaseDate];
+        self.txtReminder.text = str;
+    }
+}
+
 - (void) setTxtReminder {
     self.txtReminder.layer.borderWidth = 0.5;
     self.txtReminder.layer.borderColor = [[UIColor lightGrayColor] CGColor];
     self.txtReminder.layer.cornerRadius = 4;
     self.txtReminder.clipsToBounds = YES;
+    self.txtReminder.inputView = self.datePicker;
+    if(self.movie.reminder) {
+        self.txtReminder.text = [DateUtils stringFromDate:self.movie.reminder.reminderDate formatDate:formatOfReleaseDate];
+    }
 }
 
 - (void) setMovieImage {
@@ -180,15 +235,63 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd";
     }];
 }
 
+- (void) setBtnStart {
+    self.btnStart.layer.borderWidth = 1;
+    self.btnStart.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+    self.btnStart.layer.cornerRadius = 4;
+    self.btnStart.clipsToBounds = YES;
+    if(self.movie.isFavouriteMovie) {
+        [self.btnStart setBackgroundImage:[UIImage imageNamed: @"ic_star"] forState:UIControlStateNormal];
+    }
+    else {
+        [self.btnStart setBackgroundImage:[UIImage imageNamed: @"ic_star_border"] forState:UIControlStateNormal];
+    }
+}
+
 - (IBAction)btnStartButtonPressed:(id)sender {
+    if([self.delegate isGranted]) {
+        if(self.movie.isFavouriteMovie) {
+            self.movie.isFavouriteMovie = NO;
+        }
+        else {
+            self.movie.isFavouriteMovie = YES;
+        }
+        [self setAnimationButtonStart];
+        [self.delegate addOrRemoveFavouriteMovie: self.movie];
+    }
+}
+
+- (void) setAnimationButtonStart {
+    float borderWithOfButtonStart = self.btnStart.layer.borderWidth;
+    CGRect frameOfButtonStart = self.btnStart.frame;
+    CGColorRef borderColorOfButtonStart = self.btnStart.layer.borderColor;
+    __weak DetailViewController * weakSelf = self;
+    [UIView animateWithDuration:0.5 delay:0.0 usingSpringWithDamping:0.3 initialSpringVelocity:1 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        weakSelf.btnStart.frame = CGRectMake(frameOfButtonStart.origin.x - 5, frameOfButtonStart.origin.y - 5, frameOfButtonStart.size.width + 10, frameOfButtonStart.size.height + 10);
+        weakSelf.btnStart.layer.borderColor = [[UIColor redColor] CGColor];
+        weakSelf.btnStart.layer.borderWidth = 2;
+        if(weakSelf.movie.isFavouriteMovie) {
+            [weakSelf.btnStart setBackgroundImage:[UIImage imageNamed: @"ic_star"] forState:UIControlStateNormal];
+        }
+        else {
+            [weakSelf.btnStart setBackgroundImage:[UIImage imageNamed: @"ic_star_border"] forState:UIControlStateNormal];
+        }
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.3 delay:0.0 usingSpringWithDamping:0.3 initialSpringVelocity:1 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            weakSelf.btnStart.frame = frameOfButtonStart;
+            weakSelf.btnStart.layer.borderColor = borderColorOfButtonStart;
+            weakSelf.btnStart.layer.borderWidth = borderWithOfButtonStart;
+        } completion:nil];
+    }];
 }
 
 
 - (IBAction)btnReminderButtonPressed:(id)sender {
+    [self.txtReminder becomeFirstResponder];
 }
 
 
-#pragma mark <UICollectionViewDataSourch>
+#pragma mark <UICollectionViewDataSource>
 
 - (NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return self.casts.count;

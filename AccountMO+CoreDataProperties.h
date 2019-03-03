@@ -2,7 +2,7 @@
 //  AccountMO+CoreDataProperties.h
 //  
 //
-//  Created by RTC-HN149 on 2/22/19.
+//  Created by nguyen manh hung on 3/3/19.
 //
 //
 
@@ -15,19 +15,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSFetchRequest<AccountMO *> *)fetchRequest;
 
++ (AccountMO *) fetchAccountMOWithIdentifier: (int32_t)identifier;
+
 + (Account *) fetchAccountWithIdentifier: (int32_t)identifier;
 
 + (BOOL) insertNewAccount: (Account *)account;
 
 + (BOOL) updateAccount: (Account *)account;
 
-@property (nonatomic) int32_t identifier;
-@property (nullable, nonatomic, copy) NSString *name;
+@property (nullable, nonatomic, retain) NSData *avartar;
 @property (nullable, nonatomic, copy) NSDate *dateOfBirth;
 @property (nullable, nonatomic, copy) NSString *email;
 @property (nonatomic) int16_t gender;
-@property (nullable, nonatomic, copy) NSData *avartar;
+@property (nonatomic) int32_t identifier;
+@property (nullable, nonatomic, copy) NSString *name;
 @property (nullable, nonatomic, retain) NSSet<MovieMO *> *favouriteMovies;
+@property (nullable, nonatomic, retain) NSSet<ReminderMO *> *reminderMovies;
 
 @end
 
@@ -37,6 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeFavouriteMoviesObject:(MovieMO *)value;
 - (void)addFavouriteMovies:(NSSet<MovieMO *> *)values;
 - (void)removeFavouriteMovies:(NSSet<MovieMO *> *)values;
+
+- (void)addReminderMoviesObject:(ReminderMO *)value;
+- (void)removeReminderMoviesObject:(ReminderMO *)value;
+- (void)addReminderMovies:(NSSet<ReminderMO *> *)values;
+- (void)removeReminderMovies:(NSSet<ReminderMO *> *)values;
 
 @end
 

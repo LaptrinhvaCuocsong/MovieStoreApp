@@ -8,6 +8,7 @@
         <attribute name="identifier" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="favouriteMovies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Movie" inverseName="account" inverseEntity="Movie" syncable="YES"/>
+        <relationship name="reminderMovies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Reminder" inverseName="account" inverseEntity="Reminder" syncable="YES"/>
     </entity>
     <entity name="Movie" representedClassName="MovieMO" syncable="YES">
         <attribute name="adult" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
@@ -18,9 +19,17 @@
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="voteAverage" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="account" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Account" inverseName="favouriteMovies" inverseEntity="Account" syncable="YES"/>
+        <relationship name="reminderMovie" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Reminder" inverseName="movie" inverseEntity="Reminder" syncable="YES"/>
+    </entity>
+    <entity name="Reminder" representedClassName="ReminderMO" syncable="YES">
+        <attribute name="identifier" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="reminderDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="account" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Account" inverseName="reminderMovies" inverseEntity="Account" syncable="YES"/>
+        <relationship name="movie" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Movie" inverseName="reminderMovie" inverseEntity="Movie" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Account" positionX="-645.1015625" positionY="96.57421875" width="128" height="150"/>
-        <element name="Movie" positionX="-387" positionY="99" width="128" height="163"/>
+        <element name="Account" positionX="-645.1015625" positionY="96.57421875" width="128" height="165"/>
+        <element name="Movie" positionX="-387" positionY="99" width="128" height="180"/>
+        <element name="Reminder" positionX="-513" positionY="162" width="128" height="105"/>
     </elements>
 </model>

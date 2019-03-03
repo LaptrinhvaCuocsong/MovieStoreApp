@@ -2,14 +2,14 @@
 //  MovieMO+CoreDataClass.h
 //  
 //
-//  Created by nguyen manh hung on 2/23/19.
+//  Created by nguyen manh hung on 3/3/19.
 //
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class AccountMO;
+@class AccountMO, ReminderMO;
 
 NS_ASSUME_NONNULL_BEGIN
 

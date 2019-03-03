@@ -27,4 +27,6 @@ NSString * const DID_CHANGE_SETTING = @"DidChangeSetting";
 
 NSInteger MIN_RELEASE_YEAR = 1970;
 
+NSString * const DID_REMOVE_ACCOUNT = @"DID_REMOVE_ACCOUNT";
+
 @end

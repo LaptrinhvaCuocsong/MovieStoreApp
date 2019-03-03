@@ -2,7 +2,7 @@
 //  MovieMO+CoreDataProperties.m
 //  
 //
-//  Created by nguyen manh hung on 2/23/19.
+//  Created by nguyen manh hung on 3/3/19.
 //
 //
 
@@ -20,29 +20,14 @@ static NSString * const ENTITY_NAME = @"Movie";
 + (MovieMO *) fetchMovieMOWithIdentifier: (int32_t)identifier {
     NSManagedObjectContext * context = [AppDelegate managedObjectContext];
     NSFetchRequest * request = [NSFetchRequest fetchRequestWithEntityName: ENTITY_NAME];
+    [request setPredicate: [NSPredicate predicateWithFormat: @"SELF.identifier = %d", identifier]];
     NSError * error = nil;
-    NSArray<MovieMO *> * movies = [context executeFetchRequest:request error:&error];
-    if(error) {
-        return nil;
+    NSArray<MovieMO *> * array = [context executeFetchRequest:request error:&error];
+    MovieMO * movieMO = [array firstObject];
+    if(movieMO) {
+        return movieMO;
     }
-    NSArray<MovieMO *> * movieFilters = [movies filteredArrayUsingPredicate: [NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
-        if(evaluatedObject) {
-            MovieMO * movieMO = (MovieMO *)evaluatedObject;
-            if(identifier != movieMO.identifier) {
-                return NO;
-            }
-        }
-        else {
-            return NO;
-        }
-        return YES;
-    }]];
-    if(movieFilters) {
-        return [movieFilters firstObject];
-    }
-    else {
-        return nil;
-    }
+    return nil;
 }
 
 + (MovieMO *) insertNewMovie: (Movie *)movie {
@@ -69,13 +54,14 @@ static NSString * const ENTITY_NAME = @"Movie";
     return movieMO;
 }
 
-@dynamic identifier;
-@dynamic voteAverage;
-@dynamic title;
-@dynamic posterPath;
 @dynamic adult;
+@dynamic identifier;
 @dynamic overview;
+@dynamic posterPath;
 @dynamic releaseDate;
+@dynamic title;
+@dynamic voteAverage;
 @dynamic account;
+@dynamic reminderMovie;
 
 @end

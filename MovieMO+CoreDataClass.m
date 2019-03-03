@@ -2,7 +2,7 @@
 //  MovieMO+CoreDataClass.m
 //  
 //
-//  Created by nguyen manh hung on 2/23/19.
+//  Created by nguyen manh hung on 3/3/19.
 //
 //
 

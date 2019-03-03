@@ -84,6 +84,8 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     [self setSubViewForMovieListView];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMovieList) name:DID_CHANGE_SETTING object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventRemoveAccount) name:DID_REMOVE_ACCOUNT object:nil];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
@@ -95,30 +97,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         self.isFirstReload = NO;
     }
     else {
-        if(self.movieListView.subviews) {
-            if(self.account) {
-                if(self.account.favouriteMovies) {
-                    for(Movie * movie in self.movies) {
-                        BOOL exist = NO;
-                        for(Movie * favouriteMovie in self.account.favouriteMovies) {
-                            if(movie.identifier == favouriteMovie.identifier) {
-                                exist = YES;
-                                break;
-                            }
-                        }
-                        if(exist) {
-                            movie.isFavouriteMovie = YES;
-                        }
-                        else {
-                            movie.isFavouriteMovie = NO;
-                        }
-                    }
-                }
-            }
-            id subView = [self.movieListView.subviews firstObject];
-            [subView setMovies: self.movies];
-            [subView reloadData];
-        }
+        [self reloadViewWhenChangeAccount];
     }
 }
 
@@ -139,6 +118,43 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (void) dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
+}
+
+- (void) reloadViewWhenChangeAccount {
+    if(self.movieListView.subviews) {
+        if(self.account) {
+            if(self.account.favouriteMovies) {
+                for(Movie * movie in self.movies) {
+                    BOOL exist = NO;
+                    for(Movie * favouriteMovie in self.account.favouriteMovies) {
+                        if(movie.identifier == favouriteMovie.identifier) {
+                            exist = YES;
+                            break;
+                        }
+                    }
+                    if(exist) {
+                        movie.isFavouriteMovie = YES;
+                    }
+                    else {
+                        movie.isFavouriteMovie = NO;
+                    }
+                }
+            }
+        }
+        else {
+            for(Movie * item in self.movies) {
+                item.isFavouriteMovie = NO;
+            }
+        }
+        id subView = [self.movieListView.subviews firstObject];
+        [subView setMovies: self.movies];
+        [subView reloadData];
+    }
+}
+
+- (void) handlerEventRemoveAccount {
+    self.account = [[AccountManager getInstance] account];
+    [self reloadViewWhenChangeAccount];
 }
 
 - (UITableView *) tableView {
@@ -346,9 +362,9 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     }
 }
 
-#pragma mark <TableViewCreatorDelegate>
+#pragma mark <TableViewCreatorDelegate, CollectionViewCreatorDelegate>
 
-- (BOOL) isGrantedAddFavouriteMovie {
+- (BOOL) isGranted {
     if(!self.account) {
         [self showMessageErrorCantAddFavouriteMovie];
         return NO;
@@ -364,19 +380,41 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         [self.account.favouriteMovies addObject: movie];
     }
     else {
-        Movie * m = nil;
-        for(Movie * item in self.account.favouriteMovies) {
-            if(movie.identifier == item.identifier) {
-                m = item;
-                break;
-            }
+        Movie * m = [[self.account.favouriteMovies filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.identifier = %d", movie.identifier]] anyObject];
+        if(m) {
+            [self.account.favouriteMovies removeObject: m];
         }
-        [self.account.favouriteMovies removeObject: m];
+    }
+}
+
+- (void) addOrSetReminderMovie:(Reminder *)reminder {
+    if(!self.account.reminderMovies) {
+        self.account.reminderMovies = [[NSMutableSet alloc] init];
+    }
+    Reminder * r = [[self.account.reminderMovies filteredSetUsingPredicate: [NSPredicate predicateWithFormat:@"SELF.identifer = %d", reminder.identifer]] anyObject];
+    if(r) {
+        r.reminderDate = reminder.reminderDate;
+    }
+    else {
+        [self.account.reminderMovies addObject: reminder];
     }
 }
 
 - (void) pushDetailViewController:(DetailViewController *)detailViewController {
     [self.navigationController pushViewController:detailViewController animated:YES];
+}
+
+- (Reminder *) reminderWithMovieId: (NSInteger)movieId {
+    if(self.account) {
+        if(self.account.reminderMovies) {
+            for(Reminder * r in self.account.reminderMovies) {
+                if(r.movie.identifier == movieId) {
+                    return r;
+                }
+            }
+        }
+    }
+    return nil;
 }
 
 - (void) showMessageErrorCantAddFavouriteMovie {
