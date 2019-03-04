@@ -36,12 +36,13 @@ static NSString * const CURRENT_IDENTIFIER = @"CurrentIdentifierOfReminderMO";
     return nil;
 }
 
-+ (ReminderMO *) insertNewRemender:(Reminder *)reminder {
++ (BOOL) insertNewRemender:(Reminder *)reminder {
     NSManagedObjectContext * context = [AppDelegate managedObjectContext];
     ReminderMO * reminderMO = [NSEntityDescription insertNewObjectForEntityForName:ENTITY_NAME inManagedObjectContext:context];
     if(reminderMO) {
         NSInteger currentIdentifier = [[NSUserDefaults standardUserDefaults] integerForKey: CURRENT_IDENTIFIER];
-        reminderMO.identifier = (int32_t)++currentIdentifier;
+        reminder.identifer = ++ currentIdentifier;
+        reminderMO.identifier = (int32_t) reminder.identifer;
         reminderMO.reminderDate = reminder.reminderDate;
         reminderMO.movie = [ReminderMO movieMOfromMovie: reminder.movie];
         if(context.hasChanges) {
@@ -52,14 +53,33 @@ static NSString * const CURRENT_IDENTIFIER = @"CurrentIdentifierOfReminderMO";
                 [[NSUserDefaults standardUserDefaults] setInteger:currentIdentifier forKey:CURRENT_IDENTIFIER];
             }
             else {
-                return nil;
+                return NO;
             }
         }
     }
     else {
-        return nil;
+        return NO;
     }
-    return reminderMO;
+    return YES;
+}
+
++ (BOOL) updateReminder: (Reminder *)reminder {
+    NSManagedObjectContext * context = [AppDelegate managedObjectContext];
+    ReminderMO * reminderMO = [ReminderMO fetchReminderMOWithIdentifer: (int32_t)reminder.identifer];
+    if(reminderMO) {
+        reminderMO.reminderDate = reminder.reminderDate;
+        if(context.hasChanges) {
+            NSError * error = nil;
+            BOOL isSaved = [context save: &error];
+            if(isSaved && !error) {
+                NSLog(@"Update Reminder success");
+            }
+            else {
+                return NO;
+            }
+        }
+    }
+    return YES;
 }
 
 + (MovieMO *) movieMOfromMovie: (Movie *)movie {

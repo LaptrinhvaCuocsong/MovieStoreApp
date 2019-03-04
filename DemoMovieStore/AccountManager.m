@@ -50,7 +50,9 @@ static NSString * const KEY_SETTING_OF_ACCOUNT = @"KEY_SETTING_OF_ACCOUNT_%ld";
 - (void) removeAccountToUserDefault {
     NSUserDefaults * userDefault = [NSUserDefaults standardUserDefaults];
     [userDefault removeObjectForKey: KEY_ACCOUNT];
+    [self removeSettingOfAccount:self.account.indentifier userDefault:userDefault];
     self.account = nil;
+    self.settingOfAccount = nil;
 }
 
 - (void) saveSettingOfAccount: (NSInteger)accountId userDefault: (NSUserDefaults *)userDefault {
@@ -61,6 +63,11 @@ static NSString * const KEY_SETTING_OF_ACCOUNT = @"KEY_SETTING_OF_ACCOUNT_%ld";
 - (void) loadSettingOfAccount: (NSInteger)accountId userDefault: (NSUserDefaults *)userDefault {
     NSString * key = [NSString stringWithFormat:KEY_SETTING_OF_ACCOUNT, accountId];
     self.settingOfAccount = [[userDefault objectForKey: key] mutableCopy];
+}
+
+- (void) removeSettingOfAccount: (NSInteger)accountId userDefault: (NSUserDefaults *)userDefault {
+    NSString * key = [NSString stringWithFormat:KEY_SETTING_OF_ACCOUNT, accountId];
+    [userDefault removeObjectForKey: key];
 }
 
 @end

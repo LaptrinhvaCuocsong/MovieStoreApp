@@ -191,6 +191,7 @@ typedef NS_ENUM(NSInteger, SWRevealToggleAnimationType)
 
 // Rear view controller, can be nil if not used
 @property (nonatomic) UIViewController *rearViewController;
+
 - (void)setRearViewController:(UIViewController *)rearViewController animated:(BOOL)animated;
 
 // Optional right view controller, can be nil if not used

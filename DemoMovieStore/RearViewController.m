@@ -12,6 +12,8 @@
 #import "DateUtils.h"
 #import "Constants.h"
 #import "EditProfileViewController.h"
+#import "ReminderCollectionViewCell.h"
+#import "Constants.h"
 
 @interface RearViewController ()
 
@@ -33,6 +35,8 @@
 
 @property (nonatomic) Account * account;
 
+@property (nonatomic) NSArray<Reminder *> * reminderMoves;
+
 @end
 
 @implementation RearViewController
@@ -45,12 +49,25 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
     [super viewDidLoad];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setViewForController) name:DID_REMOVE_ACCOUNT object:nil];
+    
+    [self setCollectionView];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
     [self setViewForController];
+    
+    if(self.account) {
+        if(self.account.reminderMovies) {
+            NSSortDescriptor * sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"reminderDate" ascending:YES];
+            NSArray<NSSortDescriptor *> * array = @[sortDescriptor];
+            self.reminderMoves = [self.account.reminderMovies sortedArrayUsingDescriptors: array];
+            if(self.reminderMoves) {
+                [self.collectionView reloadData];
+            }
+        }
+    }
 }
 
 - (void) dealloc {
@@ -66,6 +83,16 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
     [self setGender];
     [self setBtnEdit];
     [self setBtnShowReminder];
+}
+
+- (void) setCollectionView {
+    self.collectionView.layer.borderWidth = 1;
+    self.collectionView.layer.borderColor = [[UIColor grayColor] CGColor];
+    self.collectionView.layer.cornerRadius = 5;
+    self.collectionView.clipsToBounds = YES;
+    self.collectionView.dataSource = self;
+    self.collectionView.delegate = self;
+    [self.collectionView registerNib:[UINib nibWithNibName:REMINDER_COLLECTION_VIEW_CELL bundle:nil] forCellWithReuseIdentifier:REMINDER_COLLECTION_VIEW_CELL];
 }
 
 - (void) setAvartarImage {
@@ -153,10 +180,40 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
     }
 }
 
+- (IBAction)btnShowReminderButtonPressed:(id)sender {
+}
+
+
 #pragma mark <EditProfileViewControllerDelegate>
 
 - (void) dismissViewController {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark <UICollectionViewDataSource>
+
+- (NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    return 1;
+}
+
+- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    if(self.reminderMoves) {
+        NSInteger count = [self.reminderMoves count];
+        return (count > 2)?2:count;
+    }
+    return 0;
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    ReminderCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:REMINDER_COLLECTION_VIEW_CELL forIndexPath:indexPath];
+    [cell setReminderCollectionViewCell: [self.reminderMoves objectAtIndex: indexPath.item]];
+    return cell;
+}
+
+#pragma mark <UICollectionViewDelegateFlowLayout>
+
+- (CGSize) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake(CGRectGetWidth(collectionView.frame), CGRectGetHeight(collectionView.frame)/2 - 5);
 }
 
 @end

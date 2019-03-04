@@ -50,6 +50,7 @@ static NSString * const ENTITY_NAME = @"Account";
         for(ReminderMO * item in accountMO.reminderMovies) {
             Movie * movie = [[Movie alloc] initWithIdentifier:item.movie.identifier voteAverage:item.movie.voteAverage title:item.movie.title posterPath:item.movie.posterPath adult:item.movie.adult overview:item.movie.overview releaseDate:item.movie.releaseDate];
             Reminder * reminder = [[Reminder alloc] initWithReminderDate:item.reminderDate movie:movie];
+            reminder.identifer = item.identifier;
             movie.reminder = reminder;
             [reminderMovies addObject: reminder];
         }
@@ -150,38 +151,28 @@ static NSString * const ENTITY_NAME = @"Account";
 }
 
 + (void) setReminderMovies: (AccountMO *)accountMO account: (Account *)account {
+    dispatch_group_t myGroup = dispatch_group_create();
     [accountMO.reminderMovies enumerateObjectsUsingBlock:^(ReminderMO * _Nonnull reminderMO, BOOL * _Nonnull stop) {
         __block BOOL isExist = NO;
+        dispatch_group_enter(myGroup);
         [account.reminderMovies enumerateObjectsUsingBlock:^(Reminder * _Nonnull reminder, BOOL * _Nonnull stop) {
             if(reminderMO.identifier == reminder.identifer) {
                 isExist = YES;
                 reminderMO.reminderDate = reminder.reminderDate;
                 [account.reminderMovies removeObject:reminder];
+                dispatch_group_leave(myGroup);
             }
         }];
-        if(!isExist) {
-            [accountMO removeReminderMoviesObject: reminderMO];
-        }
+        dispatch_group_notify(myGroup, dispatch_get_main_queue(), ^{
+            if(!isExist) {
+                [accountMO removeReminderMoviesObject: reminderMO];
+            }
+        });
     }];
     for(Reminder * reminder in account.reminderMovies) {
         ReminderMO * reminderMO = [ReminderMO fetchReminderMOWithIdentifer: (int32_t)reminder.identifer];
         if(reminderMO) {
-            BOOL exist = NO;
-            for(ReminderMO * item in accountMO.reminderMovies) {
-                if(reminderMO.identifier == item.identifier) {
-                    exist = YES;
-                    break;
-                }
-            }
-            if(!exist) {
-                [accountMO addReminderMoviesObject: reminderMO];
-            }
-        }
-        else {
-            ReminderMO * reminderMO = [ReminderMO insertNewRemender: reminder];
-            if(reminderMO) {
-                [accountMO addReminderMoviesObject: reminderMO];
-            }
+            [accountMO addReminderMoviesObject: reminderMO];
         }
     }
 }

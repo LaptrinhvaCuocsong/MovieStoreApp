@@ -235,7 +235,7 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
         
         __weak EditProfileViewController * weakSelf = self;
         
-        dispatch_async(dispatch_queue_create("muQueue", DISPATCH_QUEUE_SERIAL), ^{
+        dispatch_async(dispatch_queue_create("myQueue", DISPATCH_QUEUE_SERIAL), ^{
             BOOL isSaved = YES;
             if(account.indentifier) {
                 isSaved = [AccountMO updateAccount: account];

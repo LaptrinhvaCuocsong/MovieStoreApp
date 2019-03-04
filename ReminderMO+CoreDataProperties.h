@@ -17,7 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (ReminderMO *) fetchReminderMOWithIdentifer: (int32_t)identifier;
 
-+ (ReminderMO *) insertNewRemender: (Reminder *)reminder;
++ (BOOL) insertNewRemender: (Reminder *)reminder;
+
++ (BOOL) updateReminder: (Reminder *)reminder;
 
 @property (nonatomic) int32_t identifier;
 @property (nullable, nonatomic, copy) NSDate *reminderDate;

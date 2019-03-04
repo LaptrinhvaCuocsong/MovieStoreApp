@@ -366,7 +366,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (BOOL) isGranted {
     if(!self.account) {
-        [self showMessageErrorCantAddFavouriteMovie];
+        [self showMessageError];
         return NO;
     }
     return YES;
@@ -417,7 +417,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     return nil;
 }
 
-- (void) showMessageErrorCantAddFavouriteMovie {
+- (void) showMessageError {
     UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"🙏🙏🙏" message:@"You must be logged in to perform this feature" preferredStyle:UIAlertControllerStyleAlert];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Login now" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         

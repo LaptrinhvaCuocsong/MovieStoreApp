@@ -16,6 +16,7 @@
 #import "Cast.h"
 #import "Constants.h"
 #import "Reminder.h"
+#import "ReminderMO+CoreDataClass.h"
 
 @interface DetailViewController ()
 
@@ -95,21 +96,9 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    if(!self.movie.reminder) {
-        Reminder * r = [self.delegate reminderWithMovieId: self.movie.identifier];
-        if(r) {
-            self.movie.reminder = r;
-        }
-    }
+    self.movie.reminder = [self.delegate reminderWithMovieId: self.movie.identifier];
     
     [self setTxtReminder];
-}
-
-- (void) viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    if(self.movie.reminder) {
-        [self.delegate addOrSetReminderMovie: self.movie.reminder];
-    }
 }
 
 - (void) setNavigationBar {
@@ -161,11 +150,25 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
 
 - (void) changeReminderDate {
     if([self.delegate isGranted]) {
+        __weak DetailViewController * weakSelf = self;
+        dispatch_queue_t myQueue = dispatch_queue_create("com.sonic.larue.insert", DISPATCH_QUEUE_SERIAL);
         if(!self.movie.reminder) {
             self.movie.reminder = [[Reminder alloc] initWithReminderDate:self.datePicker.date movie:self.movie];
+            dispatch_async(myQueue, ^{
+                BOOL isInsert = [ReminderMO insertNewRemender: self.movie.reminder];
+                if(isInsert) {
+                    [weakSelf.delegate addOrSetReminderMovie: weakSelf.movie.reminder];
+                }
+            });
         }
         else {
             self.movie.reminder.reminderDate = self.datePicker.date;
+            dispatch_async(myQueue, ^{
+                BOOL isUpdate = [ReminderMO updateReminder: self.movie.reminder];
+                if(isUpdate) {
+                    [weakSelf.delegate addOrSetReminderMovie: weakSelf.movie.reminder];
+                }
+            });
         }
         NSString * str = [DateUtils stringFromDate:self.movie.reminder.reminderDate formatDate:formatOfReleaseDate];
         self.txtReminder.text = str;
