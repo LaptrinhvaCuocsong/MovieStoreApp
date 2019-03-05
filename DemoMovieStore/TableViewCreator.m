@@ -62,6 +62,12 @@
     [self.delegate pushDetailViewController:detailViewController];
 }
 
+- (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if(indexPath.row == self.tableView.movies.count - 1) {
+        [self.delegate loadMore];
+    }
+}
+
 #pragma mark <MovieItemCellDelegate, DetailViewControllerDelegate>
 
 - (void) addOrRemoveFavouriteMovie:(Movie *)movie {

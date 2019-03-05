@@ -56,6 +56,12 @@
     [self.delegate pushDetailViewController: detailViewController];
 }
 
+- (void) collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+    if(indexPath.item == self.collectionView.movies.count-1) {
+        [self.delegate loadMore];
+    }
+}
+
 #pragma mark <DetailViewControllerDelegate>
 
 - (void) addOrRemoveFavouriteMovie:(Movie *)movie {

@@ -9,6 +9,8 @@
 #import "AppDelegate.h"
 #import "AccountManager.h"
 #import "AccountMO+CoreDataClass.h"
+#import "Account.h"
+#import "Reminder.h"
 
 @interface AppDelegate ()
 
@@ -18,8 +20,14 @@
 
 static NSManagedObjectContext * managedObjectContext = nil;
 
+static BOOL isGranted;
+
 + (NSManagedObjectContext *) managedObjectContext {
     return managedObjectContext;
+}
+
++ (BOOL) isGrantPushLocalNotification {
+    return isGranted;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -27,9 +35,34 @@ static NSManagedObjectContext * managedObjectContext = nil;
     managedObjectContext = self.persistentContainer.viewContext;
     AccountManager * accountManager = [AccountManager getInstance];
     [accountManager loadAccount];
+    
+    Account * account = [accountManager account];
+    
+    NSSet<Reminder *> * reminderMovies = nil;
+    
+    if(account) {
+        if(account.reminderMovies) {
+            NSDate * currentDate = [NSDate date];
+            reminderMovies = [account.reminderMovies filteredSetUsingPredicate: [NSPredicate predicateWithFormat:@"SELF.reminderDate < %@", currentDate]];
+        }
+    }
+    
+    [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:UNAuthorizationOptionAlert + UNAuthorizationOptionSound completionHandler:^(BOOL granted, NSError * _Nullable error) {
+        isGranted = granted;
+        
+        if(granted) {
+            
+        }
+    }];
+    
+    
     return YES;
 }
 
+
+- (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+    completionHandler(UNNotificationPresentationOptionAlert + UNNotificationPresentationOptionSound);
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

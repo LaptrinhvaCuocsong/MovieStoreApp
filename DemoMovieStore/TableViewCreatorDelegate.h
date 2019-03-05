@@ -22,4 +22,6 @@
 
 - (Reminder *) reminderWithMovieId: (NSInteger)movieId;
 
+- (void) loadMore;
+
 @end

@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (Reminder *) reminderWithMovieId: (NSInteger)movieId;
 
+- (void) loadMore;
+
 @end
 
 NS_ASSUME_NONNULL_END

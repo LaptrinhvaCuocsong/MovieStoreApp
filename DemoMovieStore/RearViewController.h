@@ -11,4 +11,6 @@
 
 @interface RearViewController : UIViewController <EditProfileViewControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
+@property (nonatomic) UIViewController * frontViewController;
+
 @end

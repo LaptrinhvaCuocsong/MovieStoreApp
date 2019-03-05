@@ -31,6 +31,7 @@
 		B659D444222D286700AA047C /* ReminderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B659D443222D286700AA047C /* ReminderViewController.m */; };
 		B659D44D222D309700AA047C /* ReminderTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B659D44B222D309700AA047C /* ReminderTableViewCell.m */; };
 		B659D44E222D309700AA047C /* ReminderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B659D44C222D309700AA047C /* ReminderTableViewCell.xib */; };
+		B659D4A3222E8EB300AA047C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B659D4A2222E8EB300AA047C /* UserNotifications.framework */; };
 		B65FE6D3221A53F5005762B6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B65FE6D2221A53F5005762B6 /* main.m */; };
 		B65FE6D6221A53F5005762B6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B65FE6D5221A53F5005762B6 /* AppDelegate.m */; };
 		B65FE6DC221A53F5005762B6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B65FE6DA221A53F5005762B6 /* Main.storyboard */; };
@@ -113,6 +114,7 @@
 		B659D44A222D309700AA047C /* ReminderTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReminderTableViewCell.h; sourceTree = "<group>"; };
 		B659D44B222D309700AA047C /* ReminderTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReminderTableViewCell.m; sourceTree = "<group>"; };
 		B659D44C222D309700AA047C /* ReminderTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReminderTableViewCell.xib; sourceTree = "<group>"; };
+		B659D4A2222E8EB300AA047C /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		B65FE6CE221A53F5005762B6 /* DemoMovieStore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoMovieStore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65FE6D2221A53F5005762B6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B65FE6D4221A53F5005762B6 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -186,6 +188,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B659D4A3222E8EB300AA047C /* UserNotifications.framework in Frameworks */,
 				B6AE59042226387A00D068F9 /* WebKit.framework in Frameworks */,
 				6808C810C4B59C67FABC50C4 /* libPods-DemoMovieStore.a in Frameworks */,
 			);
@@ -474,6 +477,7 @@
 		F0B48EAF94FDCF5946C9756F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B659D4A2222E8EB300AA047C /* UserNotifications.framework */,
 				B6AE59032226387A00D068F9 /* WebKit.framework */,
 				A1CF0579222121BF00111F1B /* Photos.framework */,
 				A7EFCB16602FE85762432E4F /* libPods-DemoMovieStore.a */,
