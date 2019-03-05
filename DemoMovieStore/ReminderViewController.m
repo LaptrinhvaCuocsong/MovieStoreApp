@@ -12,6 +12,8 @@
 #import "AccountManager.h"
 #import "Reminder.h"
 #import "Constants.h"
+#import "Constants.h"
+#import "DetailViewController.h"
 
 @interface ReminderViewController ()
 
@@ -76,6 +78,30 @@
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 150.0;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath: indexPath animated: YES];
+    UIStoryboard * mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    DetailViewController * detailViewController = [mainStoryBoard instantiateViewControllerWithIdentifier: DETAIL_VIEW_CONTROLLER_MAIN_STORYBOARD];
+    detailViewController.movie = [[self.reminderMovies objectAtIndex: indexPath.row] movie];
+    detailViewController.delegate = self;
+    [self.navigationController pushViewController:detailViewController animated:YES];
+}
+
+#pragma mark <DetailViewControllerDelegate>
+
+- (Reminder *) reminderWithMovieId: (NSInteger)movieId {
+    if(self.account) {
+        if(self.account.reminderMovies) {
+            for(Reminder * r in self.account.reminderMovies) {
+                if(r.movie.identifier == movieId) {
+                    return r;
+                }
+            }
+        }
+    }
+    return nil;
 }
 
 @end

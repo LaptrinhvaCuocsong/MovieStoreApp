@@ -23,7 +23,6 @@
         [self.btnSlideBar setTarget: self.revealViewController];
         [self.btnSlideBar setAction: @selector(revealToggle:)];
         [self.view addGestureRecognizer: self.revealViewController.panGestureRecognizer];
-        //self.revealViewController.rearViewRevealWidth = CGRectGetWidth(self.view.frame);
     }
 }
 

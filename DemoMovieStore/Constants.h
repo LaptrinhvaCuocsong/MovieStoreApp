@@ -36,6 +36,8 @@ extern NSString * const REMINDER_TABLE_VIEW_CELL;
 
 extern NSString * const DETAIL_VIEW_CONTROLLER_MAIN_STORYBOARD;
 
+extern NSString * const REMINDER_VIEW_CONTROLLER_MAIN_STORYBOARD;
+
 extern NSString * const API_GET_MOVIE_POPULAR_LIST;
 extern NSString * const API_GET_MOVIE_TOP_RATE_LIST;
 extern NSString * const API_GET_MOVIE_UP_COMMING_LIST;

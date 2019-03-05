@@ -14,6 +14,9 @@
 #import "EditProfileViewController.h"
 #import "ReminderCollectionViewCell.h"
 #import "Constants.h"
+#import "SettingViewController.h"
+#import "SWRevealViewController.h"
+#import "ReminderViewController.h"
 
 @interface RearViewController ()
 
@@ -181,8 +184,21 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 }
 
 - (IBAction)btnShowReminderButtonPressed:(id)sender {
+    [self.revealViewController revealToggle: sender];
+    UITabBarController * tabBarViewController = (UITabBarController *)self.revealViewController.frontViewController;
+    UINavigationController * navigationController = [tabBarViewController.viewControllers objectAtIndex:2];
+    tabBarViewController.selectedViewController = navigationController;
+    UIStoryboard * mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    ReminderViewController * reminderViewController = [mainStoryBoard instantiateViewControllerWithIdentifier: REMINDER_VIEW_CONTROLLER_MAIN_STORYBOARD];
+    NSDictionary * dic = @{@"navigationController": navigationController, @"reminderViewController":reminderViewController};
+    [self performSelector:@selector(pushReminderViewController:) withObject:dic afterDelay:0.5];
 }
 
+- (void) pushReminderViewController: (NSDictionary *)dic {
+    UINavigationController * navigationController = dic[@"navigationController"];
+    ReminderViewController * reminderViewController = dic[@"reminderViewController"];
+    [navigationController pushViewController:reminderViewController animated:YES];
+}
 
 #pragma mark <EditProfileViewControllerDelegate>
 

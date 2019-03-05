@@ -22,6 +22,8 @@ NSString * const REMINDER_TABLE_VIEW_CELL = @"ReminderTableViewCell";
 
 NSString * const DETAIL_VIEW_CONTROLLER_MAIN_STORYBOARD = @"DetailViewController";
 
+NSString * const REMINDER_VIEW_CONTROLLER_MAIN_STORYBOARD = @"ReminderViewController";
+
 NSString * const API_GET_MOVIE_POPULAR_LIST = @"https://api.themoviedb.org/3/movie/popular?api_key=e7631ffcb8e766993e5ec0c1f4245f93&page=%lu";
 NSString * const API_GET_MOVIE_TOP_RATE_LIST = @"https://api.themoviedb.org/3/movie/top_rated?api_key=e7631ffcb8e766993e5ec0c1f4245f93&page=%lu";
 NSString * const API_GET_MOVIE_UP_COMMING_LIST = @"https://api.themoviedb.org/3/movie/upcoming?api_key=e7631ffcb8e766993e5ec0c1f4245f93&page=%lu";

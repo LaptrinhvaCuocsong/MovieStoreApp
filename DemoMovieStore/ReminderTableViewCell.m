@@ -32,6 +32,10 @@ static NSString * const formatOfReminderDate = @"yyyy/MM/dd HH:mm:ss a";
 
 - (void) setReminderTableViewCell: (Reminder * _Nonnull)reminder {
     [self setReminderTableViewImage: reminder.movie.posterPath];
+    self.movieImage.layer.borderWidth = 1.0;
+    self.movieImage.layer.borderColor = [[UIColor lightGrayColor] CGColor];
+    self.movieImage.layer.cornerRadius = 5;
+    self.movieImage.clipsToBounds = YES;
     self.title.text = reminder.movie.title;
     self.txtReminderDate.text = [DateUtils stringFromDate:reminder.reminderDate formatDate: formatOfReminderDate];
 }
