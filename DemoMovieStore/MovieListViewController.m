@@ -162,7 +162,8 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         self.tableViewCreator = [[TableViewCreator alloc] initWithTableView: _tableView];
         self.tableViewCreator.delegate = self;
         
-        // chua auto layout cho tableView
+        [_tableView setTranslatesAutoresizingMaskIntoConstraints: NO];
+        
         _tableView.delegate = self.tableViewCreator;
         _tableView.dataSource = self.tableViewCreator;
         _tableView.movies = self.movies;

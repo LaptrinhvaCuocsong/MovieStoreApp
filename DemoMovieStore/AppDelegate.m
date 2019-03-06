@@ -11,6 +11,7 @@
 #import "AccountMO+CoreDataClass.h"
 #import "Account.h"
 #import "Reminder.h"
+#import "DateUtils.h"
 
 @interface AppDelegate ()
 
@@ -22,12 +23,28 @@ static NSManagedObjectContext * managedObjectContext = nil;
 
 static BOOL isGranted;
 
+static NSString * const formatOfReminderDate = @"yyyy/MM/dd HH:mm:ss a";
+
 + (NSManagedObjectContext *) managedObjectContext {
     return managedObjectContext;
 }
 
 + (BOOL) isGrantPushLocalNotification {
     return isGranted;
+}
+
+- (void) pushNotificationForReminderMovie: (Reminder *)reminder {
+    Movie * movie = reminder.movie;
+    UNMutableNotificationContent * content = [[UNMutableNotificationContent alloc] init];
+    content.title = movie.title;
+    content.subtitle = [DateUtils stringFromDate:reminder.reminderDate formatDate:formatOfReminderDate];
+    content.sound = [UNNotificationSound defaultSound];
+
+    UNTimeIntervalNotificationTrigger * trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1 repeats:NO];
+    
+    UNNotificationRequest * request = [UNNotificationRequest requestWithIdentifier:[NSString stringWithFormat:@"request_%ld", reminder.movie.identifier] content:content trigger:trigger];
+    
+    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -51,10 +68,17 @@ static BOOL isGranted;
         isGranted = granted;
         
         if(granted) {
-            
+            for(Reminder * reminder in reminderMovies) {
+                [self pushNotificationForReminderMovie: reminder];
+            }
         }
     }];
     
+    [reminderMovies enumerateObjectsUsingBlock:^(Reminder * _Nonnull obj, BOOL * _Nonnull stop) {
+        [account.reminderMovies removeObject: obj];
+    }];
+    
+    [[UNUserNotificationCenter currentNotificationCenter] setDelegate: self];
     
     return YES;
 }
