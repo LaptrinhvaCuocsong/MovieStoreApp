@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (Reminder *) reminderWithMovieId: (NSInteger)movieId;
 
+- (BOOL) checkFavouriteMovie: (Movie *)movie;
+
 @end
 
 NS_ASSUME_NONNULL_END

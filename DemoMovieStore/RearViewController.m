@@ -50,8 +50,10 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setViewForController) name:DID_REMOVE_ACCOUNT object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setViewForController) name:DID_SAVE_ACCOUNT object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver: self selector:@selector(handlerEventRemoveReminder) name:DID_REMOVE_REMINDER object:nil];
     
     [self setCollectionView];
 }
@@ -59,26 +61,26 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [self setViewForController];
+    [self setReminderMovies];
     
-    if(self.account) {
-        if(self.account.reminderMovies) {
-            NSSortDescriptor * sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"reminderDate" ascending:YES];
-            NSArray<NSSortDescriptor *> * array = @[sortDescriptor];
-            self.reminderMoves = [self.account.reminderMovies sortedArrayUsingDescriptors: array];
-            if(self.reminderMoves) {
-                [self.collectionView reloadData];
-            }
-        }
-    }
+    [self setViewForController];
 }
 
 - (void) dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
 }
 
+- (void) handlerEventRemoveReminder {
+    self.account = [[AccountManager getInstance] account];
+    
+    [self setReminderMovies];
+    
+    [self.collectionView reloadData];
+}
+
 - (void) setViewForController {
     self.account = [[AccountManager getInstance] account];
+    
     [self setAvartarImage];
     self.txtName.text = (self.account)?self.account.name:@"Your name";
     [self setTxtBithDay];
@@ -86,6 +88,22 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
     [self setGender];
     [self setBtnEdit];
     [self setBtnShowReminder];
+    
+    [self setReminderMovies];
+    
+    [self.collectionView reloadData];
+}
+
+- (void) setReminderMovies {
+    self.reminderMoves = nil;
+    
+    if(self.account) {
+        if(self.account.reminderMovies) {
+            NSSortDescriptor * sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"reminderDate" ascending:YES];
+            NSArray<NSSortDescriptor *> * array = @[sortDescriptor];
+            self.reminderMoves = [self.account.reminderMovies sortedArrayUsingDescriptors: array];
+        }
+    }
 }
 
 - (void) setCollectionView {
@@ -178,7 +196,6 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if([segueForwardFromRearToEditProfile isEqualToString: segue.identifier]) {
         __weak EditProfileViewController * editProfileViewController = segue.destinationViewController;
-        editProfileViewController.delegate = self;
         editProfileViewController.account = self.account;
     }
 }

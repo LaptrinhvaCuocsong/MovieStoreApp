@@ -24,4 +24,6 @@
 
 - (void) loadMore;
 
+- (BOOL) checkFavouriteMovie: (Movie *)movie;
+
 @end

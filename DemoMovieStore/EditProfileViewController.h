@@ -8,12 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "Account.h"
-#import "EditProfileViewControllerDelegate.h"
 
 @interface EditProfileViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate>
 
-@property (nonatomic, weak) id<EditProfileViewControllerDelegate> delegate;
-
-@property (nonatomic, weak) Account * account;
+@property (nonatomic) Account * account;
 
 @end

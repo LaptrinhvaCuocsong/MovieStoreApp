@@ -48,6 +48,7 @@
     if(self.revealViewController) {
         [self.btnSlide setTarget: self.revealViewController];
         [self.btnSlide setAction: @selector(revealToggle:)];
+        [self.view addGestureRecognizer: self.revealViewController.panGestureRecognizer];
     }
 }
 

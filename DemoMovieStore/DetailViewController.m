@@ -17,6 +17,8 @@
 #import "Constants.h"
 #import "Reminder.h"
 #import "ReminderMO+CoreDataClass.h"
+#import <UserNotifications/UserNotifications.h>
+#import "AppDelegate.h"
 
 @interface DetailViewController ()
 
@@ -80,11 +82,35 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
     [self setBtnReminder];
     
     [self setActorCollectionView];
-
-    [self setBtnStart];
     
     UITapGestureRecognizer * tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handlerEventTapView)];
     [self.view addGestureRecognizer: tapGestureRecognizer];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventRemoveReminder) name:DID_REMOVE_REMINDER object:nil];
+}
+
+- (void) viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+
+    [self setFavouriteMovie];
+    
+    [self setBtnStart];
+    
+    self.movie.reminder = [self.delegate reminderWithMovieId: self.movie.identifier];
+    
+    [self setTxtReminder];
+}
+
+- (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
+}
+
+- (void) handlerEventRemoveReminder {
+    self.movie.reminder = [self.delegate reminderWithMovieId: self.movie.identifier];
+    
+    if(!self.movie.reminder) {
+        self.txtReminder.text = @"";
+    }
 }
 
 - (void) handlerEventTapView {
@@ -93,12 +119,13 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
     }
 }
 
-- (void) viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    self.movie.reminder = [self.delegate reminderWithMovieId: self.movie.identifier];
-    
-    [self setTxtReminder];
+- (void) setFavouriteMovie {
+    if([self.delegate checkFavouriteMovie: self.movie]) {
+        self.movie.isFavouriteMovie = YES;
+    }
+    else {
+        self.movie.isFavouriteMovie = NO;
+    }
 }
 
 - (void) setNavigationBar {
@@ -148,6 +175,22 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
     return _datePicker;
 }
 
+- (void) pushLocalNotification: (Reminder *)reminder {
+    UNMutableNotificationContent * content = [[UNMutableNotificationContent alloc] init];
+    content.title = reminder.movie.title;
+    content.body = [DateUtils stringFromDate:reminder.movie.reminder.reminderDate formatDate:formatOfReleaseDate];
+    content.sound = [UNNotificationSound defaultSound];
+    content.userInfo = @{@"reminderId" : [NSNumber numberWithInteger: reminder.identifer]};
+    
+    NSCalendar * calendar = [NSCalendar currentCalendar];
+    NSDateComponents * dateComponents = [calendar components:NSCalendarUnitYear + NSCalendarUnitMonth + NSCalendarUnitDay + NSCalendarUnitHour + NSCalendarUnitMinute fromDate:reminder.reminderDate];
+    UNCalendarNotificationTrigger * trigger = [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents repeats:NO];
+    
+    UNNotificationRequest * request = [UNNotificationRequest requestWithIdentifier:[NSString stringWithFormat:@"request_%ld", reminder.movie.identifier] content:content trigger:trigger];
+    
+    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest: request withCompletionHandler:nil];
+}
+
 - (void) changeReminderDate {
     if([self.delegate isGranted]) {
         __weak DetailViewController * weakSelf = self;
@@ -172,6 +215,10 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
         }
         NSString * str = [DateUtils stringFromDate:self.movie.reminder.reminderDate formatDate:formatOfReleaseDate];
         self.txtReminder.text = str;
+        
+        if([AppDelegate isGrantPushLocalNotification]) {
+            [self pushLocalNotification: self.movie.reminder];
+        }
     }
 }
 

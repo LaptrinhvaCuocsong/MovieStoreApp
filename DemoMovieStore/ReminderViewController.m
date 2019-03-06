@@ -15,6 +15,7 @@
 #import "Constants.h"
 #import "DetailViewController.h"
 #import "Movie.h"
+#import "EditProfileViewController.h"
 
 @interface ReminderViewController ()
 
@@ -34,12 +35,16 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerNib:[UINib nibWithNibName:REMINDER_TABLE_VIEW_CELL bundle:nil] forCellReuseIdentifier:REMINDER_TABLE_VIEW_CELL];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_SAVE_ACCOUNT object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_REMOVE_REMINDER object:nil];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
     self.account = [[AccountManager getInstance] account];
+    
     if(self.account) {
         if(self.account.reminderMovies) {
             NSSortDescriptor * sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"reminderDate" ascending:YES];
@@ -56,16 +61,26 @@
     [super viewWillDisappear:animated];
 }
 
-- (BOOL) movieIsFavourite: (Movie *)movie {
+- (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
+}
+
+- (void) handlerEventChangeAccount {
+    
+    self.account = [[AccountManager getInstance] account];
+    
     if(self.account) {
-        if(self.account.favouriteMovies) {
-            Movie * m = [[self.account.favouriteMovies filteredSetUsingPredicate: [NSPredicate predicateWithFormat:@"SELF.identifier = %ld", movie.identifier]] anyObject];
-            if(m) {
-                return YES;
-            }
+        NSSortDescriptor * sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"reminderDate" ascending:YES];
+        NSArray * array = @[sortDescriptor];
+        NSArray<Reminder *> * arraySorted = [self.account.reminderMovies sortedArrayUsingDescriptors: array];
+        if(arraySorted) {
+            self.reminderMovies = [NSMutableArray arrayWithArray: arraySorted];
         }
     }
-    return NO;
+    else {
+        self.reminderMovies = nil;
+    }
+    [self.tableView reloadData];
 }
 
 #pragma mark <UITableViewDataSource>
@@ -78,7 +93,7 @@
     if(self.reminderMovies) {
         return self.reminderMovies.count;
     }
-    return 1;
+    return 0;
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -98,9 +113,6 @@
     UIStoryboard * mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     DetailViewController * detailViewController = [mainStoryBoard instantiateViewControllerWithIdentifier: DETAIL_VIEW_CONTROLLER_MAIN_STORYBOARD];
     Movie * movie = [[self.reminderMovies objectAtIndex: indexPath.row] movie];
-    if([self movieIsFavourite: movie]) {
-        movie.isFavouriteMovie = YES;
-    }
     detailViewController.movie = movie;
     detailViewController.delegate = self;
     [self.navigationController pushViewController:detailViewController animated:YES];
@@ -144,10 +156,31 @@
     return nil;
 }
 
+- (BOOL) checkFavouriteMovie:(Movie *)movie {
+    if(self.account) {
+        if(self.account.favouriteMovies) {
+            BOOL isFavoutireMovie = NO;
+            for(Movie * m in self.account.favouriteMovies) {
+                if(m.identifier == movie.identifier) {
+                    isFavoutireMovie = YES;
+                    break;
+                }
+            }
+            if(isFavoutireMovie) {
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
 - (void) showMessageError {
+    __weak ReminderViewController * weakSelf = self;
     UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"🙏🙏🙏" message:@"You must be logged in to perform this feature" preferredStyle:UIAlertControllerStyleAlert];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Login now" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
+        UIStoryboard * storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        EditProfileViewController * editProfileViewController = [storyBoard instantiateViewControllerWithIdentifier: EDIT_PROFILE_VIEW_CONTROLLER_MAIN_STORYBOARD];
+        [weakSelf presentViewController:editProfileViewController animated:YES completion:nil];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];

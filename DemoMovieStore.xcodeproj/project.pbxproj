@@ -32,6 +32,7 @@
 		B659D44D222D309700AA047C /* ReminderTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B659D44B222D309700AA047C /* ReminderTableViewCell.m */; };
 		B659D44E222D309700AA047C /* ReminderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B659D44C222D309700AA047C /* ReminderTableViewCell.xib */; };
 		B659D4A3222E8EB300AA047C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B659D4A2222E8EB300AA047C /* UserNotifications.framework */; };
+		B659D4A6222FBE0300AA047C /* NSDictionary+Reminder.m in Sources */ = {isa = PBXBuildFile; fileRef = B659D4A5222FBE0300AA047C /* NSDictionary+Reminder.m */; };
 		B65FE6D3221A53F5005762B6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B65FE6D2221A53F5005762B6 /* main.m */; };
 		B65FE6D6221A53F5005762B6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B65FE6D5221A53F5005762B6 /* AppDelegate.m */; };
 		B65FE6DC221A53F5005762B6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B65FE6DA221A53F5005762B6 /* Main.storyboard */; };
@@ -75,7 +76,6 @@
 		A18A28C4221B374900EA3E88 /* UICollectionView+Extent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UICollectionView+Extent.h"; sourceTree = "<group>"; };
 		A18A28C5221B374900EA3E88 /* UICollectionView+Extent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UICollectionView+Extent.m"; sourceTree = "<group>"; };
 		A1C8C1CD221F281B000BDE6C /* CollectionViewCreatorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CollectionViewCreatorDelegate.h; sourceTree = "<group>"; };
-		A1CF0578222108BF00111F1B /* EditProfileViewControllerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditProfileViewControllerDelegate.h; sourceTree = "<group>"; };
 		A1CF0579222121BF00111F1B /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		A1EF8AD9222B9A2100A5CA20 /* MovieMO+CoreDataClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MovieMO+CoreDataClass.h"; sourceTree = SOURCE_ROOT; };
 		A1EF8ADA222B9A2100A5CA20 /* AccountMO+CoreDataProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AccountMO+CoreDataProperties.h"; sourceTree = SOURCE_ROOT; };
@@ -115,6 +115,8 @@
 		B659D44B222D309700AA047C /* ReminderTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReminderTableViewCell.m; sourceTree = "<group>"; };
 		B659D44C222D309700AA047C /* ReminderTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ReminderTableViewCell.xib; sourceTree = "<group>"; };
 		B659D4A2222E8EB300AA047C /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		B659D4A4222FBE0300AA047C /* NSDictionary+Reminder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Reminder.h"; sourceTree = "<group>"; };
+		B659D4A5222FBE0300AA047C /* NSDictionary+Reminder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Reminder.m"; sourceTree = "<group>"; };
 		B65FE6CE221A53F5005762B6 /* DemoMovieStore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoMovieStore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65FE6D2221A53F5005762B6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B65FE6D4221A53F5005762B6 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -314,7 +316,6 @@
 			children = (
 				B6651655221EAF6D007E77BE /* TableViewCreatorDelegate.h */,
 				A1C8C1CD221F281B000BDE6C /* CollectionViewCreatorDelegate.h */,
-				A1CF0578222108BF00111F1B /* EditProfileViewControllerDelegate.h */,
 				B6AE59022223F19D00D068F9 /* MovieItemCellDelegate.h */,
 				A1273746222A09B0005C8D64 /* DetailViewControllerDelegate.h */,
 			);
@@ -446,6 +447,8 @@
 				B6ACDBE5221E92E0000B34B7 /* NSDictionary+Cast.h */,
 				B6AE59212227C1BF00D068F9 /* NSMutableDictionary+SettingOfAccount.h */,
 				B6AE59222227C1BF00D068F9 /* NSMutableDictionary+SettingOfAccount.m */,
+				B659D4A4222FBE0300AA047C /* NSDictionary+Reminder.h */,
+				B659D4A5222FBE0300AA047C /* NSDictionary+Reminder.m */,
 			);
 			name = Category;
 			sourceTree = "<group>";
@@ -585,6 +588,7 @@
 			files = (
 				B6E332FD2220027800BD969D /* EditProfileViewController.m in Sources */,
 				A1EF8AEA222B9A2200A5CA20 /* ReminderMO+CoreDataProperties.m in Sources */,
+				B659D4A6222FBE0300AA047C /* NSDictionary+Reminder.m in Sources */,
 				B65FE703221A61B1005762B6 /* AboutViewController.m in Sources */,
 				B6C90D21221A98BC00CFE10B /* CollectionViewCreator.m in Sources */,
 				A1FC7AEE2220646E00972C9B /* Account.m in Sources */,

@@ -7,9 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "EditProfileViewControllerDelegate.h"
 
-@interface RearViewController : UIViewController <EditProfileViewControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface RearViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic) UIViewController * frontViewController;
 

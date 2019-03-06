@@ -80,4 +80,8 @@
     return [self.delegate reminderWithMovieId: movieId];
 }
 
+- (BOOL) checkFavouriteMovie:(Movie *)movie {
+    return [self.delegate checkFavouriteMovie:movie];
+}
+
 @end

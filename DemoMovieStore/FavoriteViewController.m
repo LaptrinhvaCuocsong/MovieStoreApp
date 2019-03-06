@@ -44,37 +44,41 @@
     self.tableView.dataSource = self;
     
     self.searchBar.delegate = self;
+    self.searchBar.showsCancelButton = YES;
     
     UITapGestureRecognizer * tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handlerEventTapView)];
     [self.view addGestureRecognizer: tapGestureRecognizer];
     
     [self.tableView registerNib:[UINib nibWithNibName:MOVIE_ITEM_CELL bundle:nil] forCellReuseIdentifier:MOVIE_ITEM_CELL];
-}
-
-- (void) handlerEventTapView {
-    [self.searchBar resignFirstResponder];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
     self.account = [[AccountManager getInstance] account];
-    if(self.account) {
+    
+    if(self.account && self.account.favouriteMovies) {
         [self setMoviesWithSet: self.account.favouriteMovies];
     }
+    
     if(!self.isFirstReload) {
         [self.tableView reloadData];
     }
     else {
         self.isFirstReload = NO;
     }
+    
     self.isSearchAction = NO;
+}
+
+- (void) handlerEventTapView {
+    [self.searchBar resignFirstResponder];
 }
 
 - (void) setMoviesWithSet: (NSSet *)sets {
     [self.movies removeAllObjects];
-    for(id item in sets) {
-        [self.movies addObject: item];
-    }
+    [self.movies addObjectsFromArray: [sets allObjects]];
 }
 
 #pragma mark <UITableViewDataSource>
@@ -143,6 +147,17 @@
             }
         }
     }
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    [self.searchBar resignFirstResponder];
+    
+    if(self.account && self.account.favouriteMovies) {
+        [self setMoviesWithSet: self.account.favouriteMovies];
+        self.isSearchAction = YES;
+        [self.tableView reloadData];
+    }
+    
 }
 
 @end

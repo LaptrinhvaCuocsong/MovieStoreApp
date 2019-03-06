@@ -12,6 +12,8 @@
 #import "Account.h"
 #import "Reminder.h"
 #import "DateUtils.h"
+#import "NSDictionary+Reminder.h"
+#import "Constants.h"
 
 @interface AppDelegate ()
 
@@ -33,20 +35,6 @@ static NSString * const formatOfReminderDate = @"yyyy/MM/dd HH:mm:ss a";
     return isGranted;
 }
 
-- (void) pushNotificationForReminderMovie: (Reminder *)reminder {
-    Movie * movie = reminder.movie;
-    UNMutableNotificationContent * content = [[UNMutableNotificationContent alloc] init];
-    content.title = movie.title;
-    content.subtitle = [DateUtils stringFromDate:reminder.reminderDate formatDate:formatOfReminderDate];
-    content.sound = [UNNotificationSound defaultSound];
-
-    UNTimeIntervalNotificationTrigger * trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1 repeats:NO];
-    
-    UNNotificationRequest * request = [UNNotificationRequest requestWithIdentifier:[NSString stringWithFormat:@"request_%ld", reminder.movie.identifier] content:content trigger:trigger];
-    
-    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
-}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     managedObjectContext = self.persistentContainer.viewContext;
@@ -66,12 +54,6 @@ static NSString * const formatOfReminderDate = @"yyyy/MM/dd HH:mm:ss a";
     
     [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:UNAuthorizationOptionAlert + UNAuthorizationOptionSound completionHandler:^(BOOL granted, NSError * _Nullable error) {
         isGranted = granted;
-        
-        if(granted) {
-            for(Reminder * reminder in reminderMovies) {
-                [self pushNotificationForReminderMovie: reminder];
-            }
-        }
     }];
     
     [reminderMovies enumerateObjectsUsingBlock:^(Reminder * _Nonnull obj, BOOL * _Nonnull stop) {
@@ -85,6 +67,21 @@ static NSString * const formatOfReminderDate = @"yyyy/MM/dd HH:mm:ss a";
 
 
 - (void) userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+    
+    UNNotificationRequest * request = notification.request;
+    NSDictionary * dic = request.content.userInfo;
+    NSInteger reminderID = [dic reminderId];
+    
+    Account * account = [[AccountManager getInstance] account];
+    if(account && account.reminderMovies) {
+        Reminder * reminder = [[account.reminderMovies filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.identifer = %ld", reminderID]] anyObject];
+        if(reminder) {
+            [account.reminderMovies removeObject: reminder];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:DID_REMOVE_REMINDER object:nil userInfo:nil];
+        }
+    }
+    
     completionHandler(UNNotificationPresentationOptionAlert + UNNotificationPresentationOptionSound);
 }
 

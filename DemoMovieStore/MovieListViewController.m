@@ -20,6 +20,7 @@
 #import "AccountMO+CoreDataClass.h"
 #import "NSMutableDictionary+SettingOfAccount.h"
 #import "DateUtils.h"
+#import "EditProfileViewController.h"
 
 @interface MovieListViewController ()
 
@@ -80,8 +81,8 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     [self setSubViewForMovieListView];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMovieList) name:DID_CHANGE_SETTING object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventRemoveAccount) name:DID_REMOVE_ACCOUNT object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_SAVE_ACCOUNT object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_REMOVE_ACCOUNT object:nil];
     
 }
 
@@ -148,7 +149,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     }
 }
 
-- (void) handlerEventRemoveAccount {
+- (void) handlerEventChangeAccount {
     self.account = [[AccountManager getInstance] account];
     [self reloadViewWhenChangeAccount];
 }
@@ -161,8 +162,6 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         
         self.tableViewCreator = [[TableViewCreator alloc] initWithTableView: _tableView];
         self.tableViewCreator.delegate = self;
-        
-        [_tableView setTranslatesAutoresizingMaskIntoConstraints: NO];
         
         _tableView.delegate = self.tableViewCreator;
         _tableView.dataSource = self.tableViewCreator;
@@ -221,10 +220,47 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     [self dismissViewControllerAnimated:animated completion:completion];
 }
 
+- (void) addConstraintForMovieListView: (UIView *)subView {
+    [subView setTranslatesAutoresizingMaskIntoConstraints: NO];
+    
+    [self.movieListView addConstraint: [NSLayoutConstraint constraintWithItem:self.movieListView
+                                                                    attribute:NSLayoutAttributeLeading
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:subView
+                                                                    attribute:NSLayoutAttributeLeading
+                                                                   multiplier:1.0
+                                                                     constant:0.0]];
+    
+    [self.movieListView addConstraint: [NSLayoutConstraint constraintWithItem:self.movieListView
+                                                                    attribute:NSLayoutAttributeTrailing
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:subView
+                                                                    attribute:NSLayoutAttributeTrailing
+                                                                   multiplier:1.0
+                                                                     constant:0.0]];
+    
+    [self.movieListView addConstraint: [NSLayoutConstraint constraintWithItem: self.movieListView
+                                                                      attribute:NSLayoutAttributeTop
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:subView
+                                                                      attribute:NSLayoutAttributeTop
+                                                                     multiplier:1.0
+                                                                       constant:0.0]];
+    
+    [self.movieListView addConstraint: [NSLayoutConstraint constraintWithItem: self.movieListView
+                                                                    attribute:NSLayoutAttributeBottom
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:subView
+                                                                    attribute:NSLayoutAttributeBottom
+                                                                   multiplier:1.0
+                                                                     constant:0.0]];
+}
+
 - (void) setSubViewForMovieListView {
     NSArray<__kindof UIView *> * subViews = self.movieListView.subviews;
     if(!subViews || subViews.count == 0) {
         [self.movieListView addSubview: self.tableView];
+        [self addConstraintForMovieListView: self.tableView];
         [self setImageButtonChangeMovieList: TABLE_VIEW];
     }
     else {
@@ -232,11 +268,13 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         if([firstView isKindOfClass: [UITableView class]]) {
             [self.tableView removeFromSuperview];
             [self.movieListView addSubview: self.collectionView];
+            [self addConstraintForMovieListView: self.collectionView];
             [self setImageButtonChangeMovieList: COLLECTION_VIEW];
         }
         else {
             [self.collectionView removeFromSuperview];
             [self.movieListView addSubview: self.tableView];
+            [self addConstraintForMovieListView: self.tableView];
             [self setImageButtonChangeMovieList: TABLE_VIEW];
         }
     }
@@ -432,15 +470,36 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     return nil;
 }
 
+- (BOOL) checkFavouriteMovie:(Movie *)movie {
+    if(self.account) {
+        if(self.account.favouriteMovies) {
+            BOOL isFavoutireMovie = NO;
+            for(Movie * m in self.account.favouriteMovies) {
+                if(m.identifier == movie.identifier) {
+                    isFavoutireMovie = YES;
+                    break;
+                }
+            }
+            if(isFavoutireMovie) {
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
 - (void) loadMore {
     self.pageNumber += 1;
     [self excuteGetMovieFromAPI:self.currentURLString showAlert:NO];
 }
 
 - (void) showMessageError {
+    __weak MovieListViewController * weakSelf = self;
     UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"🙏🙏🙏" message:@"You must be logged in to perform this feature" preferredStyle:UIAlertControllerStyleAlert];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Login now" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
+        UIStoryboard * storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        EditProfileViewController * editProfileViewController = [storyBoard instantiateViewControllerWithIdentifier: EDIT_PROFILE_VIEW_CONTROLLER_MAIN_STORYBOARD];
+        [weakSelf presentViewController:editProfileViewController animated:YES completion:nil];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];

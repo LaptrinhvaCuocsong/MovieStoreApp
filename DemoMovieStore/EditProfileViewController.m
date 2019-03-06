@@ -189,7 +189,7 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
 }
 
 - (IBAction)btnCancelButtonPressed:(id)sender {
-    [self.delegate dismissViewController];
+    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (void) setBtnDone {
@@ -245,7 +245,11 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
             }
             if(isSaved) {
                 [[AccountManager getInstance] setAccount: account];
+                
                 dispatch_async(dispatch_get_main_queue(), ^{
+                
+                    [[NSNotificationCenter defaultCenter] postNotificationName:DID_SAVE_ACCOUNT object:nil userInfo:nil];
+                    
                     [weakSelf dismissViewControllerAnimated:NO completion:nil];
                 });
             }

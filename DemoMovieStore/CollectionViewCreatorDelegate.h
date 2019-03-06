@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void) loadMore;
 
+- (BOOL) checkFavouriteMovie: (Movie *)movie;
+
 @end
 
 NS_ASSUME_NONNULL_END
