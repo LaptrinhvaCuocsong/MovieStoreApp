@@ -1,11 +1,3 @@
-//
-//  MovieListViewController.m
-//  DemoMovieStore
-//
-//  Created by RTC-HN149 on 2/18/19.
-//  Copyright © 2019 RTC-HN149. All rights reserved.
-//
-
 #import "MovieListViewController.h"
 #import "TableViewCreator.h"
 #import "CollectionViewCreator.h"
@@ -21,6 +13,7 @@
 #import "NSMutableDictionary+SettingOfAccount.h"
 #import "DateUtils.h"
 #import "EditProfileViewController.h"
+#import "SWRevealViewController.h"
 
 @interface MovieListViewController ()
 
@@ -58,6 +51,8 @@
 
 @property (nonatomic) BOOL alertIsActive;
 
+@property (nonatomic) NSInteger countDown;
+
 @end
 
 typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
@@ -70,6 +65,8 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 - (void) viewDidLoad {
     [super viewDidLoad];
     
+    self.countDown = 0;
+
     self.alertIsActive = NO;
     
     self.isFirstReload = YES;
@@ -84,7 +81,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     
     [self setSubViewForMovieListView];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMovieList) name:DID_CHANGE_SETTING object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeSetting) name:DID_CHANGE_SETTING object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_SAVE_ACCOUNT object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_REMOVE_ACCOUNT object:nil];
     
@@ -303,9 +300,18 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         [weakSelf setMoviesWithMovieReleaseYear: movies];
         
         // set isFavouriteMovie
-        if(weakSelf.account) {
-            if(weakSelf.account.favouriteMovies) {
-                [weakSelf setFavouriteForMovies: movies];
+        if(weakSelf.account && weakSelf.account.favouriteMovies) {
+            for(Movie * movie in weakSelf.movies) {
+                BOOL exist = NO;
+                for(Movie * favouriteMovie in weakSelf.account.favouriteMovies) {
+                    if(movie.identifier == favouriteMovie.identifier) {
+                        exist = YES;
+                        break;
+                    }
+                }
+                if(exist) {
+                    movie.isFavouriteMovie = YES;
+                }
             }
         }
         
@@ -412,6 +418,12 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     }
 }
 
+#pragma mark <EditProfileViewControllerDelegate>
+
+- (void) dismissProfileViewController {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark <TableViewCreatorDelegate, CollectionViewCreatorDelegate>
 
 - (BOOL) isGranted {
@@ -451,6 +463,15 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 }
 
 - (void) pushDetailViewController:(DetailViewController *)detailViewController {
+    if(self.revealViewController) {
+        FrontViewPosition frontViewPosition = self.revealViewController.frontViewPosition;
+        if(frontViewPosition >= FrontViewPositionRight) {
+            [self.revealViewController revealToggle:nil];
+            [self.navigationController pushViewController:detailViewController animated:NO];
+            return;
+        }
+    }
+    
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
@@ -496,14 +517,15 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     [alertController addAction:[UIAlertAction actionWithTitle:@"Login now" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         UIStoryboard * storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         EditProfileViewController * editProfileViewController = [storyBoard instantiateViewControllerWithIdentifier: EDIT_PROFILE_VIEW_CONTROLLER_MAIN_STORYBOARD];
+        editProfileViewController.delegate = weakSelf;
         [weakSelf presentViewController:editProfileViewController animated:YES completion:nil];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void) changeMovieList {
-    self.pageNumber = 1;
+- (void) handlerEventChangeSetting {
+	self.pageNumber = 1;
     [self.movies removeAllObjects];
 }
 

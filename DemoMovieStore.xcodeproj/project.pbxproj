@@ -141,6 +141,7 @@
 		B65FE705221A61D1005762B6 /* TabItemViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabItemViewController.h; sourceTree = "<group>"; };
 		B65FE706221A61D1005762B6 /* TabItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabItemViewController.m; sourceTree = "<group>"; };
 		B6651655221EAF6D007E77BE /* TableViewCreatorDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewCreatorDelegate.h; sourceTree = "<group>"; };
+		B66FF8892232525C00806FA5 /* EditProfileViewControllerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditProfileViewControllerDelegate.h; sourceTree = "<group>"; };
 		B6ACDBDE221E8E10000B34B7 /* Cast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cast.h; sourceTree = "<group>"; };
 		B6ACDBDF221E8E10000B34B7 /* Cast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cast.m; sourceTree = "<group>"; };
 		B6ACDBE1221E8EFC000B34B7 /* CastsCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CastsCreator.h; sourceTree = "<group>"; };
@@ -318,6 +319,7 @@
 				A1C8C1CD221F281B000BDE6C /* CollectionViewCreatorDelegate.h */,
 				B6AE59022223F19D00D068F9 /* MovieItemCellDelegate.h */,
 				A1273746222A09B0005C8D64 /* DetailViewControllerDelegate.h */,
+				B66FF8892232525C00806FA5 /* EditProfileViewControllerDelegate.h */,
 			);
 			name = Delegate;
 			sourceTree = "<group>";

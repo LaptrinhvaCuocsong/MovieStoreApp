@@ -1,11 +1,3 @@
-//
-//  ReminderCollectionViewCell.m
-//  DemoMovieStore
-//
-//  Created by RTC-HN149 on 3/4/19.
-//  Copyright © 2019 RTC-HN149. All rights reserved.
-//
-
 #import "ReminderCollectionViewCell.h"
 #import "ImageHelper.h"
 #import "DateUtils.h"

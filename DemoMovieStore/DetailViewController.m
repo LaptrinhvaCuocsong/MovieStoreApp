@@ -1,11 +1,3 @@
-//
-//  DetailViewController.m
-//  DemoMovieStore
-//
-//  Created by RTC-HN149 on 2/20/19.
-//  Copyright © 2019 RTC-HN149. All rights reserved.
-//
-
 #import "DetailViewController.h"
 #import "DateUtils.h"
 #import "CastCollectionViewCell.h"
@@ -370,6 +362,12 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
     CGFloat heightOfCell = heightOfCollection * 0.85;
     // auto layout for cell
     return CGSizeMake(heightOfCell, heightOfCell);
+}
+
+#pragma mark <EditProfileViewControllerDelegate>
+
+- (void) dismissProfileViewController {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

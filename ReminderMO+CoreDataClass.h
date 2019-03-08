@@ -1,11 +1,3 @@
-//
-//  ReminderMO+CoreDataClass.h
-//  
-//
-//  Created by nguyen manh hung on 3/3/19.
-//
-//
-
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 

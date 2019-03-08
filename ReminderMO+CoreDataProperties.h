@@ -1,11 +1,3 @@
-//
-//  ReminderMO+CoreDataProperties.h
-//  
-//
-//  Created by nguyen manh hung on 3/3/19.
-//
-//
-
 #import "ReminderMO+CoreDataClass.h"
 #import "Reminder.h"
 

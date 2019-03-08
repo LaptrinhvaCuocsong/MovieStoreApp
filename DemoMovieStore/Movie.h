@@ -1,11 +1,3 @@
-//
-//  Movie.h
-//  DemoMovieStore
-//
-//  Created by RTC-HN149 on 2/18/19.
-//  Copyright © 2019 RTC-HN149. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 
 @class Reminder;
@@ -28,7 +20,7 @@
 
 @property (nonatomic) BOOL isFavouriteMovie;
 
-@property (nonatomic) Reminder * reminder;
+@property (nonatomic) Reminder * _Nullable reminder;
 
 - (instancetype _Nullable) initWithIdentifier: (NSUInteger)identifier voteAverage: (float)voteAverage title: (NSString * _Nonnull)title posterPath: (NSString * _Nullable)posterPath adult: (BOOL)adult overview: (NSString * _Nullable)overview releaseDate: (NSDate * _Nonnull)releaseDate;
 

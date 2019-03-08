@@ -1,11 +1,3 @@
-//
-//  AccountMO+CoreDataProperties.h
-//  
-//
-//  Created by nguyen manh hung on 3/3/19.
-//
-//
-
 #import "AccountMO+CoreDataClass.h"
 #import "Account.h"
 

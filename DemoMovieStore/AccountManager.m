@@ -1,11 +1,3 @@
-//
-//  AccountManager.m
-//  DemoMovieStore
-//
-//  Created by nguyen manh hung on 2/23/19.
-//  Copyright © 2019 RTC-HN149. All rights reserved.
-//
-
 #import "AccountManager.h"
 #import "AccountMO+CoreDataClass.h"
 

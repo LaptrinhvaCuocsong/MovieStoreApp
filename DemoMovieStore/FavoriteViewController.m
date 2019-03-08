@@ -1,11 +1,3 @@
-//
-//  FavoriteViewController.m
-//  DemoMovieStore
-//
-//  Created by RTC-HN149 on 2/18/19.
-//  Copyright © 2019 RTC-HN149. All rights reserved.
-//
-
 #import "FavoriteViewController.h"
 #import "Movie.h"
 #import "AccountManager.h"
@@ -25,8 +17,6 @@
 @property (nonatomic) BOOL isFirstReload;
 
 @property (nonatomic) Account * account;
-
-@property (nonatomic) BOOL isSearchAction;
 
 @end
 
@@ -68,8 +58,6 @@
     else {
         self.isFirstReload = NO;
     }
-    
-    self.isSearchAction = NO;
 }
 
 - (void) handlerEventTapView {
@@ -114,39 +102,25 @@
 
 #pragma mark <UITableViewDelegate>
 
-- (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if(self.isSearchAction) {
-        cell.layer.opacity = 0.5;
-        __block CGRect frameOfCell = cell.frame;
-        frameOfCell.origin.y += 50;
-        cell.frame = frameOfCell;
-        [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-            frameOfCell.origin.y -= 50;
-            cell.frame = frameOfCell;
-            cell.layer.opacity = 1.0;
-        } completion:nil];
-    }
-}
-
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 150;
 }
 
 #pragma mark <UISearchBarDelegate>
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    [self.searchBar resignFirstResponder];
+- (void) searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
     NSString * format = [NSString stringWithFormat:@"'%@%@%@'", @"*", searchBar.text, @"*"];
-    if(self.account) {
-        if(self.account.favouriteMovies) {
-            NSSet<Movie *> * sets = [self.account.favouriteMovies filteredSetUsingPredicate: [NSPredicate predicateWithFormat: [NSString stringWithFormat:@"SELF.title LIKE[c] %@", format]]];
-            if(sets) {
-                [self setMoviesWithSet: sets];
-                self.isSearchAction = YES;
-                [self.tableView reloadData];
-            }
+    if(self.account && self.account.favouriteMovies) {
+        NSSet<Movie *> * sets = [self.account.favouriteMovies filteredSetUsingPredicate: [NSPredicate predicateWithFormat: [NSString stringWithFormat:@"SELF.title LIKE[c] %@", format]]];
+        if(sets) {
+            [self setMoviesWithSet: sets];
+            [self.tableView reloadData];
         }
     }
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [self.searchBar resignFirstResponder];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
@@ -154,7 +128,6 @@
     
     if(self.account && self.account.favouriteMovies) {
         [self setMoviesWithSet: self.account.favouriteMovies];
-        self.isSearchAction = YES;
         [self.tableView reloadData];
     }
     

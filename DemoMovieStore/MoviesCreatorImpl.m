@@ -1,11 +1,3 @@
-//
-//  MoviesCreatorImpl.m
-//  DemoMovieStore
-//
-//  Created by RTC-HN149 on 2/18/19.
-//  Copyright © 2019 RTC-HN149. All rights reserved.
-//
-
 #import "MoviesCreatorImpl.h"
 #import <AFNetworking.h>
 #import "NSDictionary+Movie.h"
@@ -17,6 +9,8 @@
 @end
 
 @implementation MoviesCreatorImpl
+
+static const NSInteger TIME_GET_API_MAX = 10;
 
 - (void) createMoviesWithPageNumber: (NSUInteger) pageNumber success: (void(^ _Nonnull)(NSMutableArray<Movie *> * _Nonnull, NSInteger))success failure: (void(^ _Nonnull)(void))failure urlString: (NSString * _Nonnull)urlString {
     NSMutableArray * movies = [[NSMutableArray alloc] init];
