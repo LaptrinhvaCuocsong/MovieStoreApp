@@ -56,6 +56,8 @@
 
 @property (nonatomic) NSString * currentURLString;
 
+@property (nonatomic) BOOL alertIsActive;
+
 @end
 
 typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
@@ -67,6 +69,8 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (void) viewDidLoad {
     [super viewDidLoad];
+    
+    self.alertIsActive = NO;
     
     self.isFirstReload = YES;
     
@@ -109,7 +113,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
             self.currentURLString = API_GET_MOVIE_POPULAR_LIST;
         }
         
-        [self excuteGetMovieFromAPI: self.currentURLString showAlert:YES];
+        [self excuteGetMovieFromAPI: self.currentURLString showAlert:YES loadMore:NO];
     }
 }
 
@@ -117,26 +121,28 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
 }
 
+- (void) setFavouriteForMovies: (NSMutableArray *)movies {
+    for(Movie * movie in movies) {
+        BOOL exist = NO;
+        for(Movie * favouriteMovie in self.account.favouriteMovies) {
+            if(movie.identifier == favouriteMovie.identifier) {
+                exist = YES;
+                break;
+            }
+        }
+        if(exist) {
+            movie.isFavouriteMovie = YES;
+        }
+        else {
+            movie.isFavouriteMovie = NO;
+        }
+    }
+}
+
 - (void) reloadViewWhenChangeAccount {
     if(self.movieListView.subviews) {
         if(self.account) {
-            if(self.account.favouriteMovies) {
-                for(Movie * movie in self.movies) {
-                    BOOL exist = NO;
-                    for(Movie * favouriteMovie in self.account.favouriteMovies) {
-                        if(movie.identifier == favouriteMovie.identifier) {
-                            exist = YES;
-                            break;
-                        }
-                    }
-                    if(exist) {
-                        movie.isFavouriteMovie = YES;
-                    }
-                    else {
-                        movie.isFavouriteMovie = NO;
-                    }
-                }
-            }
+            [self setFavouriteForMovies: self.movies];
         }
         else {
             for(Movie * item in self.movies) {
@@ -199,7 +205,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     id subView = [self.movieListView.subviews firstObject];
     [[subView refreshControl] beginRefreshing];
     [self.movies removeAllObjects];
-    [self excuteGetMovieFromAPI: self.currentURLString showAlert:NO];
+    [self excuteGetMovieFromAPI: self.currentURLString showAlert:NO loadMore:NO];
 }
 
 - (UIAlertController *) alertViewController {
@@ -280,12 +286,13 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     }
 }
 
-- (void) excuteGetMovieFromAPI: (NSString *)urlString showAlert: (BOOL)showAlert {
+- (void) excuteGetMovieFromAPI: (NSString *)urlString showAlert: (BOOL)showAlert loadMore: (BOOL)loadMore {
     if(showAlert) {
         [self presentViewController:self.alertViewController animated:YES completion:nil];
+        self.alertIsActive = YES;
     }
     
-    NSInteger limitMovieOfView = self.pageNumber * 20;
+    NSInteger limitMovieOfView = (loadMore)?(self.pageNumber * 20):20;
     
     __weak MovieListViewController * weakSelf = self;
     
@@ -295,29 +302,18 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         
         [weakSelf setMoviesWithMovieReleaseYear: movies];
         
-        [weakSelf.movies addObjectsFromArray: [NSArray arrayWithArray: movies]];
-        
         // set isFavouriteMovie
         if(weakSelf.account) {
             if(weakSelf.account.favouriteMovies) {
-                for(Movie * movie in weakSelf.movies) {
-                    BOOL exist = NO;
-                    for(Movie * favouriteMovie in weakSelf.account.favouriteMovies) {
-                        if(movie.identifier == favouriteMovie.identifier) {
-                            exist = YES;
-                            break;
-                        }
-                    }
-                    if(exist) {
-                        movie.isFavouriteMovie = YES;
-                    }
-                }
+                [weakSelf setFavouriteForMovies: movies];
             }
         }
         
+        [weakSelf.movies addObjectsFromArray: [NSArray arrayWithArray: movies]];
+        
         if(weakSelf.movies.count < limitMovieOfView && weakSelf.pageNumber < totalPages) {
             weakSelf.pageNumber ++;
-            [weakSelf excuteGetMovieFromAPI: urlString showAlert:NO];
+            [weakSelf excuteGetMovieFromAPI: urlString showAlert:NO loadMore:NO];
         }
         else {
             if(weakSelf.movies.count > limitMovieOfView) {
@@ -332,8 +328,9 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
                 [subview setMovies: weakSelf.movies];
                 [subview reloadData];
                 
-                if(showAlert) {
+                if(weakSelf.alertIsActive) {
                     [weakSelf.alertViewController dismissViewControllerAnimated:NO completion:nil];
+                    weakSelf.alertIsActive = NO;
                 }
                 
                 if([[subview refreshControl] isRefreshing]) {
@@ -355,7 +352,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
                 self.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"💔💔💔" message:@"We can't load movie collection" preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                     [self dismissViewControllerAnimated:NO completion:nil];
-                    [self excuteGetMovieFromAPI: urlString showAlert:YES];
+                    [self excuteGetMovieFromAPI: urlString showAlert:YES loadMore:NO];
                 }];
                 [self.alertErrorViewController addAction: tryAgain];
                 
@@ -490,7 +487,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (void) loadMore {
     self.pageNumber += 1;
-    [self excuteGetMovieFromAPI:self.currentURLString showAlert:NO];
+    [self excuteGetMovieFromAPI:self.currentURLString showAlert:NO loadMore:YES];
 }
 
 - (void) showMessageError {
@@ -506,6 +503,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 }
 
 - (void) changeMovieList {
+    self.pageNumber = 1;
     [self.movies removeAllObjects];
 }
 
