@@ -1,11 +1,3 @@
-//
-//  MovieListViewController.m
-//  DemoMovieStore
-//
-//  Created by RTC-HN149 on 2/18/19.
-//  Copyright © 2019 RTC-HN149. All rights reserved.
-//
-
 #import "MovieListViewController.h"
 #import "TableViewCreator.h"
 #import "CollectionViewCreator.h"
@@ -21,6 +13,7 @@
 #import "NSMutableDictionary+SettingOfAccount.h"
 #import "DateUtils.h"
 #import "EditProfileViewController.h"
+#import "SWRevealViewController.h"
 
 @interface MovieListViewController ()
 
@@ -56,6 +49,10 @@
 
 @property (nonatomic) NSString * currentURLString;
 
+@property (nonatomic) BOOL alertIsActive;
+
+@property (nonatomic) NSInteger countDown;
+
 @end
 
 typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
@@ -67,6 +64,10 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (void) viewDidLoad {
     [super viewDidLoad];
+    
+    self.countDown = 0;
+    
+    self.alertIsActive = NO;
     
     self.isFirstReload = YES;
     
@@ -80,7 +81,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     
     [self setSubViewForMovieListView];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeMovieList) name:DID_CHANGE_SETTING object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeSetting) name:DID_CHANGE_SETTING object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_SAVE_ACCOUNT object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_REMOVE_ACCOUNT object:nil];
     
@@ -109,7 +110,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
             self.currentURLString = API_GET_MOVIE_POPULAR_LIST;
         }
         
-        [self excuteGetMovieFromAPI: self.currentURLString showAlert:YES];
+        [self excuteGetMovieFromAPI: self.currentURLString showAlert:YES loadMore:NO];
     }
 }
 
@@ -199,7 +200,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     id subView = [self.movieListView.subviews firstObject];
     [[subView refreshControl] beginRefreshing];
     [self.movies removeAllObjects];
-    [self excuteGetMovieFromAPI: self.currentURLString showAlert:NO];
+    [self excuteGetMovieFromAPI: self.currentURLString showAlert:NO loadMore:NO];
 }
 
 - (UIAlertController *) alertViewController {
@@ -280,12 +281,20 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     }
 }
 
-- (void) excuteGetMovieFromAPI: (NSString *)urlString showAlert: (BOOL)showAlert {
+- (void) startCountDown {
+    __weak MovieListViewController * weakSelf = self;
+    NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        weakSelf.countDown += 1;
+    }];
+}
+
+- (void) excuteGetMovieFromAPI: (NSString *)urlString showAlert: (BOOL)showAlert loadMore: (BOOL)loadMore {
     if(showAlert) {
         [self presentViewController:self.alertViewController animated:YES completion:nil];
+        self.alertIsActive = YES;
     }
     
-    NSInteger limitMovieOfView = self.pageNumber * 20;
+    NSInteger limitMovieOfView = (loadMore)?(self.pageNumber * 20):20;
     
     __weak MovieListViewController * weakSelf = self;
     
@@ -298,26 +307,24 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         [weakSelf.movies addObjectsFromArray: [NSArray arrayWithArray: movies]];
         
         // set isFavouriteMovie
-        if(weakSelf.account) {
-            if(weakSelf.account.favouriteMovies) {
-                for(Movie * movie in weakSelf.movies) {
-                    BOOL exist = NO;
-                    for(Movie * favouriteMovie in weakSelf.account.favouriteMovies) {
-                        if(movie.identifier == favouriteMovie.identifier) {
-                            exist = YES;
-                            break;
-                        }
+        if(weakSelf.account && weakSelf.account.favouriteMovies) {
+            for(Movie * movie in weakSelf.movies) {
+                BOOL exist = NO;
+                for(Movie * favouriteMovie in weakSelf.account.favouriteMovies) {
+                    if(movie.identifier == favouriteMovie.identifier) {
+                        exist = YES;
+                        break;
                     }
-                    if(exist) {
-                        movie.isFavouriteMovie = YES;
-                    }
+                }
+                if(exist) {
+                    movie.isFavouriteMovie = YES;
                 }
             }
         }
         
         if(weakSelf.movies.count < limitMovieOfView && weakSelf.pageNumber < totalPages) {
             weakSelf.pageNumber ++;
-            [weakSelf excuteGetMovieFromAPI: urlString showAlert:NO];
+            [weakSelf excuteGetMovieFromAPI: urlString showAlert:NO loadMore:NO];
         }
         else {
             if(weakSelf.movies.count > limitMovieOfView) {
@@ -332,7 +339,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
                 [subview setMovies: weakSelf.movies];
                 [subview reloadData];
                 
-                if(showAlert) {
+                if(weakSelf.alertIsActive) {
                     [weakSelf.alertViewController dismissViewControllerAnimated:NO completion:nil];
                 }
                 
@@ -355,7 +362,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
                 self.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"💔💔💔" message:@"We can't load movie collection" preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
                     [self dismissViewControllerAnimated:NO completion:nil];
-                    [self excuteGetMovieFromAPI: urlString showAlert:YES];
+                    [self excuteGetMovieFromAPI: urlString showAlert:YES loadMore:NO];
                 }];
                 [self.alertErrorViewController addAction: tryAgain];
                 
@@ -415,6 +422,12 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     }
 }
 
+#pragma mark <EditProfileViewControllerDelegate>
+
+- (void) dismissProfileViewController {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark <TableViewCreatorDelegate, CollectionViewCreatorDelegate>
 
 - (BOOL) isGranted {
@@ -454,6 +467,15 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 }
 
 - (void) pushDetailViewController:(DetailViewController *)detailViewController {
+    if(self.revealViewController) {
+        FrontViewPosition frontViewPosition = self.revealViewController.frontViewPosition;
+        if(frontViewPosition >= FrontViewPositionRight) {
+            [self.revealViewController revealToggle:nil];
+            [self.navigationController pushViewController:detailViewController animated:NO];
+            return;
+        }
+    }
+    
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
@@ -490,7 +512,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (void) loadMore {
     self.pageNumber += 1;
-    [self excuteGetMovieFromAPI:self.currentURLString showAlert:NO];
+    [self excuteGetMovieFromAPI:self.currentURLString showAlert:NO loadMore:YES];
 }
 
 - (void) showMessageError {
@@ -499,13 +521,15 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     [alertController addAction:[UIAlertAction actionWithTitle:@"Login now" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         UIStoryboard * storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         EditProfileViewController * editProfileViewController = [storyBoard instantiateViewControllerWithIdentifier: EDIT_PROFILE_VIEW_CONTROLLER_MAIN_STORYBOARD];
+        editProfileViewController.delegate = weakSelf;
         [weakSelf presentViewController:editProfileViewController animated:YES completion:nil];
     }]];
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void) changeMovieList {
+- (void) handlerEventChangeSetting {
+    [self.movies removeAllObjects];
     [self.movies removeAllObjects];
 }
 

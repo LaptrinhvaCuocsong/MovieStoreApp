@@ -1,11 +1,3 @@
-//
-//  RearViewController.m
-//  DemoMovieStore
-//
-//  Created by RTC-HN149 on 2/18/19.
-//  Copyright © 2019 RTC-HN149. All rights reserved.
-//
-
 #import "RearViewController.h"
 #import "AccountManager.h"
 #import "Account.h"
@@ -38,7 +30,7 @@
 
 @property (nonatomic) Account * account;
 
-@property (nonatomic) NSArray<Reminder *> * reminderMoves;
+@property (nonatomic) NSArray<Reminder *> * reminderMovies;
 
 @end
 
@@ -51,58 +43,65 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setViewForController) name:DID_REMOVE_ACCOUNT object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setViewForController) name:DID_SAVE_ACCOUNT object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_REMOVE_ACCOUNT object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_SAVE_ACCOUNT object:nil];
     [[NSNotificationCenter defaultCenter] addObserver: self selector:@selector(handlerEventRemoveReminder) name:DID_REMOVE_REMINDER object:nil];
     
     [self setCollectionView];
+    
+    self.btnEdit.layer.cornerRadius = 4;
+    self.btnEdit.clipsToBounds = YES;
+    
+    self.btnShowReminder.layer.cornerRadius = 4;
+    self.btnShowReminder.clipsToBounds = YES;
+    
+    
 }
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [self setReminderMovies];
+    self.account = [[AccountManager getInstance] account];
     
     [self setViewForController];
+
+    [self setReminderMovies];
 }
 
 - (void) dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver: self];
 }
 
-- (void) handlerEventRemoveReminder {
+- (void) handlerEventChangeAccount {
     self.account = [[AccountManager getInstance] account];
     
+    [self setViewForController];
+}
+
+- (void) handlerEventRemoveReminder {
     [self setReminderMovies];
     
     [self.collectionView reloadData];
 }
 
 - (void) setViewForController {
-    self.account = [[AccountManager getInstance] account];
-    
     [self setAvartarImage];
     self.txtName.text = (self.account)?self.account.name:@"Your name";
     [self setTxtBithDay];
     self.txtEmail.text = (self.account)?self.account.email:@"Your email";
     [self setGender];
-    [self setBtnEdit];
-    [self setBtnShowReminder];
-    
     [self setReminderMovies];
-    
+    [self setBtnShowReminder];
     [self.collectionView reloadData];
 }
 
 - (void) setReminderMovies {
-    self.reminderMoves = nil;
+    self.reminderMovies = nil;
     
-    if(self.account) {
-        if(self.account.reminderMovies) {
-            NSSortDescriptor * sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"reminderDate" ascending:YES];
-            NSArray<NSSortDescriptor *> * array = @[sortDescriptor];
-            self.reminderMoves = [self.account.reminderMovies sortedArrayUsingDescriptors: array];
-        }
+    if(self.account && self.account.reminderMovies) {
+        NSSortDescriptor * sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"reminderDate" ascending:YES];
+        NSArray<NSSortDescriptor *> * array = @[sortDescriptor];
+        self.reminderMovies = [self.account.reminderMovies sortedArrayUsingDescriptors: array];
     }
 }
 
@@ -189,14 +188,19 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 }
 
 - (void) setBtnShowReminder {
-    self.btnShowReminder.layer.cornerRadius = 4;
-    self.btnShowReminder.clipsToBounds = YES;
+    if(!self.reminderMovies || self.reminderMovies.count == 0) {
+        self.btnShowReminder.layer.opacity = 0.0;
+    }
+    else {
+        self.btnShowReminder.layer.opacity = 1.0;
+    }
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if([segueForwardFromRearToEditProfile isEqualToString: segue.identifier]) {
         __weak EditProfileViewController * editProfileViewController = segue.destinationViewController;
         editProfileViewController.account = self.account;
+        editProfileViewController.delegate = self;
     }
 }
 
@@ -219,7 +223,7 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 
 #pragma mark <EditProfileViewControllerDelegate>
 
-- (void) dismissViewController {
+- (void) dismissProfileViewController {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -230,8 +234,8 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 }
 
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if(self.reminderMoves) {
-        NSInteger count = [self.reminderMoves count];
+    if(self.reminderMovies) {
+        NSInteger count = [self.reminderMovies count];
         return (count > 2)?2:count;
     }
     return 0;
@@ -239,7 +243,7 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     ReminderCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:REMINDER_COLLECTION_VIEW_CELL forIndexPath:indexPath];
-    [cell setReminderCollectionViewCell: [self.reminderMoves objectAtIndex: indexPath.item]];
+    [cell setReminderCollectionViewCell: [self.reminderMovies objectAtIndex: indexPath.item]];
     return cell;
 }
 

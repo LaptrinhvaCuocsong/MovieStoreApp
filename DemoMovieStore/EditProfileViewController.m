@@ -1,11 +1,3 @@
-//
-//  EditProfileViewController.m
-//  DemoMovieStore
-//
-//  Created by RTC-HN149 on 2/22/19.
-//  Copyright © 2019 RTC-HN149. All rights reserved.
-//
-
 #import "EditProfileViewController.h"
 #import "DateUtils.h"
 #import "Constants.h"
@@ -143,11 +135,34 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
     self.txtName.delegate = self;
 }
 
+- (void) handlerEventDeleteValueOfTxtBirthDay {
+    self.txtBirthday.text = @"";
+}
+
+- (void) handlerEventFinishSelectValueOfBirthDay {
+    [self.txtBirthday resignFirstResponder];
+}
+
+- (UIToolbar *) toolBar {
+    UIToolbar * toolBar = [[UIToolbar alloc] initWithFrame: CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 40)];
+    UIBarButtonItem * btnDelete = [[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(handlerEventDeleteValueOfTxtBirthDay)];
+    [btnDelete setTintColor: [UIColor whiteColor]];
+    UIBarButtonItem * btnFlex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    UIBarButtonItem * btnDone = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(handlerEventFinishSelectValueOfBirthDay)];
+    [btnDone setTintColor: [UIColor whiteColor]];
+    NSArray<UIBarButtonItem *> * items = @[btnDelete, btnFlex, btnDone];
+    [toolBar setItems:items animated:NO];
+    toolBar.barTintColor = [UIColor blackColor];
+    return toolBar;
+}
+
 - (UIDatePicker *) datePicker {
     if(!_datePicker) {
         _datePicker = [[UIDatePicker alloc] init];
         _datePicker.datePickerMode = UIDatePickerModeDate;
         [_datePicker addTarget:self action:@selector(changeValueOfTxtBirthday) forControlEvents:UIControlEventValueChanged];
+        _datePicker.maximumDate = [NSDate date];
+        _datePicker.backgroundColor = [UIColor whiteColor];
     }
     return _datePicker;
 }
@@ -163,7 +178,8 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
     else {
         self.txtBirthday.text = @"";
     }
-    self.txtBirthday.inputView = self.datePicker;
+    self.txtBirthday.inputView = [self datePicker];
+    self.txtBirthday.inputAccessoryView = [self toolBar];
 }
 
 - (void) setTxtEmail {
@@ -216,7 +232,7 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
         NSRange range = NSMakeRange(0, email.length);
         NSRange rangeOfMatch = [regex rangeOfFirstMatchInString:email options:0 range:range];
         if(!NSEqualRanges(rangeOfMatch, range)) {
-            [message appendString: @"Email format is yyyy/MM/dd"];
+            [message appendString: @"Email format is xxxx@xx.xx"];
         }
     }
     GENDER gender = self.segmentedControlGender.selectedSegmentIndex;
@@ -250,7 +266,12 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
                 
                     [[NSNotificationCenter defaultCenter] postNotificationName:DID_SAVE_ACCOUNT object:nil userInfo:nil];
                     
-                    [weakSelf dismissViewControllerAnimated:NO completion:nil];
+                    if(weakSelf.delegate) {
+                        [weakSelf.delegate dismissProfileViewController];
+                    }
+                    else {
+                        [weakSelf dismissViewControllerAnimated:NO completion:nil];
+                    }
                 });
             }
             else {

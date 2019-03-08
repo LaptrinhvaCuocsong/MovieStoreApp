@@ -1,11 +1,3 @@
-//
-//  ReminderMO+CoreDataProperties.m
-//  
-//
-//  Created by nguyen manh hung on 3/3/19.
-//
-//
-
 #import "ReminderMO+CoreDataProperties.h"
 #import "AppDelegate.h"
 #import "MovieMO+CoreDataClass.h"
