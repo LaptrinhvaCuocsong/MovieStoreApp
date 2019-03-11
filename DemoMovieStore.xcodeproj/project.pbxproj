@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		6808C810C4B59C67FABC50C4 /* libPods-DemoMovieStore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7EFCB16602FE85762432E4F /* libPods-DemoMovieStore.a */; };
-		A1022EEA2234AF26005DFCA0 /* IndicatorViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A1022EE92234AF26005DFCA0 /* IndicatorViewCell.xib */; };
 		A109292E222BD5770047238D /* Reminder.m in Sources */ = {isa = PBXBuildFile; fileRef = A109292D222BD5770047238D /* Reminder.m */; };
 		A18A28C3221B372100EA3E88 /* UITableView+Extent.m in Sources */ = {isa = PBXBuildFile; fileRef = A18A28C2221B372100EA3E88 /* UITableView+Extent.m */; };
 		A18A28C6221B374900EA3E88 /* UICollectionView+Extent.m in Sources */ = {isa = PBXBuildFile; fileRef = A18A28C5221B374900EA3E88 /* UICollectionView+Extent.m */; };
@@ -22,6 +21,10 @@
 		A1FC7AF1222071C100972C9B /* AccountManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A1FC7AF0222071C100972C9B /* AccountManager.m */; };
 		B61976D9221EE99E003A9F59 /* CastCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B61976D7221EE99E003A9F59 /* CastCollectionViewCell.m */; };
 		B61976DA221EE99E003A9F59 /* CastCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B61976D8221EE99E003A9F59 /* CastCollectionViewCell.xib */; };
+		B626A161223604E300E332DF /* IndicatorTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B626A160223604E300E332DF /* IndicatorTableViewCell.xib */; };
+		B626A16422360E9C00E332DF /* IndicatorTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B626A16322360E9C00E332DF /* IndicatorTableViewCell.m */; };
+		B626A1682236277600E332DF /* IndicatorCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B626A1662236277600E332DF /* IndicatorCollectionViewCell.m */; };
+		B626A1692236277600E332DF /* IndicatorCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B626A1672236277600E332DF /* IndicatorCollectionViewCell.xib */; };
 		B63BD691221D316F00B80DE0 /* CustomCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = B63BD690221D316F00B80DE0 /* CustomCollectionViewLayout.m */; };
 		B63BD694221D343E00B80DE0 /* MovieCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B63BD693221D343E00B80DE0 /* MovieCollectionViewCell.m */; };
 		B63BD696221D345A00B80DE0 /* MovieCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B63BD695221D345A00B80DE0 /* MovieCollectionViewCell.xib */; };
@@ -69,7 +72,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A1022EE92234AF26005DFCA0 /* IndicatorViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = IndicatorViewCell.xib; sourceTree = "<group>"; };
 		A109292C222BD5770047238D /* Reminder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reminder.h; sourceTree = "<group>"; };
 		A109292D222BD5770047238D /* Reminder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Reminder.m; sourceTree = "<group>"; };
 		A1273746222A09B0005C8D64 /* DetailViewControllerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewControllerDelegate.h; sourceTree = "<group>"; };
@@ -99,6 +101,12 @@
 		B61976D6221EE99E003A9F59 /* CastCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CastCollectionViewCell.h; sourceTree = "<group>"; };
 		B61976D7221EE99E003A9F59 /* CastCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CastCollectionViewCell.m; sourceTree = "<group>"; };
 		B61976D8221EE99E003A9F59 /* CastCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CastCollectionViewCell.xib; sourceTree = "<group>"; };
+		B626A160223604E300E332DF /* IndicatorTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IndicatorTableViewCell.xib; sourceTree = "<group>"; };
+		B626A16222360E9C00E332DF /* IndicatorTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IndicatorTableViewCell.h; sourceTree = "<group>"; };
+		B626A16322360E9C00E332DF /* IndicatorTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IndicatorTableViewCell.m; sourceTree = "<group>"; };
+		B626A1652236277600E332DF /* IndicatorCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IndicatorCollectionViewCell.h; sourceTree = "<group>"; };
+		B626A1662236277600E332DF /* IndicatorCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IndicatorCollectionViewCell.m; sourceTree = "<group>"; };
+		B626A1672236277600E332DF /* IndicatorCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IndicatorCollectionViewCell.xib; sourceTree = "<group>"; };
 		B63BD68F221D316F00B80DE0 /* CustomCollectionViewLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCollectionViewLayout.h; sourceTree = "<group>"; };
 		B63BD690221D316F00B80DE0 /* CustomCollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCollectionViewLayout.m; sourceTree = "<group>"; };
 		B63BD692221D343E00B80DE0 /* MovieCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MovieCollectionViewCell.h; sourceTree = "<group>"; };
@@ -339,6 +347,10 @@
 				B659D438222D088300AA047C /* ReminderCollectionViewCell.m */,
 				B659D44A222D309700AA047C /* ReminderTableViewCell.h */,
 				B659D44B222D309700AA047C /* ReminderTableViewCell.m */,
+				B626A16222360E9C00E332DF /* IndicatorTableViewCell.h */,
+				B626A16322360E9C00E332DF /* IndicatorTableViewCell.m */,
+				B626A1652236277600E332DF /* IndicatorCollectionViewCell.h */,
+				B626A1662236277600E332DF /* IndicatorCollectionViewCell.m */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -373,12 +385,13 @@
 		B6C90D4B221ABCA200CFE10B /* Xib */ = {
 			isa = PBXGroup;
 			children = (
+				B626A1672236277600E332DF /* IndicatorCollectionViewCell.xib */,
 				B659D44C222D309700AA047C /* ReminderTableViewCell.xib */,
 				B659D439222D088300AA047C /* ReminderCollectionViewCell.xib */,
 				B61976D8221EE99E003A9F59 /* CastCollectionViewCell.xib */,
 				B6C90D26221AA61500CFE10B /* MovieItemCell.xib */,
 				B63BD695221D345A00B80DE0 /* MovieCollectionViewCell.xib */,
-				A1022EE92234AF26005DFCA0 /* IndicatorViewCell.xib */,
+				B626A160223604E300E332DF /* IndicatorTableViewCell.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -552,10 +565,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B626A1692236277600E332DF /* IndicatorCollectionViewCell.xib in Resources */,
 				B63BD696221D345A00B80DE0 /* MovieCollectionViewCell.xib in Resources */,
 				B61976DA221EE99E003A9F59 /* CastCollectionViewCell.xib in Resources */,
 				B65FE6E4221A53F5005762B6 /* LaunchScreen.storyboard in Resources */,
-				A1022EEA2234AF26005DFCA0 /* IndicatorViewCell.xib in Resources */,
+				B626A161223604E300E332DF /* IndicatorTableViewCell.xib in Resources */,
 				B659D44E222D309700AA047C /* ReminderTableViewCell.xib in Resources */,
 				B6C90D27221AA61500CFE10B /* MovieItemCell.xib in Resources */,
 				B65FE6E1221A53F5005762B6 /* Assets.xcassets in Resources */,
@@ -595,6 +609,7 @@
 				B6E332FD2220027800BD969D /* EditProfileViewController.m in Sources */,
 				A1EF8AEA222B9A2200A5CA20 /* ReminderMO+CoreDataProperties.m in Sources */,
 				B659D4A6222FBE0300AA047C /* NSDictionary+Reminder.m in Sources */,
+				B626A16422360E9C00E332DF /* IndicatorTableViewCell.m in Sources */,
 				B65FE703221A61B1005762B6 /* AboutViewController.m in Sources */,
 				B6C90D21221A98BC00CFE10B /* CollectionViewCreator.m in Sources */,
 				A1FC7AEE2220646E00972C9B /* Account.m in Sources */,
@@ -602,6 +617,7 @@
 				B6ACDBE0221E8E10000B34B7 /* Cast.m in Sources */,
 				A1EF8AE8222B9A2200A5CA20 /* MovieMO+CoreDataProperties.m in Sources */,
 				A1EF8AE9222B9A2200A5CA20 /* ReminderMO+CoreDataClass.m in Sources */,
+				B626A1682236277600E332DF /* IndicatorCollectionViewCell.m in Sources */,
 				B6C90D1E221A98AF00CFE10B /* TableViewCreator.m in Sources */,
 				B61976D9221EE99E003A9F59 /* CastCollectionViewCell.m in Sources */,
 				A1EF8AE6222B9A2200A5CA20 /* MovieMO+CoreDataClass.m in Sources */,

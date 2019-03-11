@@ -12,7 +12,9 @@ NSString * const REMINDER_COLLECTION_VIEW_CELL = @"ReminderCollectionViewCell";
 
 NSString * const REMINDER_TABLE_VIEW_CELL = @"ReminderTableViewCell";
 
-NSString * const INDICATOR_VIEW_CELL = @"IndicatorViewCell";
+NSString * const INDICATOR_TABLE_VIEW_CELL = @"IndicatorTableViewCell";
+
+NSString * const INDICATOR_COLLECTION_VIEW_CELL = @"IndicatorCollectionViewCell";
 
 NSString * const DETAIL_VIEW_CONTROLLER_MAIN_STORYBOARD = @"DetailViewController";
 

@@ -6,6 +6,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UICollectionView (Extent)
 
+@property (nonatomic) BOOL loadingData;
+
 @property (nonatomic) NSArray<Movie *> * movies;
 
 @end

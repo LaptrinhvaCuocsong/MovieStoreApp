@@ -1,4 +1,5 @@
 #import "CustomCollectionViewLayout.h"
+#import "UICollectionView+Extent.h"
 
 @interface CustomCollectionViewLayout()
 
@@ -35,40 +36,53 @@
     float yOffset = 10.0;
     NSInteger numberOfSection = [self.collectionView.dataSource numberOfSectionsInCollectionView:self.collectionView];
     for(NSInteger i = 0; i < numberOfSection; i++) {
-        NSInteger numberOfItemInSection = [self.collectionView.dataSource collectionView:self.collectionView numberOfItemsInSection:i];
-        for(NSInteger j = 0; j < numberOfItemInSection; j ++) {
-            UICollectionViewLayoutAttributes * attribute = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath: [NSIndexPath indexPathForItem:j inSection:i]];
-            NSInteger a = j % numberOfCollumn;
-            float x = xOffsets[a];
-            attribute.frame = CGRectMake(x, yOffset, self.sizeOfCell.width, self.sizeOfCell.height);
-            
-            if(a == numberOfCollumn - 1 || j == numberOfItemInSection - 1) {
-                yOffset += CGRectGetHeight(attribute.frame) + grap;
+        if(i == 0) {
+            NSInteger numberOfItemInSection = [self.collectionView.dataSource collectionView:self.collectionView numberOfItemsInSection:i];
+            for(NSInteger j = 0; j < numberOfItemInSection; j ++) {
+                UICollectionViewLayoutAttributes * attribute = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath: [NSIndexPath indexPathForItem:j inSection:i]];
+                NSInteger a = j % numberOfCollumn;
+                float x = xOffsets[a];
+                attribute.frame = CGRectMake(x, yOffset, self.sizeOfCell.width, self.sizeOfCell.height);
+                
+                if(a == numberOfCollumn - 1 || j == numberOfItemInSection - 1) {
+                    yOffset += CGRectGetHeight(attribute.frame) + grap;
+                }
+                
+                [self.attributes addObject: attribute];
             }
-            
+        }
+        else {
+            UICollectionViewLayoutAttributes * attribute = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath: [NSIndexPath indexPathForItem:0 inSection:i]];
+            attribute.frame = CGRectMake(grap, yOffset, CGRectGetWidth(self.collectionView.frame) - 2*grap, 100.0);
+            yOffset += 100.0;
             [self.attributes addObject: attribute];
         }
-        yOffset += 20.0;
     }
     self.heightOfContentView = yOffset;
-}
-
-- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if(indexPath.item < self.attributes.count) {
-        return [self.attributes objectAtIndex: indexPath.item];
-    }
-    return nil;
 }
 
 - (CGSize)collectionViewContentSize {
     return CGSizeMake(CGRectGetWidth(self.collectionView.frame), self.heightOfContentView);
 }
 
+- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
+    if(indexPath.section == 0) {
+        return [self.attributes objectAtIndex: indexPath.item];
+    }
+    else {
+        return [self.attributes lastObject];
+    }
+}
+
 - (NSArray<UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect {
     NSPredicate * predicate = [NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
         return CGRectIntersectsRect([evaluatedObject frame], rect);
     }];
-    return [self.attributes filteredArrayUsingPredicate: predicate];
+    NSMutableArray * array = [NSMutableArray arrayWithArray: [self.attributes filteredArrayUsingPredicate: predicate]];
+    if(!self.collectionView.loadingData) {
+        [array removeObject: [self.attributes lastObject]];
+    }
+    return [NSArray arrayWithArray: array];
 }
 
 @end

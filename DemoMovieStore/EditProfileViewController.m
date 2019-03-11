@@ -62,7 +62,7 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
 - (void) setAvatar {
     self.avatar.layer.borderWidth = 1;
     self.avatar.layer.borderColor = [[UIColor grayColor] CGColor];
-    self.avatar.layer.cornerRadius = 5;
+    self.avatar.layer.cornerRadius = CGRectGetWidth(self.avatar.frame)/2;
     self.avatar.clipsToBounds = YES;
     if(self.account) {
         UIImage * image = [UIImage imageWithData: self.account.avartar];

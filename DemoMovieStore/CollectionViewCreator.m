@@ -3,6 +3,7 @@
 #import "Constants.h"
 #import "MovieCollectionViewCell.h"
 #import "DetailViewController.h"
+#import "IndicatorCollectionViewCell.h"
 
 @interface CollectionViewCreator()
 
@@ -16,7 +17,9 @@
     self = [super init];
     if(self) {
         self.collectionView = collectionView;
+        self.collectionView.loadingData = NO;
         [self.collectionView registerNib:[UINib nibWithNibName:MOVIE_COLLECTION_VIEW_CELL bundle:nil] forCellWithReuseIdentifier:MOVIE_COLLECTION_VIEW_CELL];
+        [self.collectionView registerNib:[UINib nibWithNibName:INDICATOR_COLLECTION_VIEW_CELL bundle:nil] forCellWithReuseIdentifier:INDICATOR_COLLECTION_VIEW_CELL];
     }
     return self;
 }
@@ -24,17 +27,35 @@
 #pragma mark <UICollectionViewDataSource>
 
 - (NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return collectionView.movies.count;
+    if(section == 1 && self.collectionView.loadingData) {
+        return 1;
+    }
+    else if(section == 1) {
+        return 0;
+    }
+    else if(section == 0) {
+        return collectionView.movies.count;
+    }
+    else {
+        return 0;
+    }
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    MovieCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:MOVIE_COLLECTION_VIEW_CELL forIndexPath:indexPath];
-    [cell setMovieCollectionViewCell: [collectionView.movies objectAtIndex: indexPath.item]];
-    return cell;
+    if(indexPath.section == 0) {
+        MovieCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:MOVIE_COLLECTION_VIEW_CELL forIndexPath:indexPath];
+        [cell setMovieCollectionViewCell: [collectionView.movies objectAtIndex: indexPath.item]];
+        return cell;
+    }
+    else {
+        IndicatorCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:INDICATOR_COLLECTION_VIEW_CELL forIndexPath:indexPath];
+        [cell startIndicatorActivity];
+        return cell;
+    }
 }
 
 #pragma mark <UICollectionViewDelegate>
@@ -48,10 +69,27 @@
     [self.delegate pushDetailViewController: detailViewController];
 }
 
-- (void) collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
-    if(indexPath.item == self.collectionView.movies.count-1) {
-        [self.delegate loadMore];
+#pragma mark <UIScrollViewDelegate>
+
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView {
+    float yOfCollectionView = scrollView.contentOffset.y;
+    float heightOfContentSize = scrollView.contentSize.height;
+    float z = heightOfContentSize - CGRectGetHeight(self.collectionView.frame);
+    if(yOfCollectionView >= z && z >= 0) {
+        if(!self.collectionView.loadingData) {
+            [self beginFetchData];
+        }
     }
+}
+
+- (void) beginFetchData {
+    self.collectionView.loadingData = YES;
+    [self.collectionView reloadSections: [NSIndexSet indexSetWithIndex: 1]];
+    [self performSelector:@selector(loading) withObject:nil afterDelay:1.0];
+}
+
+- (void) loading {
+    [self.delegate loadMore];
 }
 
 #pragma mark <DetailViewControllerDelegate>

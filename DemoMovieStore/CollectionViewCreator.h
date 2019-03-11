@@ -3,7 +3,7 @@
 #import "CollectionViewCreatorDelegate.h"
 #import "DetailViewControllerDelegate.h"
 
-@interface CollectionViewCreator : NSObject <UICollectionViewDelegate, UICollectionViewDataSource, DetailViewControllerDelegate>
+@interface CollectionViewCreator : NSObject <UICollectionViewDelegate, UICollectionViewDataSource, DetailViewControllerDelegate, UIScrollViewDelegate>
 
 @property (nonatomic, weak) id<CollectionViewCreatorDelegate> delegate;
 

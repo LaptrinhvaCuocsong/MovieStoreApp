@@ -118,9 +118,8 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 - (void) setAvartarImage {
     self.avartarImage.layer.borderWidth = 1;
     self.avartarImage.layer.borderColor = [[UIColor grayColor] CGColor];
-    self.avartarImage.layer.cornerRadius = 5;
+    self.avartarImage.layer.cornerRadius = CGRectGetWidth(self.avartarImage.frame) / 2;
     self.avartarImage.clipsToBounds = YES;
-    
     if(self.account) {
         UIImage * image = [UIImage imageWithData: self.account.avartar];
         if(image) {

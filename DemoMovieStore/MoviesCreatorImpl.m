@@ -10,8 +10,6 @@
 
 @implementation MoviesCreatorImpl
 
-static const NSInteger TIME_GET_API_MAX = 10;
-
 - (void) createMoviesWithPageNumber: (NSUInteger) pageNumber success: (void(^ _Nonnull)(NSMutableArray<Movie *> * _Nonnull, NSInteger))success failure: (void(^ _Nonnull)(void))failure urlString: (NSString * _Nonnull)urlString {
     NSMutableArray * movies = [[NSMutableArray alloc] init];
     NSString * urlStr = [NSString stringWithFormat:urlString, pageNumber];

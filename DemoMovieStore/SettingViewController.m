@@ -76,6 +76,7 @@
     
     if([self.txtMovieRelease.text integerValue] != [self.settingOfAccount releaseYear]) {
         [self.settingOfAccount setReleaseYear: [self.txtMovieRelease.text integerValue]];
+        self.haveChangeSetting = YES;
     }
     
     if(self.haveChangeSetting) {

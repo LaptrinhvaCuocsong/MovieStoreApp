@@ -35,6 +35,9 @@
 @property (nonatomic) BOOL isFirstReload;
 @property (nonatomic) NSString * currentURLString;
 @property (nonatomic) BOOL alertIsActive;
+@property (nonatomic) NSInteger currentTime;
+@property (nonatomic) NSTimer * timer;
+@property (nonatomic) BOOL timerIsActive;
 
 @end
 
@@ -45,9 +48,13 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 @implementation MovieListViewController
 
+static const NSInteger MAX_TIME_OUT = 10;
+
 - (void) viewDidLoad {
     [super viewDidLoad];
     
+    self.timerIsActive = NO;
+    self.currentTime = MAX_TIME_OUT;
     self.alertIsActive = NO;
     self.isFirstReload = YES;
     self.pageNumber = 1;
@@ -84,8 +91,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         else {
             self.currentURLString = API_GET_MOVIE_POPULAR_LIST;
         }
-        
-        [self excuteGetMovieFromAPI: self.currentURLString showAlert:YES loadMore:NO];
+        [self fetchMoviesFromAPI: self.currentURLString];
     }
 }
 
@@ -148,6 +154,9 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         _tableView.refreshControl = [[UIRefreshControl alloc] init];
         [_tableView.refreshControl addTarget:self action:@selector(handlerRefreshControl) forControlEvents:UIControlEventValueChanged];
     }
+    else {
+        _tableView.movies = self.movies;
+    }
     return _tableView;
 }
 
@@ -169,6 +178,9 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         _collectionView.refreshControl = [[UIRefreshControl alloc] init];
         [_collectionView.refreshControl addTarget:self action:@selector(handlerRefreshControl) forControlEvents:UIControlEventValueChanged];
     }
+    else {
+        _collectionView.movies = self.movies;
+    }
     return _collectionView;
 }
 
@@ -177,7 +189,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     [[subView refreshControl] beginRefreshing];
     [self.movies removeAllObjects];
     self.pageNumber = 1;
-    [self excuteGetMovieFromAPI:self.currentURLString showAlert:NO loadMore:NO];
+    [self fetchMoviesFromAPIForRefresh: self.currentURLString];
 }
 
 - (UIAlertController *) alertViewController {
@@ -248,23 +260,167 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
             [self.movieListView addSubview: self.collectionView];
             [self addConstraintForMovieListView: self.collectionView];
             [self setImageButtonChangeMovieList: COLLECTION_VIEW];
+            [self.collectionView reloadData];
         }
         else {
             [self.collectionView removeFromSuperview];
             [self.movieListView addSubview: self.tableView];
             [self addConstraintForMovieListView: self.tableView];
             [self setImageButtonChangeMovieList: TABLE_VIEW];
+            [self.tableView reloadData];
         }
     }
 }
 
-- (void) excuteGetMovieFromAPI: (NSString *)urlString showAlert: (BOOL)showAlert loadMore: (BOOL)loadMore {
-    if(showAlert) {
-        [self presentViewController:self.alertViewController animated:YES completion:nil];
-        self.alertIsActive = YES;
+- (IBAction)changeMovieListView:(id)sender {
+    [self setSubViewForMovieListView];
+}
+
+- (void) setImageButtonChangeMovieList: (MOVIE_LIST_TYPE)currentMovieListType {
+    switch (currentMovieListType) {
+        case TABLE_VIEW:
+            self.btnChangeMovieListView.image = [UIImage imageNamed:@"ic_view_module"];
+            break;
+        default:
+            self.btnChangeMovieListView.image = [UIImage imageNamed:@"ic_list"];
+            break;
     }
-    
-    NSInteger limitMovieOfView = (loadMore)?(self.pageNumber * 20):20;
+}
+
+#pragma mark <Setup Data>
+
+- (void) startCountDown {
+    @synchronized (self) {
+        if(!self.timerIsActive) {
+            __weak MovieListViewController * weakSelf = self;
+            self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+                weakSelf.currentTime -= 1;
+            }];
+            [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
+            self.timerIsActive = YES;
+        }
+    }
+}
+
+- (void) stopCountDown {
+    @synchronized (self) {
+        if(self.timerIsActive) {
+            [self.timer invalidate];
+            self.timerIsActive = NO;
+            self.currentTime = MAX_TIME_OUT;
+        }
+    }
+}
+
+- (void) reloadDataWhenFetchMoviesFinish {
+    id subview = [self.movieListView.subviews firstObject];
+    [subview setMovies: self.movies];
+    [subview reloadData];
+    if(self.alertIsActive) {
+        [self dismissViewControllerAnimated:NO completion:nil];
+        self.alertIsActive = NO;
+    }
+    [self stopCountDown];
+}
+
+- (void) fetchMoviesFromAPI: (NSString *)urlString {
+    if(!self.alertIsActive) {
+        self.alertIsActive = YES;
+        [self presentViewController:self.alertViewController animated:YES completion:nil];
+    }
+    [self startCountDown];
+    if(self.currentTime >= 0) {
+        NSInteger limitMovieOfView = 20;
+        __weak MovieListViewController * weakSelf = self;
+        [self.moviesCreator createMoviesWithPageNumber:self.pageNumber success:^(NSMutableArray<Movie *> * _Nonnull movies, NSInteger totalPages) {
+            [weakSelf setMoviesWithMovieRate: movies];
+            [weakSelf setMoviesWithMovieReleaseYear: movies];
+            if(weakSelf.account) {
+                [weakSelf setFavouriteForMovies: movies];
+            }
+            [weakSelf.movies addObjectsFromArray: [NSArray arrayWithArray: movies]];
+            if(weakSelf.movies.count < limitMovieOfView && weakSelf.pageNumber < totalPages) {
+                weakSelf.pageNumber ++;
+                [weakSelf fetchMoviesFromAPI: urlString];
+            }
+            else {
+                [weakSelf sortMoiveWithTypeOfSort: weakSelf.movies];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf reloadDataWhenFetchMoviesFinish];
+                });
+            }
+        } failure:^{
+            [weakSelf handlerErrorWhenFetchAPI: urlString];
+            [weakSelf stopCountDown];
+        } urlString:urlString];
+    }
+    else {
+        __weak MovieListViewController * weakSelf = self;
+        [self handlerEventTimeOut:urlString agree:^{
+            [weakSelf stopCountDown];
+            [weakSelf fetchMoviesFromAPI: urlString];
+        } disagree:^{
+            [weakSelf stopCountDown];
+            [weakSelf reloadDataWhenFetchMoviesFinish];
+        }];
+    }
+}
+
+- (void) reloadDataWhenFetchMoviesForRefreshFinish {
+    id subview = [self.movieListView.subviews firstObject];
+    [subview setMovies: self.movies];
+    [subview reloadData];
+    if([[subview refreshControl] isRefreshing]) {
+        [self performSelector:@selector(endRefreshing) withObject:nil afterDelay:1.0];
+    }
+    [self stopCountDown];
+}
+
+- (void) fetchMoviesFromAPIForRefresh: (NSString *)urlString {
+    [self startCountDown];
+    if(self.currentTime >= 0) {
+        NSInteger limitMovieOfView = 20;
+        __weak MovieListViewController * weakSelf = self;
+        [self.moviesCreator createMoviesWithPageNumber:self.pageNumber success:^(NSMutableArray<Movie *> * _Nonnull movies, NSInteger totalPages) {
+            [weakSelf setMoviesWithMovieRate: movies];
+            [weakSelf setMoviesWithMovieReleaseYear: movies];
+            if(weakSelf.account) {
+                [weakSelf setFavouriteForMovies: movies];
+            }
+            [weakSelf.movies addObjectsFromArray: [NSArray arrayWithArray: movies]];
+            if(weakSelf.movies.count < limitMovieOfView && weakSelf.pageNumber < totalPages) {
+                weakSelf.pageNumber ++;
+                [weakSelf fetchMoviesFromAPIForRefresh: urlString];
+            }
+            else {
+                [weakSelf sortMoiveWithTypeOfSort: weakSelf.movies];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakSelf reloadDataWhenFetchMoviesForRefreshFinish];
+                });
+            }
+        } failure:^{
+            [weakSelf handlerErrorWhenFetchAPI: urlString];
+            [weakSelf stopCountDown];
+        } urlString:urlString];
+    }
+    else {
+        __weak MovieListViewController * weakSelf = self;
+        [self handlerEventTimeOut:urlString agree:^{
+            [weakSelf stopCountDown];
+            [weakSelf fetchMoviesFromAPIForRefresh: urlString];
+        } disagree:^{
+            [weakSelf stopCountDown];
+            [weakSelf reloadDataWhenFetchMoviesForRefreshFinish];
+        }];
+    }
+}
+
+- (void) endRefreshing {
+    id subview = [self.movieListView.subviews firstObject];
+    [[subview refreshControl] endRefreshing];
+}
+
+- (void) fetchMoviesFromAPIForLoadMore: (NSString *)urlString limitMovie: (NSInteger)limitMovie {
     __weak MovieListViewController * weakSelf = self;
     [self.moviesCreator createMoviesWithPageNumber:self.pageNumber success:^(NSMutableArray<Movie *> * _Nonnull movies, NSInteger totalPages) {
         [weakSelf setMoviesWithMovieRate: movies];
@@ -273,43 +429,67 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
             [weakSelf setFavouriteForMovies: movies];
         }
         [weakSelf.movies addObjectsFromArray: [NSArray arrayWithArray: movies]];
-        if(weakSelf.movies.count < limitMovieOfView && weakSelf.pageNumber < totalPages) {
+        if(weakSelf.movies.count < limitMovie && weakSelf.pageNumber < totalPages) {
             weakSelf.pageNumber ++;
-            [weakSelf excuteGetMovieFromAPI: urlString showAlert:NO loadMore:NO];
+            [weakSelf fetchMoviesFromAPIForLoadMore:urlString limitMovie:limitMovie];
         }
         else {
-            if(weakSelf.movies.count > limitMovieOfView) {
-                NSRange range = NSMakeRange(limitMovieOfView - 1, weakSelf.movies.count - limitMovieOfView);
-                [weakSelf.movies removeObjectsInRange: range];
-            }
             [weakSelf sortMoiveWithTypeOfSort: weakSelf.movies];
             dispatch_async(dispatch_get_main_queue(), ^{
                 id subview = [weakSelf.movieListView.subviews firstObject];
                 [subview setMovies: weakSelf.movies];
                 [subview reloadData];
-                if(weakSelf.alertIsActive) {
-                    [weakSelf dismissViewControllerAnimated:NO completion:nil];
-                    weakSelf.alertIsActive = NO;
-                }
-                if([[subview refreshControl] isRefreshing]) {
-                    [[subview refreshControl] endRefreshing];
+                if([subview loadingData]) {
+                    [subview setLoadingData: NO];
                 }
             });
         }
-        
     } failure:^{
-        [weakSelf handlerErrorWhenConnectAPI: urlString];
+        id subview = [self.movieListView.subviews firstObject];
+        if([subview loadingData]) {
+            [subview setLoadingData: NO];
+        }
     } urlString:urlString];
 }
 
-- (void) handlerErrorWhenConnectAPI: (NSString *)urlString {
+- (void) handlerEventTimeOut: (NSString *)urlString agree: (void(^)(void))agreeBlock disagree: (void(^)(void))disagreeBlock {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.alertViewController dismissViewControllerAnimated:NO completion: ^ {
+            if(!self.alertErrorViewController) {
+                self.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"😭😭😭" message:@"Please waiting for searching finish ..." preferredStyle:UIAlertControllerStyleAlert];
+                __weak MovieListViewController * weakSelf = self;
+                UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    if(weakSelf.alertIsActive) {
+                        [self dismissViewControllerAnimated:NO completion:nil];
+                        weakSelf.alertIsActive = NO;
+                    }
+                    agreeBlock();
+                }];
+                [self.alertErrorViewController addAction: tryAgain];
+                
+                UIAlertAction * actionExit = [UIAlertAction actionWithTitle:@"No way" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                    disagreeBlock();
+                }];
+                [self.alertErrorViewController addAction: actionExit];
+            }
+            [self presentViewController:self.alertErrorViewController animated:YES completion:nil];
+        }] ;
+    });
+}
+
+- (void) handlerErrorWhenFetchAPI: (NSString *)urlString {
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.alertViewController dismissViewControllerAnimated:NO completion: ^ {
             if(!self.alertErrorViewController) {
                 self.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"💔💔💔" message:@"We can't load movie collection" preferredStyle:UIAlertControllerStyleAlert];
+                __weak MovieListViewController * weakSelf = self;
                 UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    [self dismissViewControllerAnimated:NO completion:nil];
-                    [self excuteGetMovieFromAPI: urlString showAlert:YES loadMore:NO];
+                    if(weakSelf.alertIsActive) {
+                        [self dismissViewControllerAnimated:NO completion:nil];
+                        weakSelf.alertIsActive = NO;
+                    }
+                    weakSelf.pageNumber = 1;
+                    [weakSelf fetchMoviesFromAPI: urlString];
                 }];
                 [self.alertErrorViewController addAction: tryAgain];
                 
@@ -351,21 +531,6 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         NSSortDescriptor * sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"voteAverage" ascending: YES];
         NSArray<NSSortDescriptor *> * array = @[sortDescriptor];
         [movies sortUsingDescriptors: array];
-    }
-}
-
-- (IBAction)changeMovieListView:(id)sender {
-    [self setSubViewForMovieListView];
-}
-
-- (void) setImageButtonChangeMovieList: (MOVIE_LIST_TYPE)currentMovieListType {
-    switch (currentMovieListType) {
-        case TABLE_VIEW:
-            self.btnChangeMovieListView.image = [UIImage imageNamed:@"ic_view_module"];
-            break;
-        default:
-            self.btnChangeMovieListView.image = [UIImage imageNamed:@"ic_list"];
-            break;
     }
 }
 
@@ -424,12 +589,14 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (void) pushDetailViewController:(DetailViewController *)detailViewController {
     if(self.revealViewController) {
+        /*
         FrontViewPosition frontViewPosition = self.revealViewController.frontViewPosition;
         if(frontViewPosition >= FrontViewPositionRight) {
             [self.revealViewController revealToggle:nil];
             [self.navigationController pushViewController:detailViewController animated:NO];
             return;
         }
+         */
     }
     
     [self.navigationController pushViewController:detailViewController animated:YES];
@@ -468,7 +635,8 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (void) loadMore {
     self.pageNumber += 1;
-    [self excuteGetMovieFromAPI:self.currentURLString showAlert:NO loadMore:YES];
+    NSInteger limitMovieOfView = self.pageNumber * 20;
+    [self fetchMoviesFromAPIForLoadMore:self.currentURLString limitMovie:limitMovieOfView];
 }
 
 - (void) showMessageError {
@@ -487,6 +655,8 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 - (void) handlerEventChangeSetting {
 	self.pageNumber = 1;
     [self.movies removeAllObjects];
+    id subView = [self.movieListView.subviews firstObject];
+    [subView setContentOffset: CGPointMake(0.0, 0.0)];
 }
 
 @end

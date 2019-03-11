@@ -6,6 +6,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UITableView (Extent)
 
+@property (nonatomic) BOOL loadingData;
+
 @property (nonatomic) NSArray<Movie *> * _Nonnull movies;
 
 @end
