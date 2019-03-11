@@ -18,4 +18,6 @@
 
 - (BOOL) checkFavouriteMovie: (Movie *)movie;
 
+- (void) removeReminderMovie: (Reminder *)reminder;
+
 @end

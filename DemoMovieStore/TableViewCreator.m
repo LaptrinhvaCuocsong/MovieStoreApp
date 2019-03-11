@@ -6,8 +6,8 @@
 @interface TableViewCreator()
 
 @property (nonatomic) UITableView * tableView;
-
 @property (nonatomic) UIStoryboard * mainStoryBoard;
+@property (nonatomic) BOOL loadMore;
 
 @end
 
@@ -19,25 +19,36 @@
     self = [super init];
     if(self) {
         self.tableView = tableView;
+        self.loadMore = NO;
         self.mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
         [self.tableView registerNib:[UINib nibWithNibName:MOVIE_ITEM_CELL bundle:nil] forCellReuseIdentifier:MOVIE_ITEM_CELL];
+        [self.tableView registerNib:[UINib nibWithNibName:INDICATOR_VIEW_CELL bundle:nil] forCellReuseIdentifier:INDICATOR_VIEW_CELL];
     }
     return self;
 }
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if(section == 1 && self.loadMore) {
+        return 1;
+    }
     return tableView.movies.count;
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    MovieItemCell * cell = [tableView dequeueReusableCellWithIdentifier: MOVIE_ITEM_CELL forIndexPath:indexPath];
-    [cell setMovieItemCell:[self.tableView.movies objectAtIndex: indexPath.row]];
-    cell.delegate = self;
-    return cell;
+    if(indexPath.section == 0) {
+        MovieItemCell * cell = [tableView dequeueReusableCellWithIdentifier: MOVIE_ITEM_CELL forIndexPath:indexPath];
+        [cell setMovieItemCell:[self.tableView.movies objectAtIndex: indexPath.row]];
+        cell.delegate = self;
+        return cell;
+    }
+    else {
+        UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier: INDICATOR_VIEW_CELL];
+        return cell;
+    }
 }
 
 #pragma mark <UITableViewDelegate>
@@ -54,9 +65,20 @@
     [self.delegate pushDetailViewController:detailViewController];
 }
 
-- (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if(indexPath.row == self.tableView.movies.count - 1) {
-        [self.delegate loadMore];
+#pragma mark <UIScrollViewDelegate>
+
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView {
+    float yOfTableView = scrollView.contentOffset.y;
+    float contentSize = scrollView.contentSize.height;
+    float z = contentSize - CGRectGetHeight(scrollView.frame);
+    if(z >= 0) {
+        if(yOfTableView >= z) {
+            self.loadMore = YES;
+            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationNone];
+        }
+    }
+    else {
+        self.loadMore = NO;
     }
 }
 
@@ -80,6 +102,10 @@
 
 - (BOOL) checkFavouriteMovie:(Movie *)movie {
     return [self.delegate checkFavouriteMovie:movie];
+}
+
+- (void) removeReminderMovie:(Reminder *)reminder {
+    [self.delegate removeReminderMovie: reminder];
 }
 
 @end

@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL) updateReminder: (Reminder *)reminder;
 
++ (void) removeReminder: (Reminder *)reminder;
+
 @property (nonatomic) int32_t identifier;
 @property (nullable, nonatomic, copy) NSDate *reminderDate;
 @property (nullable, nonatomic, retain) AccountMO *account;

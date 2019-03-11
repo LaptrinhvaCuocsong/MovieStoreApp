@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL) checkFavouriteMovie: (Movie *)movie;
 
+- (void) removeReminderMovie: (Reminder *)reminder;
+
 @end
 
 NS_ASSUME_NONNULL_END

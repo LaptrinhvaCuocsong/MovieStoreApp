@@ -76,4 +76,8 @@
     return [self.delegate checkFavouriteMovie:movie];
 }
 
+- (void) removeReminderMovie:(Reminder *)reminder {
+    [self.delegate removeReminderMovie: reminder];
+}
+
 @end

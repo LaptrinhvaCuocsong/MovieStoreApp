@@ -18,40 +18,23 @@
 @interface MovieListViewController ()
 
 @property (weak, nonatomic) IBOutlet UIView *movieListView;
-
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *btnChangeMovieListView;
 
 @property (nonatomic) TableViewCreator * tableViewCreator;
-
 @property (nonatomic) CollectionViewCreator * collectionViewCreator;
-
 @property (nonatomic) UITableView * tableView;
-
 @property (nonatomic) UICollectionView * collectionView;
-
 @property (nonatomic) NSMutableArray<Movie *> * movies;
-
 @property (nonatomic) CGRect frameOfMovieListView;
-
 @property (nonatomic) UIAlertController * alertViewController;
-
 @property (nonatomic) UIAlertController * alertErrorViewController;
-
 @property (nonatomic) id<MoviesCreator> moviesCreator;
-
 @property (nonatomic) __block NSUInteger pageNumber;
-
 @property (nonatomic) Account * account;
-
 @property (nonatomic) NSMutableDictionary * settingOfAccount;
-
 @property (nonatomic) BOOL isFirstReload;
-
 @property (nonatomic) NSString * currentURLString;
-
 @property (nonatomic) BOOL alertIsActive;
-
-@property (nonatomic) NSInteger countDown;
 
 @end
 
@@ -65,20 +48,12 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 - (void) viewDidLoad {
     [super viewDidLoad];
     
-    self.countDown = 0;
-
     self.alertIsActive = NO;
-    
     self.isFirstReload = YES;
-    
     self.pageNumber = 1;
-    
     self.frameOfMovieListView = self.movieListView.frame;
-    
     self.moviesCreator = [[MoviesCreatorImpl alloc] init];
-    
     self.movies = [[NSMutableArray alloc] init];
-    
     [self setSubViewForMovieListView];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeSetting) name:DID_CHANGE_SETTING object:nil];
@@ -89,7 +64,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+
     self.account = [[AccountManager getInstance] account];
     
     if(self.isFirstReload) {
@@ -186,7 +161,6 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         self.collectionViewCreator = [[CollectionViewCreator alloc] initWithCollectionView: _collectionView];
         self.collectionViewCreator.delegate = self;
         
-        // chua auto layout cho collectionView
         _collectionView.delegate = self.collectionViewCreator;
         _collectionView.dataSource = self.collectionViewCreator;
         _collectionView.movies = self.movies;
@@ -202,7 +176,8 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     id subView = [self.movieListView.subviews firstObject];
     [[subView refreshControl] beginRefreshing];
     [self.movies removeAllObjects];
-    [self excuteGetMovieFromAPI: self.currentURLString showAlert:NO loadMore:NO];
+    self.pageNumber = 1;
+    [self excuteGetMovieFromAPI:self.currentURLString showAlert:NO loadMore:NO];
 }
 
 - (UIAlertController *) alertViewController {
@@ -290,33 +265,14 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
     }
     
     NSInteger limitMovieOfView = (loadMore)?(self.pageNumber * 20):20;
-    
     __weak MovieListViewController * weakSelf = self;
-    
     [self.moviesCreator createMoviesWithPageNumber:self.pageNumber success:^(NSMutableArray<Movie *> * _Nonnull movies, NSInteger totalPages) {
-        
         [weakSelf setMoviesWithMovieRate: movies];
-        
         [weakSelf setMoviesWithMovieReleaseYear: movies];
-        
-        // set isFavouriteMovie
-        if(weakSelf.account && weakSelf.account.favouriteMovies) {
-            for(Movie * movie in weakSelf.movies) {
-                BOOL exist = NO;
-                for(Movie * favouriteMovie in weakSelf.account.favouriteMovies) {
-                    if(movie.identifier == favouriteMovie.identifier) {
-                        exist = YES;
-                        break;
-                    }
-                }
-                if(exist) {
-                    movie.isFavouriteMovie = YES;
-                }
-            }
+        if(weakSelf.account) {
+            [weakSelf setFavouriteForMovies: movies];
         }
-        
         [weakSelf.movies addObjectsFromArray: [NSArray arrayWithArray: movies]];
-        
         if(weakSelf.movies.count < limitMovieOfView && weakSelf.pageNumber < totalPages) {
             weakSelf.pageNumber ++;
             [weakSelf excuteGetMovieFromAPI: urlString showAlert:NO loadMore:NO];
@@ -326,23 +282,18 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
                 NSRange range = NSMakeRange(limitMovieOfView - 1, weakSelf.movies.count - limitMovieOfView);
                 [weakSelf.movies removeObjectsInRange: range];
             }
-            
             [weakSelf sortMoiveWithTypeOfSort: weakSelf.movies];
-            
             dispatch_async(dispatch_get_main_queue(), ^{
                 id subview = [weakSelf.movieListView.subviews firstObject];
                 [subview setMovies: weakSelf.movies];
                 [subview reloadData];
-                
                 if(weakSelf.alertIsActive) {
-                    [weakSelf.alertViewController dismissViewControllerAnimated:NO completion:nil];
+                    [weakSelf dismissViewControllerAnimated:NO completion:nil];
                     weakSelf.alertIsActive = NO;
                 }
-                
                 if([[subview refreshControl] isRefreshing]) {
                     [[subview refreshControl] endRefreshing];
                 }
-                
             });
         }
         
@@ -445,6 +396,15 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
         Movie * m = [[self.account.favouriteMovies filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.identifier = %d", movie.identifier]] anyObject];
         if(m) {
             [self.account.favouriteMovies removeObject: m];
+        }
+    }
+}
+
+- (void) removeReminderMovie: (Reminder * _Nonnull)reminder {
+    if(self.account.reminderMovies) {
+        Reminder * r = [[self.account.reminderMovies filteredSetUsingPredicate: [NSPredicate predicateWithFormat:@"SELF.identifer = %d", reminder.identifer]] anyObject];
+        if(r) {
+            [self.account.reminderMovies removeObject: r];
         }
     }
 }

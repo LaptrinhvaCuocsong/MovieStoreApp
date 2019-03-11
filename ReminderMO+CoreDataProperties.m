@@ -74,6 +74,14 @@ static NSString * const CURRENT_IDENTIFIER = @"CurrentIdentifierOfReminderMO";
     return YES;
 }
 
++ (void) removeReminder: (Reminder *)reminder {
+    NSManagedObjectContext * context = [AppDelegate managedObjectContext];
+    ReminderMO * reminderMO = [ReminderMO fetchReminderMOWithIdentifer: (int32_t)reminder.identifer];
+    if(reminderMO) {
+        [context deleteObject: reminderMO];
+    }
+}
+
 + (MovieMO *) movieMOfromMovie: (Movie *)movie {
     if(movie) {
         MovieMO * movieMO = [MovieMO fetchMovieMOWithIdentifier:(int32_t) movie.identifier];

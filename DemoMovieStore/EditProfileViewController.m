@@ -144,7 +144,7 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
 }
 
 - (UIToolbar *) toolBar {
-    UIToolbar * toolBar = [[UIToolbar alloc] initWithFrame: CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 40)];
+    UIToolbar * toolBar = [[UIToolbar alloc] initWithFrame: CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 45)];
     UIBarButtonItem * btnDelete = [[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(handlerEventDeleteValueOfTxtBirthDay)];
     [btnDelete setTintColor: [UIColor whiteColor]];
     UIBarButtonItem * btnFlex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -245,7 +245,12 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
         NSDate * dateOfBirth = [DateUtils dateFromDateString:birthday formatDate:formatOfDateOfBirth];
         NSData * data = UIImagePNGRepresentation(self.avatar.image);
         Account * account = [[Account alloc] initWithName:name dateOfBirth:dateOfBirth email:email gender:gender avartar:data];
-        account.indentifier= (self.account)?self.account.indentifier:0;
+        
+        if(self.account) {
+            account.indentifier = self.account.indentifier;
+            account.favouriteMovies = self.account.favouriteMovies;
+            account.reminderMovies = self.account.reminderMovies;
+        }
         
         [self presentViewController:self.alertActivityController animated:YES completion:nil];
         
@@ -263,7 +268,6 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
                 [[AccountManager getInstance] setAccount: account];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-                
                     [[NSNotificationCenter defaultCenter] postNotificationName:DID_SAVE_ACCOUNT object:nil userInfo:nil];
                     
                     if(weakSelf.delegate) {

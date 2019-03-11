@@ -14,8 +14,8 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property (nonatomic) Account * account;
-
 @property (nonatomic) NSMutableArray<Reminder *> * reminderMovies;
+@property (nonatomic) BOOL isFirstReload;
 
 @end
 
@@ -23,11 +23,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerNib:[UINib nibWithNibName:REMINDER_TABLE_VIEW_CELL bundle:nil] forCellReuseIdentifier:REMINDER_TABLE_VIEW_CELL];
 
+    self.isFirstReload = YES;
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_SAVE_ACCOUNT object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_REMOVE_REMINDER object:nil];
 }
@@ -44,6 +45,13 @@
             NSArray<Reminder *> * arraySorted = [self.account.reminderMovies sortedArrayUsingDescriptors: array];
             if(arraySorted) {
                 self.reminderMovies = [NSMutableArray arrayWithArray: arraySorted];
+                
+                if(self.isFirstReload) {
+                    self.isFirstReload = NO;
+                }
+                else {
+                    [self.tableView reloadData];
+                }
             }
         }
     }
@@ -135,6 +143,19 @@
     }
 }
 
+- (void) addOrSetReminderMovie:(Reminder *)reminder {
+    if(!self.account.reminderMovies) {
+        self.account.reminderMovies = [[NSMutableSet alloc] init];
+    }
+    Reminder * r = [[self.account.reminderMovies filteredSetUsingPredicate: [NSPredicate predicateWithFormat:@"SELF.identifer = %d", reminder.identifer]] anyObject];
+    if(r) {
+        r.reminderDate = reminder.reminderDate;
+    }
+    else {
+        [self.account.reminderMovies addObject: reminder];
+    }
+}
+
 - (Reminder *) reminderWithMovieId: (NSInteger)movieId {
     if(self.account) {
         if(self.account.reminderMovies) {
@@ -164,6 +185,15 @@
         }
     }
     return NO;
+}
+
+- (void) removeReminderMovie: (Reminder * _Nonnull)reminder {
+    if(self.account.reminderMovies) {
+        Reminder * r = [[self.account.reminderMovies filteredSetUsingPredicate: [NSPredicate predicateWithFormat:@"SELF.identifer = %d", reminder.identifer]] anyObject];
+        if(r) {
+            [self.account.reminderMovies removeObject: r];
+        }
+    }
 }
 
 - (void) showMessageError {

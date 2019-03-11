@@ -26,6 +26,8 @@ extern NSString * const REMINDER_COLLECTION_VIEW_CELL;
 
 extern NSString * const REMINDER_TABLE_VIEW_CELL;
 
+extern NSString * const INDICATOR_VIEW_CELL;
+
 extern NSString * const DETAIL_VIEW_CONTROLLER_MAIN_STORYBOARD;
 
 extern NSString * const REMINDER_VIEW_CONTROLLER_MAIN_STORYBOARD;

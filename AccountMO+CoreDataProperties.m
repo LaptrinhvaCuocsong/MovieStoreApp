@@ -151,23 +151,18 @@ static NSString * const ENTITY_NAME = @"Account";
 }
 
 + (void) setReminderMovies: (AccountMO *)accountMO account: (Account *)account {
-    dispatch_group_t myGroup = dispatch_group_create();
     [accountMO.reminderMovies enumerateObjectsUsingBlock:^(ReminderMO * _Nonnull reminderMO, BOOL * _Nonnull stop) {
         __block BOOL isExist = NO;
-        dispatch_group_enter(myGroup);
         [account.reminderMovies enumerateObjectsUsingBlock:^(Reminder * _Nonnull reminder, BOOL * _Nonnull stop) {
             if(reminderMO.identifier == reminder.identifer) {
                 isExist = YES;
                 reminderMO.reminderDate = reminder.reminderDate;
                 [account.reminderMovies removeObject:reminder];
-                dispatch_group_leave(myGroup);
             }
         }];
-        dispatch_group_notify(myGroup, dispatch_get_main_queue(), ^{
-            if(!isExist) {
-                [accountMO removeReminderMoviesObject: reminderMO];
-            }
-        });
+        if(!isExist) {
+            [accountMO removeReminderMoviesObject: reminderMO];
+        }
     }];
     for(Reminder * reminder in account.reminderMovies) {
         ReminderMO * reminderMO = [ReminderMO fetchReminderMOWithIdentifer: (int32_t)reminder.identifer];

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6808C810C4B59C67FABC50C4 /* libPods-DemoMovieStore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7EFCB16602FE85762432E4F /* libPods-DemoMovieStore.a */; };
+		A1022EEA2234AF26005DFCA0 /* IndicatorViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A1022EE92234AF26005DFCA0 /* IndicatorViewCell.xib */; };
 		A109292E222BD5770047238D /* Reminder.m in Sources */ = {isa = PBXBuildFile; fileRef = A109292D222BD5770047238D /* Reminder.m */; };
 		A18A28C3221B372100EA3E88 /* UITableView+Extent.m in Sources */ = {isa = PBXBuildFile; fileRef = A18A28C2221B372100EA3E88 /* UITableView+Extent.m */; };
 		A18A28C6221B374900EA3E88 /* UICollectionView+Extent.m in Sources */ = {isa = PBXBuildFile; fileRef = A18A28C5221B374900EA3E88 /* UICollectionView+Extent.m */; };
@@ -68,6 +69,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A1022EE92234AF26005DFCA0 /* IndicatorViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = IndicatorViewCell.xib; sourceTree = "<group>"; };
 		A109292C222BD5770047238D /* Reminder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Reminder.h; sourceTree = "<group>"; };
 		A109292D222BD5770047238D /* Reminder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Reminder.m; sourceTree = "<group>"; };
 		A1273746222A09B0005C8D64 /* DetailViewControllerDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewControllerDelegate.h; sourceTree = "<group>"; };
@@ -376,6 +378,7 @@
 				B61976D8221EE99E003A9F59 /* CastCollectionViewCell.xib */,
 				B6C90D26221AA61500CFE10B /* MovieItemCell.xib */,
 				B63BD695221D345A00B80DE0 /* MovieCollectionViewCell.xib */,
+				A1022EE92234AF26005DFCA0 /* IndicatorViewCell.xib */,
 			);
 			name = Xib;
 			sourceTree = "<group>";
@@ -552,6 +555,7 @@
 				B63BD696221D345A00B80DE0 /* MovieCollectionViewCell.xib in Resources */,
 				B61976DA221EE99E003A9F59 /* CastCollectionViewCell.xib in Resources */,
 				B65FE6E4221A53F5005762B6 /* LaunchScreen.storyboard in Resources */,
+				A1022EEA2234AF26005DFCA0 /* IndicatorViewCell.xib in Resources */,
 				B659D44E222D309700AA047C /* ReminderTableViewCell.xib in Resources */,
 				B6C90D27221AA61500CFE10B /* MovieItemCell.xib in Resources */,
 				B65FE6E1221A53F5005762B6 /* Assets.xcassets in Resources */,

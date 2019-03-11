@@ -6,7 +6,7 @@
 #import "MovieItemCellDelegate.h"
 #import "DetailViewControllerDelegate.h"
 
-@interface TableViewCreator : NSObject <UITableViewDelegate, UITableViewDataSource, MovieItemCellDelegate, DetailViewControllerDelegate>
+@interface TableViewCreator : NSObject <UITableViewDelegate, UITableViewDataSource, MovieItemCellDelegate, DetailViewControllerDelegate, UIScrollViewDelegate>
 
 @property (nonatomic, weak) id<TableViewCreatorDelegate> delegate;
 

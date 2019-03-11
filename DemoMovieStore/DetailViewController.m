@@ -15,69 +15,43 @@
 @interface DetailViewController ()
 
 @property (weak, nonatomic) IBOutlet UIButton *btnStart;
-
 @property (weak, nonatomic) IBOutlet UILabel *txtReleaseDate;
-
 @property (weak, nonatomic) IBOutlet UILabel *adult;
-
 @property (weak, nonatomic) IBOutlet UILabel *txtRating;
-
 @property (weak, nonatomic) IBOutlet UIImageView *movieImage;
-
 @property (weak, nonatomic) IBOutlet UITextView *movieOverview;
-
 @property (weak, nonatomic) IBOutlet UIButton *btnReminder;
-
 @property (weak, nonatomic) IBOutlet UITextField *txtReminder;
-
 @property (weak, nonatomic) IBOutlet UICollectionView *actorCollectionView;
 
 @property (nonatomic) UIAlertController * alertErrorController;
-
 @property (nonatomic) id<CastsCreator> castsCreator;
-
 @property (nonatomic) NSMutableArray<Cast *> * casts;
-
 @property (nonatomic) NSMutableArray * arrayImageURLString;
-
 @property (nonatomic) UIDatePicker * datePicker;
 
 @end
 
 @implementation DetailViewController
 
-static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
+static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     self.castsCreator = [[CastsCreatorImpl alloc] init];
-    
     self.casts = [[NSMutableArray alloc] init];
-    
     self.arrayImageURLString = [[NSMutableArray alloc] init];
-    
     [self setNavigationBar];
-    
     self.navigationItem.title = self.movie.title;
-    
     self.txtReleaseDate.text = [DateUtils stringFromDate:self.movie.releaseDate formatDate:formatOfReleaseDate];
-    
     self.txtRating.text = [NSString stringWithFormat:@"%.1f", self.movie.voteAverage];
-    
     [self setAdult];
-    
     [self setMovieImage];
-    
     [self setMovieOverview];
-    
     [self setBtnReminder];
-    
     [self setActorCollectionView];
-    
-    UITapGestureRecognizer * tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handlerEventTapView)];
-    [self.view addGestureRecognizer: tapGestureRecognizer];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventRemoveReminder) name:DID_REMOVE_REMINDER object:nil];
 }
 
@@ -85,11 +59,8 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
     [super viewWillAppear:animated];
 
     [self setFavouriteMovie];
-    
     [self setBtnStart];
-    
     self.movie.reminder = [self.delegate reminderWithMovieId: self.movie.identifier];
-    
     [self setTxtReminder];
 }
 
@@ -102,12 +73,6 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
     
     if(!self.movie.reminder) {
         self.txtReminder.text = @"";
-    }
-}
-
-- (void) handlerEventTapView {
-    if([self.txtReminder isFirstResponder]) {
-        [self.txtReminder resignFirstResponder];
     }
 }
 
@@ -162,9 +127,15 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
         _datePicker = [[UIDatePicker alloc] init];
         _datePicker.datePickerMode = UIDatePickerModeDateAndTime;
         [_datePicker addTarget:self action:@selector(changeReminderDate) forControlEvents:UIControlEventValueChanged];
+        _datePicker.backgroundColor = [UIColor whiteColor];
     }
     _datePicker.minimumDate = [[NSDate alloc] init];
     return _datePicker;
+}
+
+- (void) removeNotification: (Reminder *)reminder {
+    NSString * requestId = [NSString stringWithFormat:@"request_%ld", reminder.identifer];
+    [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers: @[requestId]];
 }
 
 - (void) pushLocalNotification: (Reminder *)reminder {
@@ -185,33 +156,65 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
 
 - (void) changeReminderDate {
     if([self.delegate isGranted]) {
-        __weak DetailViewController * weakSelf = self;
-        dispatch_queue_t myQueue = dispatch_queue_create("com.sonic.larue.insert", DISPATCH_QUEUE_SERIAL);
-        if(!self.movie.reminder) {
-            self.movie.reminder = [[Reminder alloc] initWithReminderDate:self.datePicker.date movie:self.movie];
-            dispatch_async(myQueue, ^{
-                BOOL isInsert = [ReminderMO insertNewRemender: self.movie.reminder];
-                if(isInsert) {
-                    [weakSelf.delegate addOrSetReminderMovie: weakSelf.movie.reminder];
-                }
-            });
-        }
-        else {
-            self.movie.reminder.reminderDate = self.datePicker.date;
-            dispatch_async(myQueue, ^{
-                BOOL isUpdate = [ReminderMO updateReminder: self.movie.reminder];
-                if(isUpdate) {
-                    [weakSelf.delegate addOrSetReminderMovie: weakSelf.movie.reminder];
-                }
-            });
-        }
-        NSString * str = [DateUtils stringFromDate:self.movie.reminder.reminderDate formatDate:formatOfReleaseDate];
-        self.txtReminder.text = str;
-        
-        if([AppDelegate isGrantPushLocalNotification]) {
-            [self pushLocalNotification: self.movie.reminder];
+        NSDate * date = self.datePicker.date;
+        if([date compare: [NSDate date]] == NSOrderedDescending) {
+            __weak DetailViewController * weakSelf = self;
+            dispatch_queue_t myQueue = dispatch_queue_create("com.sonic.larue.insert", DISPATCH_QUEUE_SERIAL);
+            if(!self.movie.reminder) {
+                self.movie.reminder = [[Reminder alloc] initWithReminderDate:date movie:self.movie];
+                dispatch_async(myQueue, ^{
+                    BOOL isInsert = [ReminderMO insertNewRemender: self.movie.reminder];
+                    if(isInsert) {
+                        [weakSelf.delegate addOrSetReminderMovie: weakSelf.movie.reminder];
+                    }
+                });
+            }
+            else {
+                self.movie.reminder.reminderDate = date;
+                dispatch_async(myQueue, ^{
+                    BOOL isUpdate = [ReminderMO updateReminder: self.movie.reminder];
+                    if(isUpdate) {
+                        [weakSelf.delegate addOrSetReminderMovie: weakSelf.movie.reminder];
+                    }
+                });
+            }
+            
+            NSString * str = [DateUtils stringFromDate:self.movie.reminder.reminderDate formatDate:formatOfReleaseDate];
+            self.txtReminder.text = str;
+            
+            if([AppDelegate isGrantPushLocalNotification]) {
+                [self pushLocalNotification: self.movie.reminder];
+            }
         }
     }
+}
+
+- (UIToolbar *) toolBar {
+    UIToolbar * toolBar = [[UIToolbar alloc] initWithFrame: CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 45)];
+    UIBarButtonItem * btnDelete = [[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(handlerEventDeleteValueOfTxtReminder)];
+    [btnDelete setTintColor: [UIColor whiteColor]];
+    UIBarButtonItem * btnFlex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    UIBarButtonItem * btnDone = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(handlerEventFinishSelectValueTxtReminder)];
+    [btnDone setTintColor: [UIColor whiteColor]];
+    NSArray<UIBarButtonItem *> * items = @[btnDelete, btnFlex, btnDone];
+    [toolBar setItems:items animated:NO];
+    toolBar.barTintColor = [UIColor blackColor];
+    return toolBar;
+}
+
+- (void) handlerEventDeleteValueOfTxtReminder {
+    if(self.movie.reminder) {
+        [self removeNotification: self.movie.reminder];
+        [self.delegate removeReminderMovie: self.movie.reminder];
+    }
+    self.txtReminder.text = @"";
+    [self.txtReminder setEnabled: NO];
+    [self.txtReminder resignFirstResponder];
+}
+
+- (void) handlerEventFinishSelectValueTxtReminder {
+    [self.txtReminder setEnabled: NO];
+    [self.txtReminder resignFirstResponder];
 }
 
 - (void) setTxtReminder {
@@ -219,10 +222,13 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
     self.txtReminder.layer.borderColor = [[UIColor lightGrayColor] CGColor];
     self.txtReminder.layer.cornerRadius = 4;
     self.txtReminder.clipsToBounds = YES;
-    self.txtReminder.inputView = self.datePicker;
     if(self.movie.reminder) {
         self.txtReminder.text = [DateUtils stringFromDate:self.movie.reminder.reminderDate formatDate:formatOfReleaseDate];
     }
+    [self.txtReminder setEnabled: NO];
+    
+    self.txtReminder.inputView = self.datePicker;
+    self.txtReminder.inputAccessoryView = [self toolBar];
 }
 
 - (void) setMovieImage {
@@ -329,6 +335,7 @@ static NSString * const formatOfReleaseDate = @"yyyy/MM/dd HH:mm:ss a";
 
 
 - (IBAction)btnReminderButtonPressed:(id)sender {
+    [self.txtReminder setEnabled: YES];
     [self.txtReminder becomeFirstResponder];
 }
 
