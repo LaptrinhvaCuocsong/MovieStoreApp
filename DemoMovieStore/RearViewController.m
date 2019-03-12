@@ -13,23 +13,15 @@
 @interface RearViewController ()
 
 @property (weak, nonatomic) IBOutlet UIImageView *avartarImage;
-
 @property (weak, nonatomic) IBOutlet UILabel *txtName;
-
 @property (weak, nonatomic) IBOutlet UILabel *txtBirthDay;
-
 @property (weak, nonatomic) IBOutlet UILabel *txtEmail;
-
 @property (weak, nonatomic) IBOutlet UILabel *txtGender;
-
 @property (weak, nonatomic) IBOutlet UIButton *btnEdit;
-
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
-
 @property (weak, nonatomic) IBOutlet UIButton *btnShowReminder;
 
 @property (nonatomic) Account * account;
-
 @property (nonatomic) NSArray<Reminder *> * reminderMovies;
 
 @end
@@ -43,28 +35,22 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_REMOVE_ACCOUNT object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_SAVE_ACCOUNT object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver: self selector:@selector(handlerEventRemoveReminder) name:DID_REMOVE_REMINDER object:nil];
-    
     [self setCollectionView];
-    
     self.btnEdit.layer.cornerRadius = 4;
     self.btnEdit.clipsToBounds = YES;
-    
     self.btnShowReminder.layer.cornerRadius = 4;
     self.btnShowReminder.clipsToBounds = YES;
     
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_REMOVE_ACCOUNT object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_SAVE_ACCOUNT object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver: self selector:@selector(handlerEventRemoveReminder) name:DID_REMOVE_REMINDER object:nil];
 }
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
     self.account = [[AccountManager getInstance] account];
-    
     [self setViewForController];
-
     [self setReminderMovies];
 }
 
@@ -74,13 +60,11 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 
 - (void) handlerEventChangeAccount {
     self.account = [[AccountManager getInstance] account];
-    
     [self setViewForController];
 }
 
 - (void) handlerEventRemoveReminder {
     [self setReminderMovies];
-    
     [self.collectionView reloadData];
 }
 
@@ -139,17 +123,13 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
     UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"Account option" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
     
     __weak RearViewController * weakSelf = self;
-    
     [alertController addAction: [UIAlertAction actionWithTitle:@"Remove account" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [[AccountManager getInstance] removeAccountToUserDefault];
-        
         [[NSNotificationCenter defaultCenter] postNotificationName: DID_REMOVE_ACCOUNT object: nil];
-        
         [weakSelf dismissViewControllerAnimated:YES completion:nil];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -206,12 +186,28 @@ static NSString * const segueForwardFromRearToEditProfile = @"segueForwardFromRe
 - (IBAction)btnShowReminderButtonPressed:(id)sender {
     [self.revealViewController revealToggle: sender];
     UITabBarController * tabBarViewController = (UITabBarController *)self.revealViewController.frontViewController;
-    UINavigationController * navigationController = [tabBarViewController.viewControllers objectAtIndex:2];
+    NSArray<UIViewController *> * array = tabBarViewController.viewControllers;
+    UIViewController * navigationController = [[array filteredArrayUsingPredicate: [NSPredicate predicateWithBlock:^BOOL(UIViewController *  _Nullable item, NSDictionary<NSString *,id> * _Nullable bindings) {
+        NSArray * subArray = item.childViewControllers;
+        NSArray * filter = [subArray filteredArrayUsingPredicate: [NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
+            if([evaluatedObject isKindOfClass: [SettingViewController class]]) {
+                return YES;
+            }
+            return NO;
+        }]];
+        if(filter && filter.count > 0) {
+            return YES;
+        }
+        return NO;
+    }]] firstObject];
     tabBarViewController.selectedViewController = navigationController;
-    UIStoryboard * mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    ReminderViewController * reminderViewController = [mainStoryBoard instantiateViewControllerWithIdentifier: REMINDER_VIEW_CONTROLLER_MAIN_STORYBOARD];
-    NSDictionary * dic = @{@"navigationController": navigationController, @"reminderViewController":reminderViewController};
-    [self performSelector:@selector(pushReminderViewController:) withObject:dic afterDelay:0.5];
+    NSArray * subViewControllers = navigationController.childViewControllers;
+    if(subViewControllers.count == 1) {
+        UIStoryboard * mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        ReminderViewController * reminderViewController = [mainStoryBoard instantiateViewControllerWithIdentifier: REMINDER_VIEW_CONTROLLER_MAIN_STORYBOARD];
+        NSDictionary * dic = @{@"navigationController": navigationController, @"reminderViewController":reminderViewController};
+        [self performSelector:@selector(pushReminderViewController:) withObject:dic afterDelay:0.5];
+    }
 }
 
 - (void) pushReminderViewController: (NSDictionary *)dic {

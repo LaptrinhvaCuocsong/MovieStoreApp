@@ -9,13 +9,10 @@
 @interface FavoriteViewController ()
 
 @property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
-
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property (nonatomic) NSMutableArray<Movie *> * movies;
-
 @property (nonatomic) BOOL isFirstReload;
-
 @property (nonatomic) Account * account;
 
 @end
@@ -26,13 +23,9 @@
     [super viewDidLoad];
     
     self.isFirstReload = YES;
-    
     self.movies = [[NSMutableArray alloc] init];
-    
     self.tableView.delegate = self;
-    
     self.tableView.dataSource = self;
-    
     self.searchBar.delegate = self;
     self.searchBar.showsCancelButton = YES;
     
@@ -47,11 +40,9 @@
     [super viewWillAppear:animated];
     
     self.account = [[AccountManager getInstance] account];
-    
     if(self.account && self.account.favouriteMovies) {
         [self setMoviesWithSet: self.account.favouriteMovies];
     }
-    
     if(!self.isFirstReload) {
         [self.tableView reloadData];
     }

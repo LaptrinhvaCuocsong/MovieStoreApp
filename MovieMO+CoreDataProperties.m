@@ -36,7 +36,6 @@ static NSString * const ENTITY_NAME = @"Movie";
         if(context.hasChanges) {
             NSError * error = nil;
             if([context save:&error]) {
-                NSLog(@"Insert Movie success");
             }
             else {
                 return nil;

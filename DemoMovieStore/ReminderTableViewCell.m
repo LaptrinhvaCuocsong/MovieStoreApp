@@ -7,9 +7,7 @@
 @interface ReminderTableViewCell ()
 
 @property (weak, nonatomic) IBOutlet UIImageView *movieImage;
-
 @property (weak, nonatomic) IBOutlet UILabel *title;
-
 @property (weak, nonatomic) IBOutlet UILabel *txtReminderDate;
 
 @end
@@ -17,10 +15,6 @@
 @implementation ReminderTableViewCell
 
 static NSString * const formatOfReminderDate = @"yyyy/MM/dd HH:mm:ss a";
-
-- (void)awakeFromNib {
-    [super awakeFromNib];
-}
 
 - (void) setReminderTableViewCell: (Reminder * _Nonnull)reminder {
     [self setReminderTableViewImage: reminder.movie.posterPath];

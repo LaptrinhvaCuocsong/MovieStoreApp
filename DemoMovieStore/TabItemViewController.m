@@ -23,6 +23,7 @@
 
     if(self.revealViewController) {
         [self.view addGestureRecognizer: self.revealViewController.panGestureRecognizer];
+        [self.view addGestureRecognizer: self.revealViewController.tapGestureRecognizer];
     }
 }
 

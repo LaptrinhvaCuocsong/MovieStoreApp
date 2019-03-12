@@ -7,24 +7,17 @@
 @interface EditProfileViewController ()
 
 @property (weak, nonatomic) IBOutlet UIButton *btnCancel;
-
 @property (weak, nonatomic) IBOutlet UIButton *btnDone;
-
 @property (weak, nonatomic) IBOutlet UIImageView *avatar;
-
 @property (weak, nonatomic) IBOutlet UITextField *txtName;
-
 @property (weak, nonatomic) IBOutlet UITextField *txtBirthday;
-
 @property (weak, nonatomic) IBOutlet UITextField *txtEmail;
-
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControlGender;
 
 @property (nonatomic) UIAlertController * alertErrorController;
-
 @property (nonatomic) UIAlertController * alertActivityController;
-
 @property (nonatomic) UIDatePicker * datePicker;
+@property (nonatomic) BOOL changeAccount;
 
 @end
 
@@ -35,6 +28,7 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self setChangeAccount];
     [self setAvatar];
     [self setTxtName];
     [self setTxtBirthday];
@@ -45,6 +39,24 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
     
     UITapGestureRecognizer * tapGestureReconizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handlerEventTapView)];
     [self.view addGestureRecognizer: tapGestureReconizer];
+    
+    [self addObserver:self forKeyPath:@"changeAccount" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void) dealloc {
+    
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    BOOL newValue = [change[NSKeyValueChangeNewKey] boolValue];
+    if(newValue) {
+        [self.btnDone setEnabled: YES];
+        self.btnDone.backgroundColor = [UIColor blueColor];
+    }
+    else {
+        [self.btnDone setEnabled: NO];
+        self.btnDone.backgroundColor = [UIColor grayColor];
+    }
 }
 
 - (void) handlerEventTapView {
@@ -56,6 +68,15 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
     }
     if([self.txtName isFirstResponder]) {
         [self.txtName resignFirstResponder];
+    }
+}
+
+- (void) setChangeAccount {
+    if(self.account) {
+        self.changeAccount = NO;
+    }
+    else {
+        self.changeAccount = YES;
     }
 }
 
@@ -211,6 +232,13 @@ static NSString * formatOfDateOfBirth = @"yyyy/MM/dd";
 - (void) setBtnDone {
     self.btnDone.layer.cornerRadius = 4;
     self.btnDone.clipsToBounds = YES;
+    if(self.changeAccount) {
+        [self.btnDone setEnabled: YES];
+    }
+    else {
+        [self.btnDone setEnabled: NO];
+        self.btnDone.backgroundColor = [UIColor lightGrayColor];
+    }
 }
 
 - (IBAction)btnDoneButtonPressed:(id)sender {

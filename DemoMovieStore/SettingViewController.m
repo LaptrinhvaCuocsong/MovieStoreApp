@@ -8,27 +8,17 @@
 @interface SettingViewController ()
 
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *btnSlide;
-
 @property (weak, nonatomic) IBOutlet UISlider *slider;
-
 @property (weak, nonatomic) IBOutlet UILabel *txtMovieRate;
-
 @property (weak, nonatomic) IBOutlet UITextField *txtMovieRelease;
 
 @property (nonatomic) UIView * pickerView;
-
 @property (nonatomic) NSMutableArray * dates;
-
 @property (nonatomic) UIButton * btnDelete;
-
 @property (nonatomic) UIButton * btnDone;
-
 @property (nonatomic) NSMutableDictionary * settingOfAccount;
-
 @property (nonatomic) NSInteger indexOfCellFilterHaveAccessory;
-
 @property (nonatomic) NSInteger indexOfCellSortHaveAccessory;
-
 @property (nonatomic) BOOL haveChangeSetting;
 
 @end
@@ -45,24 +35,22 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    if(self.revealViewController) {
+        [self.view addGestureRecognizer: self.revealViewController.tapGestureRecognizer];
+    }
+    
     self.navigationController.navigationBar.clipsToBounds = YES;
-    
     self.haveChangeSetting = NO;
-    
     self.settingOfAccount = [[AccountManager getInstance] settingOfAccount];
     if(!self.settingOfAccount) {
         self.settingOfAccount = [[NSMutableDictionary alloc] init];
         [self.settingOfAccount setUrlString: API_GET_MOVIE_POPULAR_LIST];
     }
-    
     [self setSlider];
-    
     self.txtMovieRate.text = [NSString stringWithFormat: @"%.1f", [self.settingOfAccount movieRate]];
-    
     [self setTxtMovieRelease];
-    
     self.indexOfCellFilterHaveAccessory = [self indexOfCellFromUrlString: [self.settingOfAccount urlString]];
-    
     self.indexOfCellSortHaveAccessory = [self indexOfCellFromTypeOfSort: [self.settingOfAccount typeOfSort]];
 }
 

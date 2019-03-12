@@ -4,9 +4,7 @@
 @interface CustomCollectionViewLayout()
 
 @property (nonatomic) CGSize sizeOfCell;
-
 @property (nonatomic) NSMutableArray<UICollectionViewLayoutAttributes *> * attributes;
-
 @property (nonatomic) float heightOfContentView;
 
 @end

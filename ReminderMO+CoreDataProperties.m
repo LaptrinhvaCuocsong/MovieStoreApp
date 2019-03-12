@@ -41,7 +41,6 @@ static NSString * const CURRENT_IDENTIFIER = @"CurrentIdentifierOfReminderMO";
             NSError * error = nil;
             BOOL isInserted = [context save: &error];
             if(isInserted && !error) {
-                NSLog(@"Insert reminder success");
                 [[NSUserDefaults standardUserDefaults] setInteger:currentIdentifier forKey:CURRENT_IDENTIFIER];
             }
             else {
@@ -64,7 +63,6 @@ static NSString * const CURRENT_IDENTIFIER = @"CurrentIdentifierOfReminderMO";
             NSError * error = nil;
             BOOL isSaved = [context save: &error];
             if(isSaved && !error) {
-                NSLog(@"Update Reminder success");
             }
             else {
                 return NO;

@@ -77,7 +77,6 @@ static NSString * const ENTITY_NAME = @"Account";
             NSError * error = nil;
             BOOL isSaved = [context save: &error];
             if(isSaved && !error) {
-                NSLog(@"Insert Account success");
                 [[NSUserDefaults standardUserDefaults] setInteger:currentIdentifer forKey:CURRENT_IDENTIFIER];
             }
             else {
@@ -110,7 +109,6 @@ static NSString * const ENTITY_NAME = @"Account";
             }
         }
     }
-    NSLog(@"Update Account success");
     return YES;
 }
 

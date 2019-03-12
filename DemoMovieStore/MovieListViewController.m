@@ -48,7 +48,7 @@ typedef NS_ENUM(NSInteger, MOVIE_LIST_TYPE) {
 
 @implementation MovieListViewController
 
-static const NSInteger MAX_TIME_OUT = 10;
+static const NSInteger MAX_TIME_OUT = 8;
 
 - (void) viewDidLoad {
     [super viewDidLoad];
@@ -66,14 +66,12 @@ static const NSInteger MAX_TIME_OUT = 10;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeSetting) name:DID_CHANGE_SETTING object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_SAVE_ACCOUNT object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlerEventChangeAccount) name:DID_REMOVE_ACCOUNT object:nil];
-    
 }
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-
-    self.account = [[AccountManager getInstance] account];
     
+    self.account = [[AccountManager getInstance] account];
     if(self.isFirstReload) {
         self.isFirstReload = NO;
     }
@@ -329,9 +327,9 @@ static const NSInteger MAX_TIME_OUT = 10;
         [self presentViewController:self.alertViewController animated:YES completion:nil];
     }
     [self startCountDown];
+    __weak MovieListViewController * weakSelf = self;
     if(self.currentTime >= 0) {
         NSInteger limitMovieOfView = 20;
-        __weak MovieListViewController * weakSelf = self;
         [self.moviesCreator createMoviesWithPageNumber:self.pageNumber success:^(NSMutableArray<Movie *> * _Nonnull movies, NSInteger totalPages) {
             [weakSelf setMoviesWithMovieRate: movies];
             [weakSelf setMoviesWithMovieReleaseYear: movies];
@@ -355,12 +353,10 @@ static const NSInteger MAX_TIME_OUT = 10;
         } urlString:urlString];
     }
     else {
-        __weak MovieListViewController * weakSelf = self;
         [self handlerEventTimeOut:urlString agree:^{
             [weakSelf stopCountDown];
             [weakSelf fetchMoviesFromAPI: urlString];
         } disagree:^{
-            [weakSelf stopCountDown];
             [weakSelf reloadDataWhenFetchMoviesFinish];
         }];
     }
@@ -378,9 +374,9 @@ static const NSInteger MAX_TIME_OUT = 10;
 
 - (void) fetchMoviesFromAPIForRefresh: (NSString *)urlString {
     [self startCountDown];
+    __weak MovieListViewController * weakSelf = self;
     if(self.currentTime >= 0) {
         NSInteger limitMovieOfView = 20;
-        __weak MovieListViewController * weakSelf = self;
         [self.moviesCreator createMoviesWithPageNumber:self.pageNumber success:^(NSMutableArray<Movie *> * _Nonnull movies, NSInteger totalPages) {
             [weakSelf setMoviesWithMovieRate: movies];
             [weakSelf setMoviesWithMovieReleaseYear: movies];
@@ -404,8 +400,7 @@ static const NSInteger MAX_TIME_OUT = 10;
         } urlString:urlString];
     }
     else {
-        __weak MovieListViewController * weakSelf = self;
-        [self handlerEventTimeOut:urlString agree:^{
+        [self handlerEventTimeOutWhenRefresh:urlString agree:^{
             [weakSelf stopCountDown];
             [weakSelf fetchMoviesFromAPIForRefresh: urlString];
         } disagree:^{
@@ -453,52 +448,69 @@ static const NSInteger MAX_TIME_OUT = 10;
 }
 
 - (void) handlerEventTimeOut: (NSString *)urlString agree: (void(^)(void))agreeBlock disagree: (void(^)(void))disagreeBlock {
+    __weak MovieListViewController * weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.alertViewController dismissViewControllerAnimated:NO completion: ^ {
-            if(!self.alertErrorViewController) {
-                self.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"😭😭😭" message:@"Please waiting for searching finish ..." preferredStyle:UIAlertControllerStyleAlert];
-                __weak MovieListViewController * weakSelf = self;
-                UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    if(weakSelf.alertIsActive) {
-                        [self dismissViewControllerAnimated:NO completion:nil];
-                        weakSelf.alertIsActive = NO;
-                    }
-                    agreeBlock();
-                }];
-                [self.alertErrorViewController addAction: tryAgain];
-                
-                UIAlertAction * actionExit = [UIAlertAction actionWithTitle:@"No way" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                    disagreeBlock();
-                }];
-                [self.alertErrorViewController addAction: actionExit];
+        [weakSelf.alertViewController dismissViewControllerAnimated:NO completion:^{
+            weakSelf.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"😭😭😭" message:@"Please waiting for searching finish ..." preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                if(weakSelf.alertIsActive) {
+                    [weakSelf dismissViewControllerAnimated:NO completion:nil];
+                    weakSelf.alertIsActive = NO;
+                }
+                agreeBlock();
+            }];
+            [weakSelf.alertErrorViewController addAction: tryAgain];
+            
+            UIAlertAction * actionExit = [UIAlertAction actionWithTitle:@"No way" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                disagreeBlock();
+            }];
+            [weakSelf.alertErrorViewController addAction: actionExit];
+            [weakSelf presentViewController:self.alertErrorViewController animated:YES completion:nil];
+        }];
+    });
+}
+
+- (void) handlerEventTimeOutWhenRefresh: (NSString *)urlString agree: (void(^)(void))agreeBlock disagree: (void(^)(void))disagreeBlock {
+    __weak MovieListViewController * weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        weakSelf.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"😭😭😭" message:@"Please waiting for searching finish ..." preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            if(weakSelf.alertIsActive) {
+                [weakSelf dismissViewControllerAnimated:NO completion:nil];
+                weakSelf.alertIsActive = NO;
             }
-            [self presentViewController:self.alertErrorViewController animated:YES completion:nil];
-        }] ;
+            agreeBlock();
+        }];
+        [weakSelf.alertErrorViewController addAction: tryAgain];
+        
+        UIAlertAction * actionExit = [UIAlertAction actionWithTitle:@"No way" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            disagreeBlock();
+        }];
+        [weakSelf.alertErrorViewController addAction: actionExit];
+        [weakSelf presentViewController:self.alertErrorViewController animated:YES completion:nil];
     });
 }
 
 - (void) handlerErrorWhenFetchAPI: (NSString *)urlString {
+    __weak MovieListViewController * weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.alertViewController dismissViewControllerAnimated:NO completion: ^ {
-            if(!self.alertErrorViewController) {
-                self.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"💔💔💔" message:@"We can't load movie collection" preferredStyle:UIAlertControllerStyleAlert];
-                __weak MovieListViewController * weakSelf = self;
-                UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    if(weakSelf.alertIsActive) {
-                        [self dismissViewControllerAnimated:NO completion:nil];
-                        weakSelf.alertIsActive = NO;
-                    }
-                    weakSelf.pageNumber = 1;
-                    [weakSelf fetchMoviesFromAPI: urlString];
-                }];
-                [self.alertErrorViewController addAction: tryAgain];
-                
-                UIAlertAction * actionExit = [UIAlertAction actionWithTitle:@"Exit" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                    exit(0);
-                }];
-                [self.alertErrorViewController addAction: actionExit];
-            }
-            [self presentViewController:self.alertErrorViewController animated:YES completion:nil];
+        [weakSelf.alertViewController dismissViewControllerAnimated:NO completion: ^ {
+            weakSelf.alertErrorViewController = [UIAlertController alertControllerWithTitle:@"💔💔💔" message:@"We can't load movie collection" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction * tryAgain = [UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                if(weakSelf.alertIsActive) {
+                    [weakSelf dismissViewControllerAnimated:NO completion:nil];
+                    weakSelf.alertIsActive = NO;
+                }
+                weakSelf.pageNumber = 1;
+                [weakSelf fetchMoviesFromAPI: urlString];
+            }];
+            [self.alertErrorViewController addAction: tryAgain];
+            
+            UIAlertAction * actionExit = [UIAlertAction actionWithTitle:@"Exit" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                exit(0);
+            }];
+            [weakSelf.alertErrorViewController addAction: actionExit];
+            [weakSelf presentViewController:weakSelf.alertErrorViewController animated:YES completion:nil];
         }] ;
     });
 }
@@ -588,17 +600,6 @@ static const NSInteger MAX_TIME_OUT = 10;
 }
 
 - (void) pushDetailViewController:(DetailViewController *)detailViewController {
-    if(self.revealViewController) {
-        /*
-        FrontViewPosition frontViewPosition = self.revealViewController.frontViewPosition;
-        if(frontViewPosition >= FrontViewPositionRight) {
-            [self.revealViewController revealToggle:nil];
-            [self.navigationController pushViewController:detailViewController animated:NO];
-            return;
-        }
-         */
-    }
-    
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 

@@ -7,25 +7,16 @@
 @interface MovieItemCell()
 
 @property (weak, nonatomic) IBOutlet UILabel *movieTitle;
-
 @property (weak, nonatomic) IBOutlet UIImageView *movieImage;
-
 @property (weak, nonatomic) IBOutlet UILabel *releaseDate;
-
 @property (weak, nonatomic) IBOutlet UILabel *rating;
-
 @property (weak, nonatomic) IBOutlet UILabel *adult;
-
 @property (weak, nonatomic) IBOutlet UIButton *btnStart;
-
 @property (weak, nonatomic) IBOutlet UILabel *overview;
-
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *constraintBetweenTxtReleaseDateAndBtnAdult;
-
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *constraintBetweenTxtReleaseDateAndBtnStart;
 
 @property (nonatomic) Movie * movie;
-
 @property (nonatomic) NSMutableString * urlString;
 
 @end
@@ -33,7 +24,6 @@
 @implementation MovieItemCell
 
 static float LAYOUT_PRIORITY_NON_REQUIRED = 1;
-
 static float LAYOUT_PRIORITY_REQUIRED = 99;
 
 static NSString * const formatOfReleaseDate = @"yyyy-MM-dd";

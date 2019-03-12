@@ -6,9 +6,7 @@
 @interface CastCollectionViewCell()
 
 @property (weak, nonatomic) IBOutlet UIImageView *castImage;
-
 @property (weak, nonatomic) IBOutlet UILabel *name;
-
 @property (nonatomic, weak) NSMutableArray * arrayImageURLString;
 
 @end

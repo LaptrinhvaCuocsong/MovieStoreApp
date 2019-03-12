@@ -15,15 +15,8 @@ static NSString * const urlString = @"https://www.themoviedb.org/about/our-histo
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.wkWebView = [[WKWebView alloc] init];
+    self.wkWebView = [[WKWebView alloc] initWithFrame: CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame))];
     [self.webView addSubview: self.wkWebView];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    CGRect frameOfWebView = self.webView.frame;
-    frameOfWebView.origin.y = 0;
-    self.wkWebView.frame = frameOfWebView;
     NSURLRequest * request = [NSURLRequest requestWithURL: [NSURL URLWithString: urlString]];
     [self.wkWebView loadRequest: request];
 }
